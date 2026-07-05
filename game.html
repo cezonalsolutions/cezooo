@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    height:100vh;
+    overflow:hidden;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    position:relative;
+
+    background:linear-gradient(
+        to bottom,
+        #f7f2ff 0%,
+        #fcf9ff 12%,
+        #ffffff 28%,
+        #f4fbff 55%,
+        #e8f8ff 78%,
+        #d8f2ff 100%
+    );
+}
+
+/* ================= CLOUDS ================= */
+
+.cloud{
+    position:absolute;
+    background:#fff;
+    border-radius:100px;
+    opacity:.99;
+    box-shadow:0 2px 12px rgba(255,255,255,.6);
+    z-index:1;
+}
+
+.cloud::before,
+.cloud::after{
+    content:"";
+    position:absolute;
+    background:#fff;
+    border-radius:50%;
+}
+
+.cloud::before{
+    width:60%;
+    height:120%;
+    left:18%;
+    top:-60%;
+}
+
+.cloud::after{
+    width:42%;
+    height:90%;
+    right:12%;
+    top:-40%;
+}
+
+/* Cloud Positions */
+
+.c1{
+    width:90px;
+    height:28px;
+    top:70px;
+    left:30px;
+}
+
+.c2{
+    width:65px;
+    height:20px;
+    top:110px;
+    left:170px;
+    opacity:.55;
+}
+
+.c3{
+    width:105px;
+    height:32px;
+    top:80px;
+    left:50%;
+    transform:translateX(-50%);
+}
+
+.c4{
+    width:60px;
+    height:18px;
+    top:55px;
+    right:150px;
+    opacity:.55;
+}
+
+.c5{
+    width:90px;
+    height:28px;
+    top:105px;
+    right:35px;
+}
+
+.c6{
+    width:45px;
+    height:15px;
+    top:150px;
+    right:230px;
+    opacity:.45;
+}
+/* ================= CONTENT ================= */
+
+.container{
+    position:relative;
+    margin-top:80px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:16px;
+    z-index:100;
+}
+
+.leftSide{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+}
+
+.logois{
+    font-family:'Bungee',sans-serif;
+    font-size:40px;
+    color:#11d957;
+    letter-spacing:2px;
+    margin-bottom:-6px;
+    user-select:none;
+}
+
+.tagline{
+    font-family:'Poppins',sans-serif;
+    font-size:12px;
+    color:#555;
+    font-weight:500;
+    letter-spacing:.5px;
+    margin-left:8px;   /* Move slightly to the right */
+}
+
+.vLine{
+    width:1px;
+    height:50px;
+    background:#d8d8d8;
+    border-radius:999px;
+    transform:translateY(5px);
+}
+.rightSide{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.rightSide img{
+    width:50px;
+    height:50px;
+    object-fit:contain;
+}
+
+.logo{
+    font-family:'Bungee',sans-serif;
+    font-size:40px;
+    color:#11d957;
+    letter-spacing:2px;
+    margin-bottom:-6px;
+    user-select:none;
+}
+.heroImage{
+    position:absolute;
+    top:160px;
+    left:0;
+    width:100%;
+    height:calc(100dvh - 160px); /* Taller image */
+    object-fit:contain;
+    object-position:left bottom;
+    z-index:10;
+}
+.poweredBy{
+    position:absolute;
+    top:150px;
+    left:50%;
+    transform:translateX(-50%);
+    text-align:center;
+
+    font-family:'Poppins',sans-serif;
+    font-size:10px;
+    color:#777;
+
+    z-index:100;
+}
+
+.poweredBy span{
+    display:block;
+    margin-top:2px;
+    font-size:11px;
+    font-weight:600;
+    color:#444;
+}
+#splashScreen{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    z-index:999;
+}
+#mainScreen{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+
+    background:linear-gradient(
+        to bottom,
+        #c6e9ca 0%,
+        #d3efd6 40%,
+        #def5e1 100%
+    );
+}
+
+.topLeaves{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:auto;
+    object-fit:cover;
+}
+.heroBanner{
+    position:absolute;
+    top:115px;          /* Below leaves */
+    left:0;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:10;
+}
+
+.iceCream{
+    width:200px;        /* Change size */
+    max-width:90%;
+    height:auto;
+    object-fit:contain;
+}
+.howCard{
+    position:absolute;
+
+    top:55%;   /* Was 50% */
+    left:50%;
+    transform:translate(-50%, -50%);
+
+    width:86%;
+    max-width:300px;
+
+    background:#f6f3d8;
+    border-radius:18px;
+    overflow:hidden;
+
+    box-shadow:0 8px 18px rgba(0,0,0,.12);
+    border:2px solid rgba(255,255,255,.8);
+
+    z-index:20;
+}
+
+/* Header */
+
+.howHeader{
+    background:#d7ecff;
+    text-align:center;
+    padding:10px 8px;
+
+    font-family:'Baloo 2',cursive;
+    font-size:20px;
+    font-weight:800;
+    color:#222;
+    letter-spacing:.5px;
+}
+
+/* Video */
+
+/* Video */
+
+.videoBox{
+    height:200px;   /* Increase this */
+    overflow:hidden;
+}
+
+.videoBox video{
+    width:100%;
+    height:100%;
+    object-fit:cover;   /* or contain */
+    display:block;
+}
+
+/* Footer */
+
+.howFooter{
+    background:#d7ecff;
+    padding:10px;
+    text-align:center;
+
+    font-family:'Poppins',sans-serif;
+    font-size:13px;
+    color:#222;
+}
+
+.proTip{
+    font-weight:800;
+}
+
+.tipText{
+    font-weight:400;
+}
+.playNowBtn{
+    position:absolute;
+    left:16px;
+    right:16px;
+    bottom:25px;
+
+    height:56px;
+
+    border:none;
+    border-radius:18px;
+
+    background:linear-gradient(180deg,#FFF8E8,#F4E7C6);
+
+    color:#5A4120;
+
+    font-family:'Poppins',sans-serif;
+    font-size:18px;
+    font-weight:700;
+    letter-spacing:.5px;
+
+    box-shadow:0 8px 18px rgba(0,0,0,.12);
+    border:1px solid #E8D8B5;
+
+    cursor:pointer;
+    z-index:20;
+    transition:.2s ease;
+}
+
+.playNowBtn:active{
+    transform:scale(.98);
+}
+</style>
+</head>
+
+<body>
+<div id="splashScreen">
+<!-- Background Clouds -->
+<div class="cloud c1"></div>
+<div class="cloud c2"></div>
+<div class="cloud c3"></div>
+<div class="cloud c4"></div>
+<div class="cloud c5"></div>
+<div class="cloud c6"></div>
+<div class="container">
+
+    <div class="leftSide">
+        <div class="logois">CEZOO</div>
+        <div class="tagline">Delivery in Minutes</div>
+    </div>
+
+    <div class="vLine"></div>
+
+    <div class="rightSide">
+        <img src="game/flad3.png" alt="">
+    </div>
+
+</div>
+<div class="poweredBy">
+    <span>Cezonal Solutions Pvt. Ltd.</span>
+</div>
+
+<img class="heroImage" src="game/banner1.png" alt="">
+</div>
+<div id="mainScreen" style="display:none;">
+
+    <img class="topLeaves" src="game/ok4.png" alt="Leaves">
+
+    <div class="heroBanner">
+        <img class="iceCream" src="game/banner5.png" alt="">
+    </div>
+
+
+    <div class="howCard">
+
+    <div class="howHeader">
+        HOW IT WORKS
+    </div>
+
+    <div class="videoBox">
+        <video autoplay muted loop playsinline>
+            <source src="" type="video/mp4">
+        </video>
+    </div>
+
+    <div class="howFooter">
+    <span class="proTip">PRO TIP :</span>
+    <span class="tipText">Watch the full video once.</span>
+</div>
+</div>
+<button class="playNowBtn">PLAY NOW</button>
+</div>
+
+
+</body>
+<script>
+setTimeout(function(){
+    document.getElementById("splashScreen").style.display="none";
+    document.getElementById("mainScreen").style.display="block";
+},1000);
+</script>
+</html>
