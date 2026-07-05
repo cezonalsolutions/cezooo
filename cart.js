@@ -408,6 +408,17 @@ function cartPageDecrease(key){
   restoreCartButtons(document);
   renderCartPage();
 }
+function cartPageIncrease(key){
+  if(!cart[key]) return;
+
+  cart[key].qty++;
+
+  saveCart();
+  updateCartFloat();
+  updatePopupCartSummary();
+  restoreCartButtons(document);
+  renderCartPage();
+}
 function applyCoupon(){
   const code = document.getElementById("couponCode").value.trim();
 
