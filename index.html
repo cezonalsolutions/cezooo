@@ -5509,6 +5509,17 @@ button{
 </div>
 
 
+<h3 class="sectionTitle">Lays Packets</h3>
+
+
+  <div class="autoProductRow"
+     data-table="cezoogroceries"
+     data-ids="155,156,157,158,159,160,161,162">
+</div>
+<div class="seeAllBar" id="seeAllBar20">
+  <span>See All</span>
+  <span class="seeAllArrow">›</span>
+</div>
 
 <h3 class="sectionTitle">Chocolates</h3>
 
@@ -5523,17 +5534,6 @@ button{
 </div>
 
 
-<h3 class="sectionTitle">Lays Packets</h3>
-
-
-  <div class="autoProductRow"
-     data-table="cezoogroceries"
-     data-ids="155,156,157,158,159,160,161">
-</div>
-<div class="seeAllBar" id="seeAllBar16">
-  <span>See All</span>
-  <span class="seeAllArrow">›</span>
-</div>
 
 <h3 class="sectionTitle">Biscuits</h3>
 
@@ -8470,45 +8470,53 @@ async function loadAutoProductRow(row){
   row.innerHTML = (data || []).map(p => `
    <div class="productCard" data-id="${p.id}" data-table="${table}">
 
-      <div class="productImageWrap"
-           onclick='openProductPopup(Object.assign(${JSON.stringify(p)}, {table:"${table}"}))'>
+      <div class="productImageWrap">
+        <img class="productImage" src="${p.image1 || ''}" loading="lazy">
 
-        <img
-          class="productImage"
-          src="${p.image1 || ''}"
-          loading="lazy"
-        >
-
-        <button class="addBtn"
-          onclick='return addToCart(event,this,${JSON.stringify(p)})'>
+        <button class="addBtn">
           <span>+</span>
         </button>
-
       </div>
 
-      <div class="productInfo"
-           onclick='openProductPopup(Object.assign(${JSON.stringify(p)}, {table:"${table}"}))'>
-
+      <div class="productInfo">
         <div class="priceRow">
           <span class="discountPrice">₹${p.discount_price || 0}</span>
           <span class="originalPrice">₹${p.original_price || 0}</span>
         </div>
 
         <div class="productName">${p.name || ''}</div>
-<div class="productNameTelugu">
-  ${p.name_telugu || ''}
-</div>
+
+        <div class="productNameTelugu">
+          ${p.name_telugu || ''}
+        </div>
+
         <div class="productQty">
           ${p.quantity || ''} ${p.unit || ''}
         </div>
-
       </div>
 
     </div>
-  `).join("");
-  restoreCartButtons(row);
-}
+`).join("");
 
+row.querySelectorAll(".productCard").forEach(card => {
+  const id = Number(card.dataset.id);
+  const product = (data || []).find(p => Number(p.id) === id);
+
+  card.querySelector(".productImageWrap").addEventListener("click", () => {
+    openProductPopup({...product, table});
+  });
+
+  card.querySelector(".productInfo").addEventListener("click", () => {
+    openProductPopup({...product, table});
+  });
+
+  card.querySelector(".addBtn").addEventListener("click", (e) => {
+    return addToCart(e, card.querySelector(".addBtn"), product);
+  });
+});
+
+restoreCartButtons(row);
+}
 const autoProductObserver =
 new IntersectionObserver(entries => {
 
@@ -8815,26 +8823,27 @@ const normalPopupConfigs = {
       305,306,307,308,309
     ]
   },
-
-seeAllBar16: {
+  seeAllBar20: {
     banner: "banner/lays.jpeg",
     table: "cezoogroceries",
-    ids: [155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170]
+    ids: [155,156,157,158,159,160,161,162,163,164,165,166]
   },
+
+
 seeAllBar17: {
     banner: "banner/biscuits.png",
     table: "cezoogroceries",
     ids: [197,198,199,200,202,203,204,205,206,207,208,209,210,211,112]
   },
-  seeAllBar3: {
-    banner: "banner/fresh-daily.png",
-    table: "fresh_products",
-    ids: [
-      77,78,76,75,74,
-      73,72,71,70,69,
-      68,67,66,65
-    ]
-  },
+ seeAllBar3: {
+  banner: "banner/fresh-daily.png",
+  table: "cezoogroceries",
+  ids: [
+    77,78,76,75,74,
+    73,72,71,70,69,
+    68,67,66,65
+  ]
+},
 seeAllBar19: {
     banner: "banner/color.jpeg",
     table: "cool_drinks_products",
