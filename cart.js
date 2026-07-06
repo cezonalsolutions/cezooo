@@ -712,15 +712,18 @@ function createLionSheet(){
       font-weight:400;
     }
 
-    .lionClose{
-      width:34px;
-      height:34px;
-      border:0;
-      border-radius:50%;
-      background:#f3f3f3;
-      font-size:20px;
-      color:#333;
-    }
+   .lionClose{
+  width:34px;
+  height:34px;
+  border:0;
+  border-radius:50%;
+  background:#f3f3f3;
+  font-size:20px;
+  color:#333;
+
+  position: relative;
+  top: -10px; /* Adjust: -2px, -4px, etc. */
+}
 
     .lionTodayBox{
       padding:12px 14px;
