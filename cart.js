@@ -110,7 +110,14 @@ const savings =
 function renderCartPage(){
   const box = document.getElementById("cartPageContent");
   const t = getCartTotals();
+const savedSchedule = JSON.parse(
+  localStorage.getItem("cezooDeliverySchedule") || "null"
+);
 
+const deliveryTimeDisplay =
+  savedSchedule?.time
+    ? `Scheduled for ${savedSchedule.time}`
+    : "Delivering in 10-15 mins";
   document.getElementById("cartToPayBottom").innerText = `₹${t.toPay}`;
 
   if(t.totalQty <= 0){
@@ -135,9 +142,9 @@ function renderCartPage(){
 
     <div class="deliveryInfoWrap">
 
-      <div class="deliveryTimeText">
-        Delivering in 10-15 mins
-      </div>
+     <div class="deliveryTimeText">
+  ${deliveryTimeDisplay}
+</div>
 
       <div class="deliveryItemsText">
         ${t.totalQty} items
@@ -649,7 +656,7 @@ function createLionSheet(){
       inset:0;
       z-index:999999999;
       display:none;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      font-family:Arial, sans-serif;
     }
 
     .lionSheet.show{display:block;}
@@ -657,8 +664,7 @@ function createLionSheet(){
     .lionSheetOverlay{
       position:absolute;
       inset:0;
-      background:rgba(15,18,25,.55);
-      backdrop-filter:blur(3px);
+      background:rgba(0,0,0,.38);
     }
 
     .lionSheetBox{
@@ -667,253 +673,227 @@ function createLionSheet(){
       right:0;
       bottom:0;
       background:#fff;
-      border-radius:28px 28px 0 0;
-      padding:14px 16px 22px;
-      max-height:86vh;
-      overflow-y:auto;
-      box-shadow:0 -12px 35px rgba(0,0,0,.18);
-      animation:lionSheetUp .28s ease;
+      border-radius:26px 26px 0 0;
+      padding:14px 18px 20px;
+      box-shadow:0 -10px 30px rgba(0,0,0,.14);
+      animation:lionUp .25s ease;
     }
 
-    @keyframes lionSheetUp{
+    @keyframes lionUp{
       from{transform:translateY(100%);}
       to{transform:translateY(0);}
     }
 
-    .lionSheetHandle{
-      width:44px;
-      height:5px;
+    .lionHandle{
+      width:42px;
+      height:4px;
+      background:#ddd;
       border-radius:20px;
-      background:#d7d7d7;
       margin:0 auto 16px;
     }
 
-    .lionSheetHead{
+    .lionTop{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:12px;
-      margin-bottom:18px;
+      margin-bottom:14px;
     }
 
-    .lionSheetHeadLeft{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      min-width:0;
-    }
-
-    .lionSheetIcon{
-      width:44px;
-      height:44px;
-      border-radius:16px;
-      background:#f4f5f8;
+    .lionTitle{
+      font-size:17px;
+      font-weight:600;
       color:#222;
+    }
+
+    .lionSub{
+      font-size:12px;
+      color:#777;
+      margin-top:3px;
+      font-weight:400;
+    }
+
+    .lionClose{
+      width:34px;
+      height:34px;
+      border:0;
+      border-radius:50%;
+      background:#f3f3f3;
+      font-size:20px;
+      color:#333;
+    }
+
+    .lionTodayBox{
+      padding:12px 14px;
+      border-radius:15px;
+      background:#fafafa;
+      border:1px solid #eee;
+      margin-bottom:14px;
+    }
+
+    .lionTodaySmall{
+      font-size:10px;
+      font-weight:500;
+      color:#999;
+      margin-bottom:4px;
+      letter-spacing:.3px;
+    }
+
+    .lionTodayText{
+      font-size:14px;
+      font-weight:500;
+      color:#222;
+    }
+
+    .lionPickerLabelRow{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      text-align:center;
+      margin-bottom:6px;
+      font-size:12px;
+      font-weight:400;
+      color:#777;
+    }
+
+    .lionPickerWrap{
+      position:relative;
+      height:165px;
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:8px;
+      overflow:hidden;
+      margin-bottom:14px;
+    }
+
+    .lionPickerCenterLine{
+      position:absolute;
+      left:0;
+      right:0;
+      top:57px;
+      height:50px;
+      background:#f6f6f6;
+      border-top:1px solid #e9e9e9;
+      border-bottom:1px solid #e9e9e9;
+      border-radius:14px;
+      z-index:1;
+      pointer-events:none;
+    }
+
+    .lionPickerWrap:before,
+    .lionPickerWrap:after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      height:52px;
+      z-index:4;
+      pointer-events:none;
+    }
+
+    .lionPickerWrap:before{
+      top:0;
+      background:linear-gradient(to bottom,#fff,rgba(255,255,255,.7),transparent);
+    }
+
+    .lionPickerWrap:after{
+      bottom:0;
+      background:linear-gradient(to top,#fff,rgba(255,255,255,.7),transparent);
+    }
+
+    .lionWheel{
+      position:relative;
+      z-index:2;
+      height:165px;
+      overflow-y:auto;
+      scroll-snap-type:y mandatory;
+      scrollbar-width:none;
+      padding:57px 0;
+      box-sizing:border-box;
+    }
+
+    .lionWheel::-webkit-scrollbar{display:none;}
+
+    .lionWheelItem{
+      height:50px;
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:18px;
-      flex-shrink:0;
-    }
-
-    .lionSheetTitle{
-      font-size:18px;
-      font-weight:800;
-      color:#151515;
-      line-height:1.1;
-    }
-
-    .lionSheetText{
-      font-size:12px;
-      font-weight:500;
-      color:#777;
-      margin-top:4px;
-      line-height:1.3;
-    }
-
-    .lionSheetClose{
-      width:36px;
-      height:36px;
-      border:none;
-      border-radius:50%;
-      background:#f3f3f3;
-      color:#222;
-      font-size:22px;
-      line-height:36px;
-      cursor:pointer;
-      flex-shrink:0;
-    }
-
-    .lionSection{
-      margin-top:18px;
-    }
-
-    .lionLabel{
-      font-size:13px;
-      font-weight:800;
-      color:#252525;
-      margin-bottom:10px;
-    }
-
-    .lionDateRow{
-      display:flex;
-      gap:10px;
-      overflow-x:auto;
-      padding-bottom:4px;
-      scrollbar-width:none;
-    }
-
-    .lionDateRow::-webkit-scrollbar{display:none;}
-
-    .lionDateBtn{
-      min-width:82px;
-      border:1px solid #e5e5e5;
-      background:#fff;
-      border-radius:18px;
-      padding:12px 8px;
-      text-align:center;
-      cursor:pointer;
-      box-shadow:0 5px 14px rgba(0,0,0,.04);
-    }
-
-    .lionDateBtn.active{
-      border-color:#222;
-      background:#222;
-      color:#fff;
-    }
-
-    .lionDay{
-      display:block;
-      font-size:11px;
-      font-weight:700;
-      color:#777;
-      margin-bottom:5px;
-    }
-
-    .lionDateBtn.active .lionDay{
-      color:#ddd;
-    }
-
-    .lionDateNum{
-      display:block;
+      scroll-snap-align:center;
       font-size:20px;
-      font-weight:900;
-      line-height:1;
+      font-weight:400;
+      color:#aaa;
+      transition:.15s ease;
     }
 
-    .lionMonth{
-      display:block;
-      margin-top:5px;
-      font-size:11px;
-      font-weight:700;
-      color:#777;
-    }
-
-    .lionDateBtn.active .lionMonth{
-      color:#ddd;
-    }
-
-    .lionCalendar{
-      width:100%;
-      height:50px;
-      border:1px solid #e1e1e1;
-      border-radius:16px;
-      padding:0 14px;
-      box-sizing:border-box;
-      background:#fafafa;
+    .lionWheelItem.active{
       color:#222;
-      font-size:14px;
-      font-weight:700;
-      outline:none;
-    }
-
-    .lionCalendar:focus{
-      border-color:#222;
-      background:#fff;
-    }
-
-    .lionTimeGrid{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:10px;
-    }
-
-    .lionTimeBtn{
-      height:48px;
-      border:1px solid #e5e5e5;
-      border-radius:16px;
-      background:#fff;
-      color:#222;
-      font-size:12px;
-      font-weight:800;
-      cursor:pointer;
-      box-shadow:0 5px 14px rgba(0,0,0,.04);
-    }
-
-    .lionTimeBtn.active{
-      border-color:#222;
-      background:#222;
-      color:#fff;
+      font-size:23px;
+      font-weight:500;
     }
 
     .lionPreview{
       display:none;
-      align-items:center;
-      gap:12px;
-      margin-top:18px;
-      padding:14px;
-      border-radius:18px;
-      background:#f6f6f6;
-      border:1px solid #ececec;
+      padding:12px 14px;
+      border-radius:15px;
+      background:#fafafa;
+      border:1px solid #eee;
+      font-size:13px;
+      font-weight:500;
+      color:#222;
+      margin-bottom:12px;
     }
 
-    .lionPreview.show{display:flex;}
+    .lionPreview.show{display:block;}
 
-    .lionPreviewIcon{
-      width:38px;
-      height:38px;
+    .lionInstantBtn{
+      width:100%;
+      height:46px;
+      border:1px solid #e5e5e5;
       border-radius:14px;
-      background:#fff;
+      background:#fafafa;
+      color:#222;
+      font-size:14px;
+      font-weight:500;
+      cursor:pointer;
+      margin-bottom:10px;
+
       display:flex;
       align-items:center;
       justify-content:center;
-      color:#222;
-      flex-shrink:0;
+      gap:8px;
     }
 
-    .lionPreviewSmall{
-      font-size:11px;
-      color:#777;
-      font-weight:700;
-      margin-bottom:3px;
-    }
-
-    .lionPreviewText{
+    .lionInstantBtn i{
       font-size:13px;
-      font-weight:850;
-      color:#111;
-      line-height:1.25;
+      color:#555;
     }
 
-    .lionConfirm{
-      width:100%;
-      height:52px;
-      margin-top:18px;
-      border:none;
-      border-radius:18px;
-      background:#222;
-      color:#fff;
-      font-size:15px;
-      font-weight:900;
+    .lionBtnRow{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .lionCancel,
+    .lionSet{
+      height:48px;
+      border:0;
+      border-radius:14px;
+      font-size:14px;
+      font-weight:500;
       cursor:pointer;
     }
 
-    .lionConfirm:disabled{
-      background:#cfcfcf;
-      color:#777;
-      cursor:not-allowed;
+    .lionCancel{
+      background:#f2f2f2;
+      color:#333;
+    }
+
+    .lionSet{
+      background:#222;
+      color:#fff;
     }
   `;
+
   document.head.appendChild(style);
 
   document.body.insertAdjacentHTML("beforeend", `
@@ -921,190 +901,168 @@ function createLionSheet(){
       <div class="lionSheetOverlay" onclick="closeLionSheet()"></div>
 
       <div class="lionSheetBox">
-        <div class="lionSheetHandle"></div>
+        <div class="lionHandle"></div>
 
-        <div class="lionSheetHead">
-          <div class="lionSheetHeadLeft">
-            <div class="lionSheetIcon">
-              <i class="fa-regular fa-calendar-check"></i>
-            </div>
-
-            <div>
-              <div class="lionSheetTitle">Schedule Delivery</div>
-              <div class="lionSheetText">Choose a comfortable delivery slot</div>
-            </div>
-          </div>
-
-          <button class="lionSheetClose" onclick="closeLionSheet()">×</button>
-        </div>
-
-        <div class="lionSection">
-          <div class="lionLabel">Quick date</div>
-          <div id="lionDateRow" class="lionDateRow"></div>
-        </div>
-
-        <div class="lionSection">
-          <div class="lionLabel">Custom date</div>
-          <input
-            type="date"
-            id="lionCalendar"
-            class="lionCalendar"
-            onchange="lionCalendarChanged(this.value)">
-        </div>
-
-        <div class="lionSection">
-          <div class="lionLabel">Available time slots</div>
-
-          <div class="lionTimeGrid">
-            <button class="lionTimeBtn" onclick="selectLionTime(this,'8:00 AM - 10:00 AM')">8 AM - 10 AM</button>
-            <button class="lionTimeBtn" onclick="selectLionTime(this,'10:00 AM - 12:00 PM')">10 AM - 12 PM</button>
-            <button class="lionTimeBtn" onclick="selectLionTime(this,'12:00 PM - 2:00 PM')">12 PM - 2 PM</button>
-            <button class="lionTimeBtn" onclick="selectLionTime(this,'2:00 PM - 4:00 PM')">2 PM - 4 PM</button>
-            <button class="lionTimeBtn" onclick="selectLionTime(this,'4:00 PM - 6:00 PM')">4 PM - 6 PM</button>
-            <button class="lionTimeBtn" onclick="selectLionTime(this,'6:00 PM - 8:00 PM')">6 PM - 8 PM</button>
-          </div>
-        </div>
-
-        <div id="lionPreview" class="lionPreview">
-          <div class="lionPreviewIcon">
-            <i class="fa-solid fa-clock"></i>
-          </div>
-
+        <div class="lionTop">
           <div>
-            <div class="lionPreviewSmall">Selected schedule</div>
-            <div id="lionPreviewText" class="lionPreviewText"></div>
+            <div class="lionTitle">Schedule Delivery</div>
+            <div class="lionSub">Choose delivery time</div>
           </div>
+          <button class="lionClose" onclick="closeLionSheet()">×</button>
         </div>
 
-        <button
-          id="lionConfirm"
-          class="lionConfirm"
-          onclick="confirmLionSchedule()"
-          disabled>
-          Confirm Schedule
+        <div class="lionTodayBox">
+          <div class="lionTodaySmall">TODAY</div>
+          <div id="lionTodayText" class="lionTodayText"></div>
+        </div>
+
+        <div class="lionPickerLabelRow">
+          <div>Hour</div>
+          <div>Minute</div>
+          <div>AM / PM</div>
+        </div>
+
+        <div class="lionPickerWrap">
+          <div class="lionPickerCenterLine"></div>
+          <div id="lionHourWheel" class="lionWheel"></div>
+          <div id="lionMinuteWheel" class="lionWheel"></div>
+          <div id="lionAmPmWheel" class="lionWheel"></div>
+        </div>
+
+        <div id="lionPreview" class="lionPreview"></div>
+
+        <button class="lionInstantBtn" onclick="setLionInstantDelivery()">
+          <i class="fa-solid fa-bolt"></i>
+          Instant Delivery
         </button>
+
+        <div class="lionBtnRow">
+          <button class="lionCancel" onclick="closeLionSheet()">Cancel</button>
+          <button class="lionSet" onclick="confirmLionSchedule()">Set</button>
+        </div>
       </div>
     </div>
   `);
 
-  generateLionDates();
+  buildLionWheels();
+  setLionTodayDate();
 }
 
 function openLionSheet(){
   createLionSheet();
-  document.body.appendChild(document.getElementById("lionSheet"));
   document.getElementById("lionSheet").classList.add("show");
+
+  setTimeout(() => {
+    setLionCurrentTime();
+    updateLionWheelValues(false);
+  }, 100);
 }
 
 function closeLionSheet(){
   document.getElementById("lionSheet")?.classList.remove("show");
 }
 
-function generateLionDates(){
-  const row = document.getElementById("lionDateRow");
-  if(!row) return;
+function buildLionWheels(){
+  const hourWheel = document.getElementById("lionHourWheel");
+  const minuteWheel = document.getElementById("lionMinuteWheel");
+  const ampmWheel = document.getElementById("lionAmPmWheel");
 
-  row.innerHTML = "";
+  hourWheel.innerHTML = "";
+  minuteWheel.innerHTML = "";
+  ampmWheel.innerHTML = "";
 
-  const today = new Date();
-
-  for(let i = 0; i < 7; i++){
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
-
-    const value =
-      date.getFullYear() + "-" +
-      String(date.getMonth() + 1).padStart(2,"0") + "-" +
-      String(date.getDate()).padStart(2,"0");
-
-    const day =
-      i === 0 ? "Today" :
-      i === 1 ? "Tomorrow" :
-      date.toLocaleDateString("en-US",{weekday:"short"});
-
-    const month = date.toLocaleDateString("en-US",{month:"short"});
-
-    row.insertAdjacentHTML("beforeend", `
-      <button
-        class="lionDateBtn"
-        data-date="${value}"
-        onclick="selectLionDate(this,'${value}')">
-
-        <span class="lionDay">${day}</span>
-        <span class="lionDateNum">${date.getDate()}</span>
-        <span class="lionMonth">${month}</span>
-      </button>
-    `);
+  for(let i = 1; i <= 12; i++){
+    hourWheel.innerHTML += `<div class="lionWheelItem">${String(i).padStart(2,"0")}</div>`;
   }
 
-  const calendar = document.getElementById("lionCalendar");
+  for(let i = 0; i < 60; i += 5){
+    minuteWheel.innerHTML += `<div class="lionWheelItem">${String(i).padStart(2,"0")}</div>`;
+  }
 
-  calendar.min =
+  ["AM","PM"].forEach(x => {
+    ampmWheel.innerHTML += `<div class="lionWheelItem">${x}</div>`;
+  });
+
+  document.querySelectorAll(".lionWheel").forEach(wheel => {
+    wheel.addEventListener("scroll", () => {
+      clearTimeout(wheel._timer);
+      wheel._timer = setTimeout(() => updateLionWheelValues(true), 90);
+    });
+  });
+}
+
+function setLionTodayDate(){
+  const today = new Date();
+
+  lionSelectedDate =
     today.getFullYear() + "-" +
     String(today.getMonth() + 1).padStart(2,"0") + "-" +
     String(today.getDate()).padStart(2,"0");
-}
 
-function selectLionDate(btn,date){
-  document.querySelectorAll(".lionDateBtn")
-    .forEach(x => x.classList.remove("active"));
-
-  btn.classList.add("active");
-
-  lionSelectedDate = date;
-  document.getElementById("lionCalendar").value = date;
-
-  updateLionPreview();
-}
-
-function lionCalendarChanged(date){
-  lionSelectedDate = date;
-
-  document.querySelectorAll(".lionDateBtn").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.date === date);
-  });
-
-  updateLionPreview();
-}
-
-function selectLionTime(btn,time){
-  document.querySelectorAll(".lionTimeBtn")
-    .forEach(x => x.classList.remove("active"));
-
-  btn.classList.add("active");
-
-  lionSelectedTime = time;
-
-  updateLionPreview();
-}
-
-function updateLionPreview(){
-  const preview = document.getElementById("lionPreview");
-  const text = document.getElementById("lionPreviewText");
-  const confirmBtn = document.getElementById("lionConfirm");
-
-  if(lionSelectedDate && lionSelectedTime){
-    const date = new Date(lionSelectedDate + "T00:00:00");
-
-    const formatted = date.toLocaleDateString("en-IN",{
-      weekday:"short",
+  document.getElementById("lionTodayText").innerText =
+    today.toLocaleDateString("en-IN",{
+      weekday:"long",
       day:"numeric",
       month:"short",
       year:"numeric"
     });
+}
 
-    text.innerText = `${formatted} • ${lionSelectedTime}`;
+function setLionCurrentTime(){
+  const now = new Date();
 
-    preview.classList.add("show");
-    confirmBtn.disabled = false;
-  }else{
-    preview.classList.remove("show");
-    confirmBtn.disabled = true;
+  let hour = now.getHours();
+  const ampm = hour >= 12 ? "PM" : "AM";
+
+  hour = hour % 12;
+  hour = hour ? hour : 12;
+
+  let minute = now.getMinutes();
+  minute = Math.round(minute / 5) * 5;
+
+  if(minute === 60){
+    minute = 0;
+    hour++;
+    if(hour > 12) hour = 1;
   }
+
+  document.getElementById("lionHourWheel").scrollTop = (hour - 1) * 50;
+  document.getElementById("lionMinuteWheel").scrollTop = (minute / 5) * 50;
+  document.getElementById("lionAmPmWheel").scrollTop = ampm === "AM" ? 0 : 50;
+}
+
+function getWheelValue(wheelId, smooth){
+  const wheel = document.getElementById(wheelId);
+  const items = wheel.querySelectorAll(".lionWheelItem");
+
+  let index = Math.round(wheel.scrollTop / 50);
+  index = Math.max(0, Math.min(index, items.length - 1));
+
+  items.forEach(x => x.classList.remove("active"));
+  items[index].classList.add("active");
+
+  wheel.scrollTo({
+    top:index * 50,
+    behavior:smooth ? "smooth" : "auto"
+  });
+
+  return items[index].innerText;
+}
+
+function updateLionWheelValues(smooth = true){
+  const hour = getWheelValue("lionHourWheel", smooth);
+  const minute = getWheelValue("lionMinuteWheel", smooth);
+  const ampm = getWheelValue("lionAmPmWheel", smooth);
+
+  lionSelectedTime = `${hour}:${minute} ${ampm}`;
+
+  const preview = document.getElementById("lionPreview");
+  preview.innerText = `Selected: Today • ${lionSelectedTime}`;
+  preview.classList.add("show");
 }
 
 function confirmLionSchedule(){
-  if(!lionSelectedDate || !lionSelectedTime) return;
+  updateLionWheelValues(false);
 
   const scheduleData = {
     date: lionSelectedDate,
@@ -1116,13 +1074,30 @@ function confirmLionSchedule(){
     JSON.stringify(scheduleData)
   );
 
-  const scheduleText = document.querySelector(".scheduleBtn span");
+  const scheduleText =
+    document.querySelector(".scheduleBtn span");
 
   if(scheduleText){
-    scheduleText.innerText = "Scheduled";
+    scheduleText.innerText = lionSelectedTime;
   }
 
-  closeLionSheet();
+  renderCartPage();
 
-  console.log("Delivery Schedule:", scheduleData);
+  closeLionSheet();
+}
+function setLionInstantDelivery(){
+
+  localStorage.removeItem("cezooDeliverySchedule");
+
+  lionSelectedDate = "";
+  lionSelectedTime = "";
+
+  const scheduleText = document.querySelector(".scheduleBtn span");
+  if(scheduleText){
+    scheduleText.innerText = "Schedule";
+  }
+
+  renderCartPage();
+
+  closeLionSheet();
 }
