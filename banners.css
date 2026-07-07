@@ -2349,3 +2349,20 @@
   border-radius:20px;
   background:#fff;
 }
+.idolGiftHeading{
+  margin:0;
+  text-align:center;
+
+  font-family:'Baloo 2', sans-serif;
+  font-size:24px;
+  font-weight:800;
+
+  line-height:1.1;
+  letter-spacing:.2px;
+
+  color:#4e8b65;
+}
+.idolGiftEmoji{
+  font-size:17px;
+  vertical-align:2px;
+}
