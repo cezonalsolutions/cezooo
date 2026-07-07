@@ -8442,11 +8442,6 @@ function closeSheet() {
   sheet.classList.remove("open");
   document.getElementById("overlay").classList.remove("active");
 }
-document.addEventListener("DOMContentLoaded", () => {
-  if (window.APP_LOCATION) {
-    window.onAppLocationReceived(window.APP_LOCATION);
-  }
-});
 
 /* ===== ASYNC LOCATION HANDLER ===== */
 async function handleLocation(lat, lng) {
@@ -8475,6 +8470,12 @@ saveLocation(result.display_name, lat, lng);
     console.error(err);
   }
 }
+
+
+/* LOCATION ONLY FROM iOS APP */
+villageEl.textContent = "Detecting location...";
+streetEl.textContent = "Please wait";
+
 window.onAppLocationReceived = function(location) {
   if (!location) return;
 
@@ -8485,17 +8486,12 @@ window.onAppLocationReceived = function(location) {
 
   handleLocation(lat, lon);
 };
-/* GPS on load */
-if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(
-    pos => handleLocation(pos.coords.latitude, pos.coords.longitude),
-    () => {
-      /* GPS comes from iOS app WebView */
-villageEl.textContent = "Detecting location...";
-streetEl.textContent = "Please wait";
-    }
-  );
-}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (window.APP_LOCATION) {
+    window.onAppLocationReceived(window.APP_LOCATION);
+  }
+});
 
 /* ===== SEARCH ===== */
 let searchTimer;
