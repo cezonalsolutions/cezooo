@@ -754,3 +754,74 @@ const jalandharBannerObserver =
 jalandharBannerImages.forEach(img=>{
   jalandharBannerObserver.observe(img);
 });
+
+
+const phagwaraBannerTrack =
+  document.getElementById("phagwaraBannerTrack");
+
+const phagwaraBannerDots =
+  document.querySelectorAll(".phagwaraBannerDot");
+
+const phagwaraBannerImages =
+  document.querySelectorAll(".phagwaraBannerImg");
+
+
+/* DOT CHANGE */
+
+phagwaraBannerTrack.addEventListener("scroll", ()=>{
+
+  const slide =
+    phagwaraBannerTrack.querySelector(".phagwaraBannerSlide");
+
+  const slideWidth =
+    slide.offsetWidth + 12;
+
+  const index = Math.round(
+    phagwaraBannerTrack.scrollLeft / slideWidth
+  );
+
+  phagwaraBannerDots.forEach(dot=>{
+    dot.classList.remove("active");
+  });
+
+  phagwaraBannerDots[index]?.classList.add("active");
+
+});
+
+
+/* LAZY LOAD */
+
+const phagwaraBannerObserver =
+  new IntersectionObserver((entries)=>{
+
+    entries.forEach(entry=>{
+
+      if(!entry.isIntersecting) return;
+
+      const img = entry.target;
+
+      if(!img.src){
+        img.src = img.dataset.src;
+      }
+
+      img.onload = ()=>{
+
+        img.classList.add("phagwaraBannerLoaded");
+
+        img.closest(".phagwaraBannerSlide")
+          .classList.add("phagwaraBannerImageLoaded");
+      };
+
+      phagwaraBannerObserver.unobserve(img);
+
+    });
+
+  },{
+    threshold:0.15,
+    rootMargin:"160px"
+  });
+
+
+phagwaraBannerImages.forEach(img=>{
+  phagwaraBannerObserver.observe(img);
+});
