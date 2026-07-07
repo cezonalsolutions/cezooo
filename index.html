@@ -761,7 +761,51 @@ position:relative;
     #ffffff 100%
   );
 }
+/* SUMMER MOBILE SCROLL BLINK FIX */
+@media (max-width: 480px){
 
+  .content-section[data-section="Summer"]{
+    position:relative;
+    z-index:1;
+    isolation:isolate;
+  }
+
+  #coolSection{
+    position:relative;
+    z-index:1;
+    transform:translateZ(0);
+    -webkit-transform:translateZ(0);
+  }
+
+  .tropicalBanner{
+    position:relative;
+    z-index:1;
+    transform:translateZ(0);
+    -webkit-transform:translateZ(0);
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+  }
+
+  .tropicalBanner .imgWrap,
+  .tropicalBanner .leaf,
+  .tropicalBanner .drink,
+  .tropicalBanner .floatFruit,
+  .tropicalContent,
+  .topGlow,
+  .bottomFade{
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+  }
+
+  #topSection{
+    position:relative;
+    z-index:100;
+  }
+
+  .search-container{
+    z-index:101;
+  }
+}
 /* ================= SHIMMER SYSTEM ================= */
 .imgWrap{
   position:absolute;
