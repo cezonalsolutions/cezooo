@@ -6400,6 +6400,28 @@ button{
   <span>See All</span>
   <span class="seeAllArrow">›</span>
 </div>
+
+
+
+
+
+
+<h3 class="sectionTitle">Daily Brew</h3>
+
+<div class="autoProductRow"
+     data-table="cezoogroceries"
+     data-ids="145,146,147,148,149,150,151,152">
+</div>
+
+
+<div class="seeAllBar" id="seeAllBar43">
+  <span>See All</span>
+  <span class="seeAllArrow">›</span>
+</div>
+
+
+
+
 <div class="groceryHeadingBox">
   <h2 class="groceryMainHeading">PANTRY PICKS</h2>
   <p class="grocerySubHeading">Everyday essentials for every home</p>
@@ -6434,7 +6456,7 @@ button{
 
       <img
         class="vijayawadaBannerImg"
-        data-src="banner/5.png"
+        data-src="banner/vijba.png"
         alt="Banner">
     </div>
 
@@ -6506,10 +6528,75 @@ button{
 
 
 
+<h3 class="sectionTitle">Oils</h3>
+
+<div class="autoProductRow"
+     data-table="cezoogroceries"
+     data-ids="96,87,98,99,100,101,102,103,104">
+</div>
+
+
+<div class="seeAllBar" id="seeAllBar40">
+  <span>See All</span>
+  <span class="seeAllArrow">›</span>
+</div>
+
+
+<div class="groceryHeadingBox">
+  <h2 class="groceryMainHeading">SNACKS & MORE</h2>
+  <p class="grocerySubHeading">Crunchy bites for every craving</p>
+</div>
+<div class="jalandharBannerSlider">
+
+  <div id="jalandharBannerTrack" class="jalandharBannerTrack">
+
+    <div class="jalandharBannerSlide">
+      <div class="jalandharBannerShimmer"></div>
+      <img class="jalandharBannerImg" data-src="banner/snacks1.webp" alt="Banner">
+    </div>
+
+    <div class="jalandharBannerSlide">
+      <div class="jalandharBannerShimmer"></div>
+      <img class="jalandharBannerImg" data-src="banner/snacks2.webp" alt="Banner">
+    </div>
+
+  </div>
+
+  <div class="jalandharBannerDots">
+    <span class="jalandharBannerDot active"></span>
+    <span class="jalandharBannerDot"></span>
+  </div>
+
+</div>
 
 
 
+<h3 class="sectionTitle">Lays Packst</h3>
 
+<div class="autoProductRow"
+     data-table="cezoogroceries"
+     data-ids="155,156,157,158,158,159,160,161">
+</div>
+
+
+<div class="seeAllBar" id="seeAllBar41">
+  <span>See All</span>
+  <span class="seeAllArrow">›</span>
+</div>
+
+
+<h3 class="sectionTitle">Crunch Tieme</h3>
+
+<div class="autoProductRow"
+     data-table="cezoogroceries"
+     data-ids="162,163,164,165,166,167,168,169">
+</div>
+
+
+<div class="seeAllBar" id="seeAllBar42">
+  <span>See All</span>
+  <span class="seeAllArrow">›</span>
+</div>
 
 
 <section class="singleImageSection">
@@ -8318,7 +8405,7 @@ function renderFreshProducts(products){
           src="${p.image1 || ''}"
           loading="lazy"
         >
-<button class="addBtn" onclick='return addToCart(event,this,${JSON.stringify(p)})'>
+<button class="addBtn">
   <span>+</span>
 </button>
 
@@ -8459,7 +8546,7 @@ function renderLaunchProducts(products){
           loading="lazy"
         >
 
-       <button class="addBtn" onclick='return addToCart(event,this,${JSON.stringify(p)})'>
+       <button class="addBtn">
           <span>+</span>
         </button>
 
@@ -8679,6 +8766,10 @@ function showHighlightMsg(card, text){
 
 }
 function popupKey(){
+  if(!popupProduct || !popupProduct.id){
+    return null;
+  }
+
   return `${popupTable}_${popupProduct.id}`;
 }
 
@@ -8718,6 +8809,10 @@ addedTime: Date.now()
 function updatePopupCartButton(){
   const btn = document.getElementById("popupAddBtnFixed");
   const key = popupKey();
+
+  if(!btn || !key){
+    return;
+  }
 
   if(cart[key]){
     btn.innerHTML = `
@@ -9001,8 +9096,9 @@ updateCartFloat();
 updatePopupCartSummary();
 
 restoreCartButtons(document);
-updatePopupCartButton();
-
+if(popupProduct){
+  updatePopupCartButton();
+}
 return false;
 }
 
@@ -9031,7 +9127,9 @@ function increaseCart(e, btn){
   updatePopupCartSummary();
 
   restoreCartButtons(document);
+  if(popupProduct){
   updatePopupCartButton();
+}
 
   return false;
 }
@@ -9053,7 +9151,9 @@ function decreaseCart(e, btn){
   updatePopupCartSummary();
 
   restoreCartButtons(document);
+ if(popupProduct){
   updatePopupCartButton();
+}
 
   return false;
 }
@@ -9358,6 +9458,34 @@ seeAllBar39: {
   },
 
 
+seeAllBar40: {
+    banner: "banner/color.jpeg",
+    table: "cezoogroceries",
+    ids: [ 
+   96,87,98,99,100,101,102,103,104]
+  },
+
+seeAllBar41: {
+    banner: "bottom/pk.png",
+    table: "cezoogroceries",
+    ids: [ 
+   155,156,157,158,158,159,160,161,178,179,180,181,182,177]
+  },
+
+seeAllBar42: {
+    banner: "bottom/pk.png",
+    table: "cezoogroceries",
+    ids: [ 
+   162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,183]
+  },
+seeAllBar43: {
+    banner: "bottom/tea.jpg",
+    table: "cezoogroceries",
+    ids: [ 
+145,146,147,148,149,150,151,152]
+  },
+
+
 seeAllBar27: {
     banner: "banner/color.jpeg",
     table: "cezoogroceries",
@@ -9492,10 +9620,10 @@ function renderNormalPopupProducts(products, table){
   grid.innerHTML = products.map(p => `
     <div class="productCard" data-id="${p.id}" data-table="${table}">
 
-      <div class="productImageWrap" onclick='openProductPopup(Object.assign(${JSON.stringify(p)}, {table:"${table}"}))'>
-        <img class="productImage" src="${p.image1 || ''}" loading="lazy">
+<div class="productImageWrap">
+          <img class="productImage" src="${p.image1 || ''}" loading="lazy">
 
-        <button class="addBtn" onclick='return addToCart(event,this,${JSON.stringify(p)})'>
+        <button class="addBtn">
           <span>+</span>
         </button>
       </div>
@@ -9514,6 +9642,22 @@ function renderNormalPopupProducts(products, table){
   `).join("");
 
   restoreCartButtons(grid);
+  grid.querySelectorAll(".productCard").forEach(card => {
+  const id = Number(card.dataset.id);
+  const product = products.find(p => Number(p.id) === id);
+
+  card.querySelector(".productImageWrap").onclick = () => {
+    openProductPopup({...product, table});
+  };
+
+  card.querySelector(".productInfo").onclick = () => {
+    openProductPopup({...product, table});
+  };
+
+  card.querySelector(".addBtn").onclick = (e) => {
+    return addToCart(e, card.querySelector(".addBtn"), product);
+  };
+});
 }
 
 
@@ -9639,7 +9783,7 @@ function renderCategoryPopupProducts(products, table){
       <div class="productImageWrap" onclick='openProductPopup(Object.assign(${JSON.stringify(p)}, {table:"${table}"}))'>
         <img class="productImage" src="${p.image1 || ""}" loading="lazy">
 
-        <button class="addBtn" onclick='return addToCart(event,this,${JSON.stringify(p)})'>
+        <button class="addBtn">
           <span>+</span>
         </button>
       </div>
@@ -9718,7 +9862,9 @@ addEdgeSwipeClose("categoryProductsPopup", () => {
   document.body.style.overflow = "";
   document.querySelector(".floatBarWrap").classList.remove("popupMode");
 });
-
+function safeProductForClick(p, table){
+  openProductPopup({...p, table});
+}
 </script>
 
 </body>
