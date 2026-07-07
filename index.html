@@ -8442,6 +8442,11 @@ function closeSheet() {
   sheet.classList.remove("open");
   document.getElementById("overlay").classList.remove("active");
 }
+document.addEventListener("DOMContentLoaded", () => {
+  if (window.APP_LOCATION) {
+    window.onAppLocationReceived(window.APP_LOCATION);
+  }
+});
 
 /* ===== ASYNC LOCATION HANDLER ===== */
 async function handleLocation(lat, lng) {
@@ -8470,14 +8475,24 @@ saveLocation(result.display_name, lat, lng);
     console.error(err);
   }
 }
+window.onAppLocationReceived = function(location) {
+  if (!location) return;
 
+  const lat = location.latitude;
+  const lon = location.longitude;
+
+  if (!lat || !lon) return;
+
+  handleLocation(lat, lon);
+};
 /* GPS on load */
 if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(
     pos => handleLocation(pos.coords.latitude, pos.coords.longitude),
     () => {
-      villageEl.textContent = "Location blocked";
-      streetEl.textContent = "Enable GPS";
+      /* GPS comes from iOS app WebView */
+villageEl.textContent = "Detecting location...";
+streetEl.textContent = "Please wait";
     }
   );
 }
