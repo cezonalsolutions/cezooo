@@ -6500,8 +6500,6 @@ button{
 </div>
 
 
-<h3 class="sectionTitle">Cleaning</h3>
-
 <div class="autoProductRow"
      data-table="cezoogroceries"
      data-ids="52,53,54,55,56,57,58,59">
@@ -6909,7 +6907,6 @@ button{
 </div>
 
 
-<h3 class="sectionTitle">Shampoo</h3>
 
 
   <div class="autoProductRow"
@@ -6926,6 +6923,7 @@ button{
 
 
 
+<h3 class="sectionTitle">Body Wash</h3>
 
 
   <div class="autoProductRow"
@@ -8529,8 +8527,7 @@ function renderFreshProducts(products){
   products.map(p => `
 
    <div class="productCard" data-id="${p.id}" data-table="fresh_products">
-      <div class="productImageWrap" onclick='openProductPopup(Object.assign(${JSON.stringify(p)}, {table:"fresh_products"}))'>
-
+<div class="productImageWrap">
         <img
           class="productImage"
           src="${p.image1 || ''}"
@@ -8572,7 +8569,22 @@ function renderFreshProducts(products){
 
   `).join("");
   restoreCartButtons(row);
+row.querySelectorAll(".productCard").forEach(card => {
+  const id = Number(card.dataset.id);
+  const product = products.find(p => Number(p.id) === id);
 
+  card.querySelector(".productImageWrap").onclick = () => {
+    openProductPopup({...product, table:"fresh_products"});
+  };
+
+  card.querySelector(".productInfo").onclick = () => {
+    openProductPopup({...product, table:"fresh_products"});
+  };
+
+  card.querySelector(".addBtn").onclick = (e) => {
+    return addToCart(e, card.querySelector(".addBtn"), product);
+  };
+});
 }
 
 const freshObserver =
@@ -8683,8 +8695,7 @@ function renderLaunchProducts(products){
 
       </div>
 
-      <div class="productInfo" onclick='openProductPopup(Object.assign(${JSON.stringify(p)}, {table:"fresh_products"}))'>
-
+<div class="productInfo">
         <div class="priceRow">
           <span class="discountPrice">₹${p.discount_price || 0}</span>
           <span class="originalPrice">₹${p.original_price || 0}</span>
@@ -8703,7 +8714,22 @@ function renderLaunchProducts(products){
     </div>
   `).join("");
   restoreCartButtons(row);
+row.querySelectorAll(".productCard").forEach(card => {
+  const id = Number(card.dataset.id);
+  const product = products.find(p => Number(p.id) === id);
 
+  card.querySelector(".productImageWrap").onclick = () => {
+    openProductPopup({...product, table:"fresh_products"});
+  };
+
+  card.querySelector(".productInfo").onclick = () => {
+    openProductPopup({...product, table:"fresh_products"});
+  };
+
+  card.querySelector(".addBtn").onclick = (e) => {
+    return addToCart(e, card.querySelector(".addBtn"), product);
+  };
+});
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -9643,7 +9669,7 @@ seeAllBar48: {
     ids: [ 
 135,136,137,138,139,140,141,142,143,144]  },
 
-seeAllBar48: {
+seeAllBar49: {
     banner: "banner/skin5.jpg",
     table: "cezoogroceries",
     ids: [ 
