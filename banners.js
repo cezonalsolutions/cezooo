@@ -696,3 +696,61 @@ const depaaObserver = new IntersectionObserver((entries)=>{
 depaaImages.forEach(img=>{
   depaaObserver.observe(img);
 });
+
+const jalandharBannerTrack =
+  document.getElementById("jalandharBannerTrack");
+
+const jalandharBannerDots =
+  document.querySelectorAll(".jalandharBannerDot");
+
+const jalandharBannerImages =
+  document.querySelectorAll(".jalandharBannerImg");
+
+jalandharBannerTrack.addEventListener("scroll", ()=>{
+
+  const slideWidth =
+    jalandharBannerTrack.querySelector(".jalandharBannerSlide").offsetWidth + 12;
+
+  const index = Math.round(
+    jalandharBannerTrack.scrollLeft / slideWidth
+  );
+
+  jalandharBannerDots.forEach(dot=>{
+    dot.classList.remove("active");
+  });
+
+  jalandharBannerDots[index]?.classList.add("active");
+});
+
+const jalandharBannerObserver =
+  new IntersectionObserver((entries)=>{
+
+    entries.forEach(entry=>{
+
+      if(!entry.isIntersecting) return;
+
+      const img = entry.target;
+
+      if(!img.src){
+        img.src = img.dataset.src;
+      }
+
+      img.onload = ()=>{
+
+        img.classList.add("jalandharBannerLoaded");
+
+        img.closest(".jalandharBannerSlide")
+          .classList.add("jalandharBannerImageLoaded");
+      };
+
+      jalandharBannerObserver.unobserve(img);
+    });
+
+  },{
+    threshold:0.15,
+    rootMargin:"160px"
+  });
+
+jalandharBannerImages.forEach(img=>{
+  jalandharBannerObserver.observe(img);
+});
