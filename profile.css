@@ -1,0 +1,222 @@
+.cezooProfilePopup{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100dvh;
+  background:#fff;
+  z-index:9999999;
+  display:none;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+
+.cezooProfilePopup.open{
+  display:block;
+}
+
+.cezooProfilePopup .profilePage{
+  width:100%;
+  min-height:100vh;
+  background:#fff;
+}
+
+.cezooProfilePopup .profileTop{
+  width:100%;
+  background:#fff0e9;
+  border-radius:0 0 32px 32px;
+  padding:calc(50px + env(safe-area-inset-top)) 16px 22px;
+}
+
+.cezooProfilePopup .profileNav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:relative;
+}
+
+.cezooProfilePopup .profileBack{
+  width:38px;
+  height:38px;
+  margin:0;
+  padding:0;
+  border:none;
+  background:transparent;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.cezooProfilePopup .profileBack svg{
+  width:29px;
+  height:29px;
+  stroke:#505050;
+  stroke-width:2.5;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.cezooProfilePopup .profileNavRight{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  position:relative;
+}
+
+.cezooProfilePopup .profileHelp{
+  height:36px;
+  margin:0;
+  padding:0 17px;
+  background:#fff;
+  border:1px solid #f5cfc0;
+  border-radius:22px;
+  color:#e64a19;
+  font-size:15px;
+  font-weight:700;
+}
+
+.cezooProfilePopup .profileDots{
+  width:24px;
+  height:34px;
+  margin:0;
+  padding:0;
+  border:none;
+  background:transparent;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:2px;
+}
+
+.cezooProfilePopup .profileDots span{
+  width:4px;
+  height:4px;
+  background:#555;
+  border-radius:50%;
+}
+
+.cezooProfilePopup .profileMenu{
+  position:absolute;
+  top:38px;
+  right:0;
+  width:145px;
+  margin:0;
+  padding:5px 0;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 20px rgba(0,0,0,.14);
+  overflow:hidden;
+  display:none;
+  z-index:100;
+}
+
+.cezooProfilePopup .profileMenu.show{
+  display:block;
+}
+
+.cezooProfilePopup .profileMenu button{
+  width:100%;
+  height:38px;
+  min-height:38px;
+  margin:0;
+  padding:0 14px;
+  border:0;
+  border-radius:0;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  font-size:13px;
+  line-height:1;
+  font-weight:600;
+  color:#333;
+  text-align:left;
+  box-shadow:none;
+}
+
+.cezooProfilePopup .profileMenu button:active{
+  background:#f5f5f5;
+}
+
+.cezooProfilePopup .profileMenu .logout{
+  color:#e53935;
+}
+
+.cezooProfilePopup .profileDetails{
+  margin-top:32px;
+  padding:0 16px 8px;
+  width:100%;
+  text-align:left;
+}
+
+.cezooProfilePopup .profileName{
+  margin:0;
+  padding:0;
+  width:100%;
+  font-size:24px;
+  line-height:1.15;
+  font-weight:800;
+  color:#17171d;
+  text-align:left !important;
+  display:block;
+}
+
+.cezooProfilePopup .profileMobile{
+  margin-top:6px;
+  font-size:16px;
+  color:#666;
+  text-align:left;
+}
+
+.cezooProfilePopup .profileMenuCard{
+  margin:18px 16px 0;
+  background:#fff;
+  border:1px solid #dedede;
+  border-radius:22px;
+  overflow:hidden;
+}
+
+.cezooProfilePopup .profileListItem{
+  min-height:64px;
+  padding:0 18px;
+  display:flex;
+  align-items:center;
+  border-bottom:1px solid #e5e5e5;
+  cursor:pointer;
+}
+
+.cezooProfilePopup .profileListItem:last-child{
+  border-bottom:none;
+}
+
+.cezooProfilePopup .profileListIcon{
+  width:30px;
+  margin-right:14px;
+  font-size:18px;
+  text-align:center;
+  color:#686868;
+}
+
+.cezooProfilePopup .profileListItem span{
+  flex:1;
+  font-size:16px;
+  font-weight:600;
+  color:#626262;
+  text-align:left;
+}
+
+.cezooProfilePopup .profileArrow{
+  font-size:14px;
+  color:#999;
+}
+
+.cezooProfilePopup .recentOrdersHeading{
+  margin:24px 20px 12px;
+  font-size:18px;
+  font-weight:800;
+  color:#202124;
+  letter-spacing:-0.2px;
+  text-align:left;
+}
