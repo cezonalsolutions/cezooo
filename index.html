@@ -8277,34 +8277,29 @@ button{
     <i class="fa-solid fa-chevron-right profileArrow"></i>
   </div>
 
-  <div class="profileListItem">
-    <i class="fa-regular fa-file-lines profileListIcon"></i>
-    <span>Terms & Conditions</span>
-    <i class="fa-solid fa-chevron-right profileArrow"></i>
-  </div>
+  <div class="profileListItem" onclick="openTermsPopup()">
+  <i class="fa-regular fa-file-lines profileListIcon"></i>
+  <span>Terms & Conditions</span>
+  <i class="fa-solid fa-chevron-right profileArrow"></i>
+</div>
 
-  <div class="profileListItem">
-    <i class="fa-solid fa-arrow-rotate-left profileListIcon"></i>
-    <span>Refund Policy</span>
-    <i class="fa-solid fa-chevron-right profileArrow"></i>
-  </div>
-<div class="profileListItem">
+ <div class="profileListItem" onclick="openRefundPopup()">
+  <i class="fa-solid fa-arrow-rotate-left profileListIcon"></i>
+  <span>Refund Policy</span>
+  <i class="fa-solid fa-chevron-right profileArrow"></i>
+</div>
+<div class="profileListItem" onclick="openCouponsPopup()">
   <i class="fa-solid fa-ticket profileListIcon"></i>
   <span>Coupons</span>
   <i class="fa-solid fa-chevron-right profileArrow"></i>
 </div>
-<div class="profileListItem">
-  <i class="fa-solid fa-bag-shopping profileListIcon"></i>
-  <span>Suggested Products</span>
-  <i class="fa-solid fa-chevron-right profileArrow"></i>
-</div>
 
-<div class="profileListItem">
+<div class="profileListItem" onclick="openNotificationsPopup()">
   <i class="fa-solid fa-bell profileListIcon"></i>
   <span>Notifications</span>
   <i class="fa-solid fa-chevron-right profileArrow"></i>
 </div>
-<div class="profileListItem">
+<div class="profileListItem" onclick="openSellerPopup()">
   <i class="fa-solid fa-store profileListIcon"></i>
   <span>Seller Registration</span>
   <i class="fa-solid fa-chevron-right profileArrow"></i>
@@ -8319,8 +8314,636 @@ button{
 
 
 
+<div id="termsPopup" class="termsPopup">
+
+  <div class="termsHeader">
+    <button class="termsBackBtn" onclick="closeTermsPopup()">‹</button>
+    <div class="termsTitle">Terms & Conditions</div>
+    <div class="termsRightSpace"></div>
+  </div>
+
+  <div class="termsContent">
+
+  <p>
+    Welcome to CEZOO. These Terms & Conditions govern your access to and use of
+    the CEZOO platform, including our website, mobile application, delivery
+    services, games, payment features, and other related services.
+  </p>
+
+  <h3>1. Acceptance of Terms</h3>
+
+  <p>
+    By accessing or using CEZOO, creating an account, placing an order, making
+    a payment, or using any feature of the platform, you agree to these Terms
+    & Conditions. If you do not agree with these terms, please do not use the
+    platform.
+  </p>
 
 
+  <h3>2. Our Services</h3>
+
+  <p>
+    CEZOO is an e-commerce and delivery platform offering products such as
+    groceries, household essentials, fruits, beverages, chocolates, snacks,
+    gifts, stationery, personal care products, and other eligible products
+    displayed on the platform.
+  </p>
+
+  <p>
+    CEZOO does not operate as a restaurant food-delivery service. Restaurant
+    meals and freshly prepared foods such as biryani and similar dishes are
+    not part of our regular grocery delivery service unless specifically
+    introduced and displayed as an available service on the platform.
+  </p>
+
+
+  <h3>3. User Account and Mobile Number</h3>
+
+  <p>
+    Some CEZOO services may require users to provide their name and mobile
+    number. The mobile number may be used for account access, OTP verification,
+    order communication, delivery coordination, customer support, and important
+    service-related updates.
+  </p>
+
+  <p>
+    Users are responsible for providing accurate information and maintaining
+    access to the mobile number associated with their account.
+  </p>
+
+
+  <h3>4. OTP Verification</h3>
+
+  <p>
+    CEZOO may use One-Time Password (OTP) verification for login, account
+    verification, transactions, or other security purposes. Users must not
+    share their OTP with unauthorized persons.
+  </p>
+
+  <p>
+    CEZOO representatives will never ask users to disclose confidential payment
+    information, card PINs, UPI PINs, or banking passwords.
+  </p>
+
+
+  <h3>5. Location Information</h3>
+
+  <p>
+    CEZOO may request access to your device location to identify your delivery
+    area, calculate delivery distance or applicable delivery charges, display
+    relevant services, and assist with order delivery.
+  </p>
+
+  <p>
+    Location access depends on the permission provided through your device.
+    If location permission is unavailable or inaccurate, some delivery-related
+    features may not function correctly.
+  </p>
+
+
+  <h3>6. Orders and Product Availability</h3>
+
+  <p>
+    All orders are subject to product availability, service-area availability,
+    operational capacity, and successful order confirmation. CEZOO may cancel,
+    modify, or partially fulfil an order when a product becomes unavailable or
+    when delivery cannot reasonably be completed.
+  </p>
+
+  <p>
+    Product images are provided for representation. Actual packaging, colour,
+    size, design, or appearance may vary due to manufacturer updates or product
+    availability.
+  </p>
+
+
+  <h3>7. Pricing and Charges</h3>
+
+  <p>
+    Product prices, discounts, delivery charges, handling charges, taxes, and
+    other applicable charges will be displayed on the platform before order
+    confirmation whenever applicable.
+  </p>
+
+  <p>
+    Prices and promotional offers may change from time to time. The final amount
+    displayed and accepted during checkout will apply to the order, subject to
+    correction of genuine technical or pricing errors.
+  </p>
+
+
+  <h3>8. Payments</h3>
+
+  <p>
+    CEZOO may provide payment options through authorized payment gateway
+    providers. Depending on availability, payment methods may include UPI,
+    cards, supported digital payment applications, or other available methods.
+  </p>
+
+  <p>
+    Payment processing may be handled by third-party payment service providers
+    under their own terms and security policies. CEZOO does not require users
+    to share their UPI PIN, card PIN, or banking password with CEZOO.
+  </p>
+
+
+  <h3>9. Delivery</h3>
+
+  <p>
+    Delivery estimates are approximate and may be affected by distance,
+    weather, traffic, product availability, operational conditions, local
+    restrictions, or other circumstances beyond reasonable control.
+  </p>
+
+  <p>
+    Users should provide an accurate delivery location and remain reachable
+    through the mobile number provided for the order when delivery coordination
+    is required.
+  </p>
+
+
+  <h3>10. Cancellations and Refunds</h3>
+
+  <p>
+    Order cancellation and refund eligibility may depend on the order status,
+    product category, payment status, and circumstances of the request.
+    Approved refunds will be processed according to the applicable refund
+    process and payment provider timelines.
+  </p>
+
+  <p>
+    Additional details may be provided separately in the CEZOO Refund Policy.
+  </p>
+
+
+  <h3>11. Games and Voice Features</h3>
+
+  <p>
+    CEZOO may provide optional entertainment features and games that use
+    microphone access or voice-level detection. These features require
+    microphone permission from the user.
+  </p>
+
+  <p>
+    Microphone access is used for the operation of the relevant game or
+    interactive feature. Users may deny microphone permission, but the
+    voice-based feature may not function without it.
+  </p>
+
+
+  <h3>12. Promotions, Coupons and Rewards</h3>
+
+  <p>
+    Coupons, rewards, game benefits, promotional offers, and discounts may have
+    separate eligibility conditions, usage limits, expiry dates, minimum order
+    requirements, service-area restrictions, or product restrictions.
+  </p>
+
+  <p>
+    CEZOO may modify or discontinue promotional offers in accordance with the
+    conditions communicated for the applicable promotion.
+  </p>
+
+
+  <h3>13. Acceptable Use</h3>
+
+  <p>
+    Users must not misuse the platform, attempt fraudulent transactions, create
+    false orders, interfere with platform security, abuse promotional offers,
+    impersonate another person, or use CEZOO for unlawful activities.
+  </p>
+
+
+  <h3>14. Third-Party Services</h3>
+
+  <p>
+    Some CEZOO features may depend on third-party services, including payment
+    processing, maps, location services, OTP delivery, hosting, analytics, or
+    other technical infrastructure. Availability of these services may depend
+    on the respective third-party providers.
+  </p>
+
+
+  <h3>15. Changes to Services and Terms</h3>
+
+  <p>
+    CEZOO may update its services, features, policies, and these Terms &
+    Conditions from time to time. Updated terms may be published on the
+    platform with an effective date where appropriate.
+  </p>
+
+
+  <h3>16. Contact and Support</h3>
+
+<p>
+  For questions regarding orders, payments, delivery, refunds, or use of the
+  CEZOO platform, users may contact CEZOO through the Help or Customer Support
+  options available within the platform.
+</p>
+
+<p>
+  Customer Support Email:
+  <strong>support@cezoo.co.in</strong>
+</p>
+
+  <p class="termsLastUpdated">
+    Last updated: July 2026
+  </p>
+
+</div>
+
+
+</div>
+<div id="refundPopup" class="refundPopup">
+
+  <div class="refundHeader">
+
+    <button
+      class="refundBackBtn"
+      onclick="closeRefundPopup()"
+      aria-label="Back"
+    >
+      ‹
+    </button>
+
+    <div class="refundTitle">
+      Refund Policy
+    </div>
+
+    <div class="refundRightSpace"></div>
+
+  </div>
+
+
+  <div class="refundContent">
+
+    <p>
+      At CEZOO, we aim to deliver products in good condition and provide a
+      reliable shopping experience. Refund, replacement, or return eligibility
+      depends on the product category, condition of the product, nature of the
+      issue, and the applicable policy shown for that product.
+    </p>
+
+
+    <h3>1. Product-Specific Refund Policy</h3>
+
+    <p>
+      Not every product available on CEZOO is eligible for return or refund.
+      Some products may be eligible for replacement only, while others may be
+      eligible for a refund when the reported issue meets the applicable
+      conditions.
+    </p>
+
+    <p>
+      Where applicable, the return, replacement, or refund conditions may be
+      displayed on the product page, order details page, or other relevant
+      section of the CEZOO platform.
+    </p>
+
+
+    <h3>2. Products That May Be Eligible</h3>
+
+    <p>
+      A refund or replacement request may be considered when an eligible
+      product is damaged during delivery, defective, expired, materially
+      different from the product ordered, or when an incorrect product has
+      been delivered.
+    </p>
+
+    <p>
+      Eligibility is subject to verification of the issue and the specific
+      policy applicable to the product category.
+    </p>
+
+
+    <h3>3. Perishable Products</h3>
+
+    <p>
+      Fruits and other perishable products generally have limited return
+      eligibility because of their nature and shelf life. If a perishable
+      product is delivered damaged, spoiled, or in an unacceptable condition,
+      the user should report the issue as soon as reasonably possible after
+      delivery.
+    </p>
+
+    <p>
+      CEZOO may request photographs or other reasonable information to verify
+      the condition of the product before approving a refund or replacement.
+    </p>
+
+
+    <h3>4. Grocery and Packaged Products</h3>
+
+    <p>
+      Packaged grocery products may be considered for refund or replacement
+      when the delivered item is incorrect, damaged, leaking, expired, or
+      otherwise materially defective at the time of delivery.
+    </p>
+
+    <p>
+      Products that have been substantially used, altered, damaged after
+      delivery, or returned without original packaging where packaging is
+      reasonably required for verification may not be eligible.
+    </p>
+
+
+    <h3>5. Gifts, Stationery and Other Products</h3>
+
+    <p>
+      Eligibility for gifts, stationery, household items, and other
+      non-perishable products may vary by product. Some products may qualify
+      for replacement or refund for manufacturing defects, transit damage,
+      missing parts, or delivery of an incorrect item.
+    </p>
+
+    <p>
+      Change-of-mind returns are not automatically available for every product.
+      The applicable product policy should be checked before purchase where
+      such information is displayed.
+    </p>
+
+
+    <h3>6. Non-Returnable Products</h3>
+
+    <p>
+      Certain products may be marked as non-returnable because of hygiene,
+      safety, perishability, short shelf life, or other product-specific
+      reasons. Such products will generally not be eligible for return unless
+      they were delivered damaged, defective, expired, or incorrect and the
+      issue is verified.
+    </p>
+
+
+    <h3>7. Reporting an Issue</h3>
+
+    <p>
+      To request assistance, users should open the Help or Customer Support
+      section and provide the relevant order information and a clear
+      description of the issue.
+    </p>
+
+    <p>
+      CEZOO may request photographs of the product, packaging, expiry date,
+      batch information, or other relevant evidence where reasonably necessary
+      to review the request.
+    </p>
+
+
+    <h3>8. Refund Review</h3>
+
+    <p>
+      Refund and replacement requests are reviewed based on the information
+      provided, the condition of the product, order records, delivery details,
+      and the policy applicable to the product.
+    </p>
+
+    <p>
+      Submission of a request does not automatically guarantee approval.
+      CEZOO will communicate the available resolution after reviewing the
+      request.
+    </p>
+
+
+    <h3>9. Refund Method</h3>
+
+    <p>
+      Approved refunds for prepaid orders will generally be processed through
+      the original payment method where supported. In some situations, another
+      available refund method may be offered.
+    </p>
+
+    <p>
+      The time required for the refunded amount to appear may vary depending
+      on the bank, UPI application, card issuer, payment gateway, or other
+      payment service provider involved in the transaction.
+    </p>
+
+
+    <h3>10. Order Cancellation</h3>
+
+    <p>
+      An order may be cancelled only while cancellation is available for the
+      applicable order status. Once an order has reached a stage where
+      preparation, packing, dispatch, or delivery cannot reasonably be
+      reversed, cancellation may no longer be available.
+    </p>
+
+    <p>
+      If CEZOO cancels a prepaid order or an unavailable item from a prepaid
+      order, the applicable amount will be processed for refund according to
+      the relevant payment process.
+    </p>
+
+
+    <h3>11. Missing Products</h3>
+
+    <p>
+      If a confirmed and paid product is missing from the delivered order,
+      users should report the issue through CEZOO support. After verification,
+      CEZOO may provide an appropriate refund, replacement, or other available
+      resolution.
+    </p>
+
+
+    <h3>12. Promotional Items and Coupons</h3>
+
+    <p>
+      Refund calculations for discounted orders, coupons, promotional bundles,
+      or rewards may take into account the actual amount paid and the conditions
+      of the applicable promotion.
+    </p>
+
+    <p>
+      Coupon value, promotional benefits, or rewards may not always be
+      refundable or restorable unless specifically stated in the applicable
+      offer conditions.
+    </p>
+
+
+    <h3>13. Policy Updates</h3>
+
+    <p>
+      CEZOO may update this Refund Policy as products, services, delivery
+      operations, or payment methods change. The policy applicable to a request
+      will be considered based on the relevant order and circumstances.
+    </p>
+
+
+   <h3>14. Customer Support</h3>
+
+<p>
+  For questions about refunds, damaged products, incorrect products,
+  missing items, or order cancellations, users can contact CEZOO through
+  the Help or Customer Support options available on the platform.
+</p>
+
+<p>
+  Customer Support Email:
+  <strong>support@cezoo.co.in</strong>
+</p>
+
+
+    <p class="refundLastUpdated">
+      Last updated: July 2026
+    </p>
+
+  </div>
+
+</div>
+<div id="couponsPopup" class="couponsPopup">
+
+  <div class="couponsHeader">
+    <button class="couponsBackBtn" onclick="closeCouponsPopup()">‹</button>
+    <div class="couponsTitle">Coupons</div>
+    <div class="couponsRightSpace"></div>
+  </div>
+
+  <div class="couponsContent">
+    <div class="noCouponsBox">
+      <i class="fa-solid fa-ticket"></i>
+      <h3>No coupons available</h3>
+      <p>New offers and coupon codes will appear here soon.</p>
+    </div>
+  </div>
+
+</div>
+
+
+
+<div id="notificationsPopup" class="notificationsPopup">
+
+  <div class="notificationsHeader">
+    <button class="notificationsBackBtn" onclick="closeNotificationsPopup()">‹</button>
+    <div class="notificationsTitle">Notifications</div>
+    <div class="notificationsRightSpace"></div>
+  </div>
+
+  <div class="notificationsContent">
+
+    <div class="notificationRow">
+      <div>
+        <h3>App Notifications</h3>
+        <p>Order updates, offers and important alerts</p>
+      </div>
+
+      <label class="notifySwitch">
+        <input type="checkbox" id="appNotificationToggle">
+        <span></span>
+      </label>
+    </div>
+
+    <div class="notificationRow">
+      <div>
+        <h3>WhatsApp Notifications</h3>
+        <p>Receive order updates on WhatsApp</p>
+      </div>
+
+      <label class="notifySwitch">
+        <input type="checkbox" id="whatsappNotificationToggle">
+        <span></span>
+      </label>
+    </div>
+
+  </div>
+
+</div>
+
+
+<div id="sellerPopup" class="sellerPopup">
+
+  <div class="sellerHeader">
+
+    <button class="sellerBackBtn" onclick="closeSellerPopup()">
+      ‹
+    </button>
+
+    <div class="sellerTitle">
+      Seller Registration
+    </div>
+
+    <div class="sellerRightSpace"></div>
+
+  </div>
+
+
+  <div class="sellerContent">
+
+    <h2>Sell with CEZOO</h2>
+
+    <p>
+      Grow your business by becoming a seller on CEZOO. We welcome local
+      retailers, grocery stores, product suppliers, manufacturers, gift sellers,
+      stationery sellers, fruit suppliers, and other eligible businesses to
+      connect with our platform.
+    </p>
+
+    <p>
+      CEZOO helps sellers reach more customers through our digital platform and
+      delivery network. Our team will review your business details, product
+      categories, service location, and required documents before completing
+      the seller registration process.
+    </p>
+
+
+    <h3>Who Can Register?</h3>
+
+    <p>
+      Grocery stores, supermarkets, local retailers, wholesalers, distributors,
+      manufacturers, fruit suppliers, gift shops, stationery stores, household
+      product sellers, personal care product sellers, and other eligible
+      businesses may contact us for seller registration.
+    </p>
+
+
+    <h3>Registration Process</h3>
+
+    <p>
+      Contact the CEZOO support team and share your business name, owner or
+      authorized contact name, mobile number, business address, product
+      categories, and other requested business details.
+    </p>
+
+    <p>
+      Our team will contact you and guide you through the verification,
+      onboarding, product listing, and other applicable steps.
+    </p>
+
+
+    <h3>Contact Us</h3>
+
+    <p>
+      For seller registration and business partnership enquiries, contact us at:
+    </p>
+
+    <p>
+      Email:
+      <a href="mailto:support@cezoo.co.in" class="sellerMail">
+        support@cezoo.co.in
+      </a>
+    </p>
+
+
+   <h3>Office Address</h3>
+
+<p>
+  CEZOO<br>
+  Opposite VMAX,<br>
+  2nd Floor,<br>
+  Tanuku,<br>
+  West Godavari,<br>
+  Andhra Pradesh,<br>
+  India - 534211
+</p>
+
+
+    <div class="sellerCompanyBox">
+      Directed by<br>
+      <strong>Cezonal Solutions Private Limited</strong>
+    </div>
+
+  </div>
+
+</div>
 
 
 </div>
