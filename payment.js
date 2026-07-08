@@ -461,10 +461,24 @@ function openCashOrderConfirm(){
 
   document.body.style.overflow = "hidden";
 
-  setTimeout(function(){
+  clearTimeout(cashAutoStartTimer);
+
+cashAutoStartTimer = setTimeout(function(){
+
+  cashAutoStartTimer = null;
+
+  const overlay =
+    document.getElementById("cashConfirmOverlay");
+
+  if(overlay?.classList.contains("open")){
     startAutoCashOrder();
-  }, 800);
+  }
+
+}, 100);
 }
+
+let cashOrderTimer = null;
+let cashAutoStartTimer = null;
 
 
 function startAutoCashOrder(){
@@ -473,49 +487,87 @@ function startAutoCashOrder(){
 
   if(!btn) return;
 
+  // stop any old order timer
+  clearTimeout(cashOrderTimer);
+  cashOrderTimer = null;
+
   if(btn.dataset.processing === "true") return;
 
   btn.dataset.processing = "true";
 
+  // restart fill animation from 0
   btn.classList.remove("loading");
+
   void btn.offsetWidth;
 
   btn.classList.add("loading");
-  btn.querySelector("span").innerText = "Place Order";
 
-  setTimeout(function(){
+  // always same text
+  btn.querySelector("span").innerText = "Place Order Now";
 
-    closeCashOrderConfirm();
+
+  cashOrderTimer = setTimeout(function(){
+
+    cashOrderTimer = null;
+
+    closeCashOrderConfirm(false);
 
     setTimeout(function(){
+
       showOrderPlacedPopup();
+
     }, 200);
 
+
     setTimeout(function(){
 
-      document.getElementById("orderPlacedPopup")?.classList.remove("show");
-      document.getElementById("cartPagePopup")?.classList.remove("open");
-      document.getElementById("cezooProfilePopup")?.classList.remove("open");
-      document.getElementById("loginPopup")?.classList.remove("open");
+      document
+        .getElementById("orderPlacedPopup")
+        ?.classList.remove("show");
+
+      document
+        .getElementById("cartPagePopup")
+        ?.classList.remove("open");
+
+      document
+        .getElementById("cezooProfilePopup")
+        ?.classList.remove("open");
+
+      document
+        .getElementById("loginPopup")
+        ?.classList.remove("open");
+
 
       cart = {};
+
       localStorage.removeItem("cezooCart");
+
 
       document.body.style.overflow = "";
 
-      document.querySelector(".floatBarWrap")?.classList.remove("popupMode");
+
+      document
+        .querySelector(".floatBarWrap")
+        ?.classList.remove("popupMode");
+
 
       if(typeof updateCartFloat === "function"){
         updateCartFloat();
       }
 
+
       if(typeof restoreCartButtons === "function"){
         restoreCartButtons(document);
       }
 
+
       btn.dataset.processing = "false";
+
       btn.classList.remove("loading");
-      btn.querySelector("span").innerText = "Place Order Now";
+
+      btn.querySelector("span").innerText =
+        "Place Order Now";
+
 
       window.scrollTo({
         top:0,
@@ -528,8 +580,41 @@ function startAutoCashOrder(){
 }
 
 
-function closeCashOrderConfirm(){
-  document.getElementById("cashConfirmOverlay")?.classList.remove("open");
+function closeCashOrderConfirm(cancelOrder = true){
+
+  document
+    .getElementById("cashConfirmOverlay")
+    ?.classList.remove("open");
+
+
+  if(cancelOrder){
+
+    // cancel auto-start delay
+    clearTimeout(cashAutoStartTimer);
+    cashAutoStartTimer = null;
+
+
+    // cancel running order timer
+    clearTimeout(cashOrderTimer);
+    cashOrderTimer = null;
+
+
+    const btn =
+      document.getElementById("cashPlaceOrderNowBtn");
+
+
+    if(btn){
+
+      btn.dataset.processing = "false";
+
+      btn.classList.remove("loading");
+
+      btn.querySelector("span").innerText =
+        "Place Order Now";
+    }
+  }
+
+
   document.body.style.overflow = "hidden";
 }
 
