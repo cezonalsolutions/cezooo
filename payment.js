@@ -270,8 +270,289 @@ document
 
 
 
+document
+.getElementById("payOnlineBtn")
+.addEventListener("click", async function(){
 
+  const user = JSON.parse(
+    localStorage.getItem("cezooUser") || "null"
+  );
+
+  if(!user || !user.name || !user.mobile || !user.otp || user.login !== true){
+    openLoginPopup();
+    return;
+  }
+
+  function showPaySpinner(){
+
+    if(!document.getElementById("paySpinnerStyle")){
+      const style = document.createElement("style");
+      style.id = "paySpinnerStyle";
+      style.innerHTML = `
+  .paySpinnerOverlay{
+    position:fixed;
+    inset:0;
+    z-index:999999999;
+
+    background:rgba(255,255,255,.15);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .iosPaySpinner{
+    position:relative;
+
+    width:38px;
+    height:38px;
+  }
+
+  .iosPaySpinner span{
+    position:absolute;
+
+    left:17px;
+    top:2px;
+
+    width:4px;
+    height:10px;
+
+    background:#555;
+
+    border-radius:4px;
+
+    transform-origin:2px 17px;
+
+    animation:iosPayFade 1.2s linear infinite;
+  }
+
+  .iosPaySpinner span:nth-child(1){
+    transform:rotate(0deg);
+    animation-delay:-1.1s;
+  }
+
+  .iosPaySpinner span:nth-child(2){
+    transform:rotate(30deg);
+    animation-delay:-1s;
+  }
+
+  .iosPaySpinner span:nth-child(3){
+    transform:rotate(60deg);
+    animation-delay:-.9s;
+  }
+
+  .iosPaySpinner span:nth-child(4){
+    transform:rotate(90deg);
+    animation-delay:-.8s;
+  }
+
+  .iosPaySpinner span:nth-child(5){
+    transform:rotate(120deg);
+    animation-delay:-.7s;
+  }
+
+  .iosPaySpinner span:nth-child(6){
+    transform:rotate(150deg);
+    animation-delay:-.6s;
+  }
+
+  .iosPaySpinner span:nth-child(7){
+    transform:rotate(180deg);
+    animation-delay:-.5s;
+  }
+
+  .iosPaySpinner span:nth-child(8){
+    transform:rotate(210deg);
+    animation-delay:-.4s;
+  }
+
+  .iosPaySpinner span:nth-child(9){
+    transform:rotate(240deg);
+    animation-delay:-.3s;
+  }
+
+  .iosPaySpinner span:nth-child(10){
+    transform:rotate(270deg);
+    animation-delay:-.2s;
+  }
+
+  .iosPaySpinner span:nth-child(11){
+    transform:rotate(300deg);
+    animation-delay:-.1s;
+  }
+
+  .iosPaySpinner span:nth-child(12){
+    transform:rotate(330deg);
+    animation-delay:0s;
+  }
+
+  @keyframes iosPayFade{
+    0%{
+      opacity:1;
+    }
+
+    100%{
+      opacity:.12;
+    }
+  }
+`;
+      document.head.appendChild(style);
+    }
+
+    if(!document.getElementById("paySpinnerOverlay")){
+      document.body.insertAdjacentHTML("beforeend", `
+  <div id="paySpinnerOverlay" class="paySpinnerOverlay">
+
+    <div class="iosPaySpinner">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+  </div>
+`);
+    }else{
+      document.getElementById("paySpinnerOverlay").style.display = "flex";
+    }
+  }
+
+  function hidePaySpinner(){
+    const loader = document.getElementById("paySpinnerOverlay");
+    if(loader){
+      loader.style.display = "none";
+    }
+  }
+
+  try{
+
+    showPaySpinner();
+
+    const finalAmount = Number(
+  document
+    .getElementById("cartToPayBottom")
+    .innerText
+    .replace(/[^\d.]/g, "")
+);
+    if(!finalAmount || finalAmount <= 0){
+      hidePaySpinner();
+      console.log("Invalid amount");
+      return;
+    }
+
+    const response = await fetch(
+      "https://razropay.onrender.com/create-order",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          amount: finalAmount * 100
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    console.log("RAZORPAY RESPONSE:", data);
+
+    if(!data || !data.success || !data.order){
+      hidePaySpinner();
+      console.log("Razorpay order failed");
+      return;
+    }
+
+    const options = {
+      key:"rzp_live_SqrUSaPO5pA6gt",
+
+      amount:data.order.amount,
+      currency:data.order.currency,
+      order_id:data.order.id,
+
+      name:"CEZOO",
+      description:"Order Payment",
+
+      prefill:{
+        name:user.name,
+        contact:user.mobile
+      },
+
+      theme:{
+        color:"#0BD957"
+      },
+
+      handler:function(paymentResponse){
+
+        console.log("Payment Success:", paymentResponse);
+
+        showOrderPlacedPopup();
+
+        setTimeout(function(){
+
+          document.getElementById("orderPlacedPopup")
+            ?.classList.remove("show");
+
+          document.getElementById("cartPagePopup")
+            ?.classList.remove("open");
+
+          cart = {};
+          localStorage.removeItem("cezooCart");
+
+          document.body.style.overflow = "";
+
+          document.querySelector(".floatBarWrap")
+            ?.classList.remove("popupMode");
+
+          if(typeof updateCartFloat === "function"){
+            updateCartFloat();
+          }
+
+          if(typeof restoreCartButtons === "function"){
+            restoreCartButtons(document);
+          }
+
+          window.scrollTo({
+            top:0,
+            behavior:"smooth"
+          });
+
+        }, 5000);
+      },
+
+      modal:{
+        ondismiss:function(){
+          hidePaySpinner();
+          console.log("Razorpay closed");
+        }
+      }
+    };
+
+    const razorpay = new Razorpay(options);
+
+    hidePaySpinner();
+
+    setTimeout(function(){
+      razorpay.open();
+    }, 150);
+
+  }catch(error){
+
+    hidePaySpinner();
+
+    console.error("Payment error:", error);
+
+  }
+
+});
 
   
 
-  
