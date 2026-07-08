@@ -1,4 +1,28 @@
 
+function openCezooProfile(){
+
+  const user = JSON.parse(
+    localStorage.getItem("cezooUser") || "null"
+  );
+
+  if(user && user.name && user.mobile && user.otp && user.login === true){
+
+    document.getElementById("profileUserName").innerText =
+      user.name;
+
+    document.getElementById("profileUserMobile").innerText =
+      "+91 - " + user.mobile;
+
+    document.getElementById("cezooProfilePopup").classList.add("open");
+    document.body.style.overflow = "hidden";
+
+  }else{
+
+    openLoginPopup();
+
+  }
+}
+
 function shake(el){
   el.classList.remove("shake");
   void el.offsetWidth;
