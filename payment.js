@@ -190,6 +190,88 @@ document
       return;
     }
 
+    // show success popup
     showOrderPlacedPopup();
 
+
+    // wait 5 seconds
+    setTimeout(function(){
+
+  // 1. Hide success popup
+  document
+    .getElementById("orderPlacedPopup")
+    ?.classList.remove("show");
+
+
+  // 2. Close cart page popup
+  document
+    .getElementById("cartPagePopup")
+    ?.classList.remove("open");
+
+
+  // 3. Close profile popup
+  document
+    .getElementById("cezooProfilePopup")
+    ?.classList.remove("open");
+
+
+  // 4. Close login popup if open
+  document
+    .getElementById("loginPopup")
+    ?.classList.remove("open");
+
+
+  // 5. Close location sheet
+  document
+    .getElementById("sheet")
+    ?.classList.remove("open");
+
+  document
+    .getElementById("overlay")
+    ?.classList.remove("active");
+
+
+  // 6. Clear cart
+  cart = {};
+
+  localStorage.removeItem("cezooCart");
+
+
+  // 7. Restore page scrolling
+  document.body.style.overflow = "";
+
+
+  // 8. Remove popup mode from floating bar
+  document
+    .querySelector(".floatBarWrap")
+    ?.classList.remove("popupMode");
+
+
+  // 9. Update cart UI
+  if(typeof updateCartFloat === "function"){
+    updateCartFloat();
+  }
+
+  if(typeof restoreCartButtons === "function"){
+    restoreCartButtons(document);
+  }
+
+
+  // 10. Go main page top
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
   });
+
+}, 4000);
+
+  });
+
+
+
+
+
+
+  
+
+  
