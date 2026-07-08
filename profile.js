@@ -94,3 +94,239 @@ cezooProfilePopup.addEventListener("touchend", function(e){
     closeCezooProfile();
   }
 });
+
+
+function openTermsPopup(){
+  document.getElementById("termsPopup").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeTermsPopup(){
+  document.getElementById("termsPopup").classList.remove("open");
+  document.body.style.overflow = "hidden"; // keep profile popup locked
+}
+
+let termsStartX = 0;
+let termsStartY = 0;
+
+const termsPopup = document.getElementById("termsPopup");
+
+termsPopup.addEventListener("touchstart", function(e){
+  const touch = e.touches[0];
+  termsStartX = touch.clientX;
+  termsStartY = touch.clientY;
+});
+
+termsPopup.addEventListener("touchend", function(e){
+  const touch = e.changedTouches[0];
+
+  const diffX = touch.clientX - termsStartX;
+  const diffY = touch.clientY - termsStartY;
+
+  if(Math.abs(diffX) > 90 && Math.abs(diffY) < 70){
+    closeTermsPopup();
+  }
+});
+
+window.openRefundPopup = function(){
+  document
+    .getElementById("refundPopup")
+    .classList.add("open");
+
+  document.body.style.overflow = "hidden";
+};
+
+
+window.closeRefundPopup = function(){
+  document
+    .getElementById("refundPopup")
+    .classList.remove("open");
+
+  // profile is still open behind refund popup
+  document.body.style.overflow = "hidden";
+};
+
+
+let refundStartX = 0;
+let refundStartY = 0;
+
+const refundPopupBox =
+  document.getElementById("refundPopup");
+
+
+refundPopupBox.addEventListener("touchstart", function(e){
+
+  const touch = e.touches[0];
+
+  refundStartX = touch.clientX;
+  refundStartY = touch.clientY;
+
+});
+
+
+refundPopupBox.addEventListener("touchend", function(e){
+
+  const touch = e.changedTouches[0];
+
+  const diffX =
+    touch.clientX - refundStartX;
+
+  const diffY =
+    touch.clientY - refundStartY;
+
+
+  if(
+    Math.abs(diffX) > 90 &&
+    Math.abs(diffY) < 70
+  ){
+    closeRefundPopup();
+  }
+
+});
+
+window.openCouponsPopup = function(){
+  document.getElementById("couponsPopup").classList.add("open");
+  document.body.style.overflow = "hidden";
+};
+
+window.closeCouponsPopup = function(){
+  document.getElementById("couponsPopup").classList.remove("open");
+  document.body.style.overflow = "hidden";
+};
+
+let couponsStartX = 0;
+let couponsStartY = 0;
+
+const couponsPopupBox = document.getElementById("couponsPopup");
+
+couponsPopupBox.addEventListener("touchstart", function(e){
+  const touch = e.touches[0];
+  couponsStartX = touch.clientX;
+  couponsStartY = touch.clientY;
+});
+
+couponsPopupBox.addEventListener("touchend", function(e){
+  const touch = e.changedTouches[0];
+
+  const diffX = touch.clientX - couponsStartX;
+  const diffY = touch.clientY - couponsStartY;
+
+  if(Math.abs(diffX) > 90 && Math.abs(diffY) < 70){
+    closeCouponsPopup();
+  }
+});
+
+window.openNotificationsPopup = function(){
+  document.getElementById("notificationsPopup").classList.add("open");
+  document.body.style.overflow = "hidden";
+
+  document.getElementById("appNotificationToggle").checked =
+    localStorage.getItem("cezooAppNotifications") === "on";
+
+  document.getElementById("whatsappNotificationToggle").checked =
+    localStorage.getItem("cezooWhatsappNotifications") === "on";
+};
+
+window.closeNotificationsPopup = function(){
+  document.getElementById("notificationsPopup").classList.remove("open");
+  document.body.style.overflow = "hidden";
+};
+
+document.getElementById("appNotificationToggle").addEventListener("change", function(){
+
+  if(this.checked){
+
+    localStorage.setItem("cezooAppNotifications", "on");
+
+    if(window.webkit && window.webkit.messageHandlers.requestNotificationPermission){
+      window.webkit.messageHandlers.requestNotificationPermission.postMessage("ask");
+    }
+
+  }else{
+
+    localStorage.setItem("cezooAppNotifications", "off");
+
+  }
+
+});
+
+document.getElementById("whatsappNotificationToggle").addEventListener("change", function(){
+  localStorage.setItem(
+    "cezooWhatsappNotifications",
+    this.checked ? "on" : "off"
+  );
+});
+
+let notificationsStartX = 0;
+let notificationsStartY = 0;
+
+const notificationsPopupBox =
+  document.getElementById("notificationsPopup");
+
+notificationsPopupBox.addEventListener("touchstart", function(e){
+  const touch = e.touches[0];
+  notificationsStartX = touch.clientX;
+  notificationsStartY = touch.clientY;
+});
+
+notificationsPopupBox.addEventListener("touchend", function(e){
+  const touch = e.changedTouches[0];
+
+  const diffX = touch.clientX - notificationsStartX;
+  const diffY = touch.clientY - notificationsStartY;
+
+  if(Math.abs(diffX) > 90 && Math.abs(diffY) < 70){
+    closeNotificationsPopup();
+  }
+});
+
+window.openSellerPopup = function(){
+  document
+    .getElementById("sellerPopup")
+    .classList.add("open");
+
+  document.body.style.overflow = "hidden";
+};
+
+
+window.closeSellerPopup = function(){
+  document
+    .getElementById("sellerPopup")
+    .classList.remove("open");
+
+  document.body.style.overflow = "hidden";
+};
+
+
+let sellerStartX = 0;
+let sellerStartY = 0;
+
+const sellerPopupBox =
+  document.getElementById("sellerPopup");
+
+
+sellerPopupBox.addEventListener("touchstart", function(e){
+
+  const touch = e.touches[0];
+
+  sellerStartX = touch.clientX;
+  sellerStartY = touch.clientY;
+
+});
+
+
+sellerPopupBox.addEventListener("touchend", function(e){
+
+  const touch = e.changedTouches[0];
+
+  const diffX = touch.clientX - sellerStartX;
+  const diffY = touch.clientY - sellerStartY;
+
+  if(
+    Math.abs(diffX) > 90 &&
+    Math.abs(diffY) < 70
+  ){
+    closeSellerPopup();
+  }
+
+});
