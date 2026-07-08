@@ -4961,6 +4961,7 @@ button{
 
 }
 </style>
+<link rel="stylesheet" href="profile.css">
 <link rel="stylesheet" href="xerox.css">
 <link rel="stylesheet" href="game.css">
 <link rel="stylesheet" href="banners.css">
@@ -4981,7 +4982,7 @@ button{
     <div class="street" id="street">Allow location access</div>
   </div>
 
-<div class="profile" onclick="openLoginPopup()">
+<div class="profile" onclick="openCezooProfile()">
   <img id="profileImg" src="profile/profile.png" alt="Profile">
 </div>
 </div>
@@ -8145,6 +8146,9 @@ button{
 
 
 
+
+
+
 <div id="loginPopup" class="loginPopup" onclick="closeLoginPopup()">
 
   <div class="loginPage" onclick="event.stopPropagation()">
@@ -8213,12 +8217,118 @@ button{
 
 </div>
 
+</div>
+
+<!--profile page starts-->
+
+
+<div id="cezooProfilePopup" class="cezooProfilePopup">
+
+
+<div class="profilePage">
+
+  <section class="profileTop">
+
+    <div class="profileNav">
+
+      <button class="profileBack" id="profileBackBtn">
+        <svg viewBox="0 0 24 24">
+          <path d="M15 18l-6-6 6-6"></path>
+        </svg>
+      </button>
+
+      <div class="profileNavRight">
+
+        <button class="profileHelp" id="profileHelpBtn">Help</button>
+
+        <button class="profileDots" id="profileDotsBtn">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <div class="profileMenu" id="profileMenu">
+          <button onclick="editProfile()">Edit Profile</button>
+          <button onclick="openSettings()">Settings</button>
+          <button class="logout" onclick="logoutUser()">Logout</button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="profileDetails">
+      <h1 class="profileName" id="profileUserName">Sundar Reddy</h1>
+      <div class="profileMobile" id="profileUserMobile">+91 - 9502877675</div>
+    </div>
+
+  </section>
+<div class="profileMenuCard">
+
+  <div class="profileListItem">
+    <i class="fa-solid fa-box-open profileListIcon"></i>
+    <span>Your Orders</span>
+    <i class="fa-solid fa-chevron-right profileArrow"></i>
+  </div>
+
+  <div class="profileListItem">
+    <i class="fa-solid fa-location-dot profileListIcon"></i>
+    <span>Saved Address</span>
+    <i class="fa-solid fa-chevron-right profileArrow"></i>
+  </div>
+
+  <div class="profileListItem">
+    <i class="fa-regular fa-file-lines profileListIcon"></i>
+    <span>Terms & Conditions</span>
+    <i class="fa-solid fa-chevron-right profileArrow"></i>
+  </div>
+
+  <div class="profileListItem">
+    <i class="fa-solid fa-arrow-rotate-left profileListIcon"></i>
+    <span>Refund Policy</span>
+    <i class="fa-solid fa-chevron-right profileArrow"></i>
+  </div>
+<div class="profileListItem">
+  <i class="fa-solid fa-ticket profileListIcon"></i>
+  <span>Coupons</span>
+  <i class="fa-solid fa-chevron-right profileArrow"></i>
+</div>
+<div class="profileListItem">
+  <i class="fa-solid fa-bag-shopping profileListIcon"></i>
+  <span>Suggested Products</span>
+  <i class="fa-solid fa-chevron-right profileArrow"></i>
+</div>
+
+<div class="profileListItem">
+  <i class="fa-solid fa-bell profileListIcon"></i>
+  <span>Notifications</span>
+  <i class="fa-solid fa-chevron-right profileArrow"></i>
+</div>
+<div class="profileListItem">
+  <i class="fa-solid fa-store profileListIcon"></i>
+  <span>Seller Registration</span>
+  <i class="fa-solid fa-chevron-right profileArrow"></i>
+</div>
+
+</div>
+
+<h2 class="recentOrdersHeading">
+  Recent Orders
+</h2>
+</div>
+
+
 
 
 
 
 
 </div>
+
+<!--profile page ends-->
+
+
+
 
 
 <div class="floatBarWrap">
@@ -8564,7 +8674,7 @@ button{
 <script src="login.js"></script>
 <script src="xerox.js"></script>
 <script src="cart.js"></script>
-
+<script src="profile.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
