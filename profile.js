@@ -69,3 +69,28 @@ window.logoutUser = function(){
     openLoginPopup();
   }, 150);
 };
+
+
+let profileStartX = 0;
+let profileStartY = 0;
+
+const cezooProfilePopup =
+  document.getElementById("cezooProfilePopup");
+
+cezooProfilePopup.addEventListener("touchstart", function(e){
+  const touch = e.touches[0];
+
+  profileStartX = touch.clientX;
+  profileStartY = touch.clientY;
+});
+
+cezooProfilePopup.addEventListener("touchend", function(e){
+  const touch = e.changedTouches[0];
+
+  const diffX = touch.clientX - profileStartX;
+  const diffY = touch.clientY - profileStartY;
+
+  if(Math.abs(diffX) > 90 && Math.abs(diffY) < 70){
+    closeCezooProfile();
+  }
+});
