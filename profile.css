@@ -859,3 +859,101 @@
   font-weight:600;
   color:#333;
 }
+.yourOrdersPopup{
+  position:fixed;
+  inset:0;
+
+  width:100%;
+  height:100dvh;
+
+  background:#fff;
+
+  z-index:10000005;
+
+  display:none;
+
+  overflow-y:auto;
+  overflow-x:hidden;
+
+  -webkit-overflow-scrolling:touch;
+}
+
+.yourOrdersPopup.open{
+  display:block;
+}
+
+
+/* HEADER */
+
+.yourOrdersHeader{
+  position:sticky;
+  top:0;
+
+  width:100%;
+
+  padding:
+    calc(48px + env(safe-area-inset-top))
+    16px
+    14px;
+
+  background:#fff;
+
+  display:flex;
+  align-items:center;
+
+  gap:6px;
+
+  border-bottom:1px solid #eee;
+
+  z-index:10;
+}
+
+
+/* BACK */
+
+.yourOrdersBackBtn{
+  width:36px;
+  height:36px;
+
+  margin:0;
+  padding:0 0 3px 0;
+
+  border:none;
+  background:transparent;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-family:Arial,sans-serif;
+  font-size:36px;
+  line-height:1;
+  font-weight:300;
+
+  color:#4d4d4d;
+
+  cursor:pointer;
+}
+
+
+/* TITLE BESIDE BACK BUTTON */
+
+.yourOrdersTitle{
+  font-family:Arial,sans-serif;
+
+  font-size:19px;
+  line-height:1.2;
+  font-weight:600;
+
+  color:#202124;
+
+  text-align:left;
+}
+
+
+/* CONTENT */
+
+.yourOrdersContent{
+  width:100%;
+  padding:18px 16px 50px;
+}
