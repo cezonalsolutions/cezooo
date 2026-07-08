@@ -114,12 +114,15 @@ let termsStartY = 0;
 const termsPopup = document.getElementById("termsPopup");
 
 termsPopup.addEventListener("touchstart", function(e){
+    e.stopPropagation();
   const touch = e.touches[0];
   termsStartX = touch.clientX;
   termsStartY = touch.clientY;
 });
 
 termsPopup.addEventListener("touchend", function(e){
+      e.stopPropagation();
+
   const touch = e.changedTouches[0];
 
   const diffX = touch.clientX - termsStartX;
@@ -157,6 +160,7 @@ const refundPopupBox =
 
 
 refundPopupBox.addEventListener("touchstart", function(e){
+  e.stopPropagation();
 
   const touch = e.touches[0];
 
@@ -167,6 +171,7 @@ refundPopupBox.addEventListener("touchstart", function(e){
 
 
 refundPopupBox.addEventListener("touchend", function(e){
+  e.stopPropagation();
 
   const touch = e.changedTouches[0];
 
@@ -202,12 +207,16 @@ let couponsStartY = 0;
 const couponsPopupBox = document.getElementById("couponsPopup");
 
 couponsPopupBox.addEventListener("touchstart", function(e){
+      e.stopPropagation();
+
   const touch = e.touches[0];
   couponsStartX = touch.clientX;
   couponsStartY = touch.clientY;
 });
 
 couponsPopupBox.addEventListener("touchend", function(e){
+      e.stopPropagation();
+
   const touch = e.changedTouches[0];
 
   const diffX = touch.clientX - couponsStartX;
@@ -266,12 +275,14 @@ const notificationsPopupBox =
   document.getElementById("notificationsPopup");
 
 notificationsPopupBox.addEventListener("touchstart", function(e){
+    e.stopPropagation();
   const touch = e.touches[0];
   notificationsStartX = touch.clientX;
   notificationsStartY = touch.clientY;
 });
 
 notificationsPopupBox.addEventListener("touchend", function(e){
+    e.stopPropagation();
   const touch = e.changedTouches[0];
 
   const diffX = touch.clientX - notificationsStartX;
@@ -308,7 +319,7 @@ const sellerPopupBox =
 
 
 sellerPopupBox.addEventListener("touchstart", function(e){
-
+e.stopPropagation();
   const touch = e.touches[0];
 
   sellerStartX = touch.clientX;
@@ -318,7 +329,7 @@ sellerPopupBox.addEventListener("touchstart", function(e){
 
 
 sellerPopupBox.addEventListener("touchend", function(e){
-
+e.stopPropagation();
   const touch = e.changedTouches[0];
 
   const diffX = touch.clientX - sellerStartX;
@@ -335,6 +346,9 @@ sellerPopupBox.addEventListener("touchend", function(e){
 
 function anyChildPopupOpen(){
   return (
+    document
+  .getElementById("savedAddressPopup")
+  ?.classList.contains("open") ||
     document.getElementById("termsPopup")?.classList.contains("open") ||
     document.getElementById("refundPopup")?.classList.contains("open") ||
     document.getElementById("couponsPopup")?.classList.contains("open") ||
@@ -372,31 +386,205 @@ const yourOrdersPopupBox =
 
 
 yourOrdersPopupBox.addEventListener("touchstart", function(e){
+  e.stopPropagation();
 
   const touch = e.touches[0];
-
   ordersStartX = touch.clientX;
   ordersStartY = touch.clientY;
-
 });
 
-
 yourOrdersPopupBox.addEventListener("touchend", function(e){
+  e.stopPropagation();
 
   const touch = e.changedTouches[0];
 
-  const diffX =
-    touch.clientX - ordersStartX;
+  const diffX = touch.clientX - ordersStartX;
+  const diffY = touch.clientY - ordersStartY;
 
-  const diffY =
-    touch.clientY - ordersStartY;
-
-
-  if(
-    Math.abs(diffX) > 90 &&
-    Math.abs(diffY) < 70
-  ){
+  if(Math.abs(diffX) > 90 && Math.abs(diffY) < 70){
     closeYourOrdersPopup();
   }
-
 });
+
+
+
+/* ================================
+   OPEN SAVED ADDRESS
+================================ */
+
+window.openSavedAddressPopup = function(){
+
+  const popup =
+    document.getElementById("savedAddressPopup");
+
+  popup.classList.add("open");
+
+  document.body.style.overflow = "hidden";
+
+  renderSavedAddresses();
+
+};
+
+
+/* ================================
+   CLOSE SAVED ADDRESS
+================================ */
+
+window.closeSavedAddressPopup = function(){
+
+  const popup =
+    document.getElementById("savedAddressPopup");
+
+  popup.classList.remove("open");
+
+  // Keep body locked because profile popup
+  // is still open behind this popup
+
+  document.body.style.overflow = "hidden";
+
+};
+
+
+/* ================================
+   SHOW SAVED LOCATIONS
+================================ */
+
+function renderSavedAddresses(){
+
+  const list =
+    document.getElementById("savedAddressList");
+
+
+  const addresses = JSON.parse(
+    localStorage.getItem("recentLocations") || "[]"
+  );
+
+
+  if(addresses.length === 0){
+
+    list.innerHTML = `
+      <div class="noSavedAddress">
+        No saved address found
+      </div>
+    `;
+
+    return;
+  }
+
+
+  list.innerHTML = addresses.map((loc, index) => {
+
+    return `
+
+      <div class="savedAddressCard">
+
+        <div class="savedAddressCardIcon">
+          <i class="fa-solid fa-location-dot"></i>
+        </div>
+
+
+        <div class="savedAddressCardText">
+
+          <h3>
+            Saved Address ${index + 1}
+          </h3>
+
+          <p>
+            ${loc.name}
+          </p>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }).join("");
+
+}
+
+
+/* ================================
+   SWIPE TO CLOSE
+================================ */
+
+let savedAddressStartX = 0;
+let savedAddressStartY = 0;
+
+
+const savedAddressPopupBox =
+  document.getElementById("savedAddressPopup");
+
+
+savedAddressPopupBox.addEventListener(
+  "touchstart",
+  function(e){
+
+    // IMPORTANT:
+    // Prevent profile popup swipe listener
+    e.stopPropagation();
+
+
+    const touch = e.touches[0];
+
+    savedAddressStartX =
+      touch.clientX;
+
+    savedAddressStartY =
+      touch.clientY;
+
+  }
+);
+
+
+savedAddressPopupBox.addEventListener(
+  "touchend",
+  function(e){
+
+    // IMPORTANT:
+    // Only close Saved Address popup
+    e.stopPropagation();
+
+
+    const touch =
+      e.changedTouches[0];
+
+
+    const diffX =
+      touch.clientX -
+      savedAddressStartX;
+
+
+    const diffY =
+      touch.clientY -
+      savedAddressStartY;
+
+
+    if(
+      Math.abs(diffX) > 90 &&
+      Math.abs(diffY) < 70
+    ){
+
+      closeSavedAddressPopup();
+
+    }
+
+  }
+);
+
+function openAddressSheetFromProfile(){
+
+  // close saved address page first
+  document.getElementById("savedAddressPopup")
+    ?.classList.remove("open");
+
+  // close profile page also, so sheet works normally
+  document.getElementById("cezooProfilePopup")
+    ?.classList.remove("open");
+
+  document.body.style.overflow = "";
+
+  setTimeout(() => {
+    openSheet();
+  }, 100);
+}
