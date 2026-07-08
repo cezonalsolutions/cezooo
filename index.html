@@ -8249,7 +8249,7 @@ button{
 
         <div class="profileMenu" id="profileMenu">
           <button onclick="editProfile()">Edit Profile</button>
-          <button onclick="openSettings()">Settings</button>
+         
           <button class="logout" onclick="logoutUser()">Logout</button>
         </div>
 
@@ -8265,11 +8265,11 @@ button{
   </section>
 <div class="profileMenuCard">
 
-  <div class="profileListItem">
-    <i class="fa-solid fa-box-open profileListIcon"></i>
-    <span>Your Orders</span>
-    <i class="fa-solid fa-chevron-right profileArrow"></i>
-  </div>
+  <div class="profileListItem" onclick="openYourOrdersPopup()">
+  <i class="fa-solid fa-box-open profileListIcon"></i>
+  <span>Your Orders</span>
+  <i class="fa-solid fa-chevron-right profileArrow"></i>
+</div>
 
   <div class="profileListItem">
     <i class="fa-solid fa-location-dot profileListIcon"></i>
@@ -8946,6 +8946,32 @@ button{
 </div>
 
 
+
+<div id="yourOrdersPopup" class="yourOrdersPopup">
+
+  <div class="yourOrdersHeader">
+
+    <button
+      class="yourOrdersBackBtn"
+      onclick="closeYourOrdersPopup()"
+      aria-label="Back"
+    >
+      ‹
+    </button>
+
+    <div class="yourOrdersTitle">
+      Your Orders
+    </div>
+
+  </div>
+
+  <div class="yourOrdersContent">
+
+    <!-- ORDERS WILL COME HERE -->
+
+  </div>
+
+</div>
 </div>
 
 <!--profile page ends-->
