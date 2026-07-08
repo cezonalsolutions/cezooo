@@ -151,22 +151,27 @@ function openLoginPopup(){
 function closeLoginPopup(){
   document.getElementById("loginPopup").classList.remove("open");
 }
+let loginStartX = 0;
 let loginStartY = 0;
 
 const loginPopup = document.getElementById("loginPopup");
 
-loginPopup.addEventListener("touchstart", e => {
-  loginStartY = e.touches[0].clientY;
+loginPopup.addEventListener("touchstart", function(e){
+  const touch = e.touches[0];
+
+  loginStartX = touch.clientX;
+  loginStartY = touch.clientY;
 });
 
-loginPopup.addEventListener("touchend", e => {
+loginPopup.addEventListener("touchend", function(e){
+  const touch = e.changedTouches[0];
 
-  const endY = e.changedTouches[0].clientY;
+  const diffX = touch.clientX - loginStartX;
+  const diffY = touch.clientY - loginStartY;
 
-  if(endY - loginStartY > 100){
+  if(Math.abs(diffX) > 90 && Math.abs(diffY) < 70){
     closeLoginPopup();
   }
-
 });
 
 let cart = JSON.parse(localStorage.getItem("cezooCart") || "{}");
