@@ -181,91 +181,362 @@ function showOrderPlacedPopup(){
   `);
 }
 
-document
-  .getElementById("payCashBtn")
-  .addEventListener("click", function(){
 
-    if(!isCezooUserLoggedIn()){
-      openLoginPopup();
-      return;
-    }
+document.getElementById("payCashBtn").addEventListener("click", function(){
 
-    // show success popup
-    showOrderPlacedPopup();
+  const user = JSON.parse(localStorage.getItem("cezooUser") || "null");
+
+  if(!user || !user.name || !user.mobile || !user.otp || user.login !== true){
+    openLoginPopup();
+    return;
+  }
+
+  openCashOrderConfirm();
+});
 
 
-    // wait 5 seconds
+function openCashOrderConfirm(){
+
+  const total = document.getElementById("cartToPayBottom")?.innerText || "₹0";
+
+  const savedLocations = JSON.parse(localStorage.getItem("recentLocations") || "[]");
+
+  let deliveryAddress = "Selected delivery address";
+
+  if(savedLocations.length > 0 && savedLocations[0].name){
+    deliveryAddress = savedLocations[0].name;
+  }else{
+    const village = document.getElementById("village")?.innerText || "";
+    const street = document.getElementById("street")?.innerText || "";
+    deliveryAddress = `${village} ${street}`;
+  }
+
+  if(!document.getElementById("cashConfirmStyle")){
+    const style = document.createElement("style");
+    style.id = "cashConfirmStyle";
+
+    style.innerHTML = `
+      .cashConfirmOverlay{
+        position:fixed;
+        inset:0;
+        z-index:999999999;
+        background:rgba(0,0,0,.30);
+        opacity:0;
+        visibility:hidden;
+        transition:.22s ease;
+      }
+
+      .cashConfirmOverlay.open{
+        opacity:1;
+        visibility:visible;
+      }
+
+      .cashConfirmSheet{
+        position:absolute;
+        left:0;
+        right:0;
+        bottom:0;
+        background:#fff;
+        border-radius:22px 22px 0 0;
+        padding:9px 15px calc(18px + env(safe-area-inset-bottom));
+        transform:translateY(105%);
+        transition:transform .32s cubic-bezier(.22,.9,.32,1);
+      }
+
+      .cashConfirmOverlay.open .cashConfirmSheet{
+        transform:translateY(0);
+      }
+
+      .cashConfirmHandle{
+        width:42px;
+        height:4px;
+        background:#cfcfcf;
+        border-radius:10px;
+        margin:0 auto 16px;
+      }
+
+      .cashConfirmTitle{
+        margin:0;
+        font-size:22px;
+        line-height:1.15;
+        font-weight:800;
+        color:#20232d;
+      }
+
+      .cashConfirmSub{
+        margin:6px 0 15px;
+        font-size:13px;
+        line-height:1.35;
+        color:#747b89;
+      }
+
+      .cashInfoRow{
+        display:flex;
+        align-items:center;
+        gap:11px;
+        padding:10px 0;
+      }
+
+      .cashInfoIcon{
+        width:43px;
+        height:43px;
+        border-radius:12px;
+        background:#f3f4f6;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:16px;
+        color:#606775;
+        flex-shrink:0;
+      }
+
+      .cashInfoText{
+        flex:1;
+        min-width:0;
+      }
+
+      .cashAmount{
+        display:block;
+        font-size:18px;
+        line-height:1.2;
+        font-weight:800;
+        color:#20232d;
+        margin-bottom:2px;
+      }
+
+      .cashSmallText{
+        font-size:12px;
+        color:#777e8b;
+      }
+
+      .cashDashedLine{
+        border-top:1.2px dashed #d8d8d8;
+        margin:2px 0;
+      }
+
+      .cashAddressTitle{
+        margin:0 0 3px;
+        font-size:14px;
+        font-weight:700;
+        color:#202124;
+      }
+
+      .cashAddressText{
+        margin:0;
+        font-size:12px;
+        line-height:1.4;
+        color:#747b88;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+
+      .cashPlaceOrderBtn{
+        position:relative;
+        width:100%;
+        height:49px;
+        margin-top:16px;
+        border:none;
+        border-radius:14px;
+        background:#ff0f64;
+        color:#fff;
+        font-size:15px;
+        font-weight:800;
+        overflow:hidden;
+        cursor:pointer;
+        box-shadow:0 8px 18px rgba(255,15,100,.22);
+      }
+
+      .cashPlaceOrderBtn span{
+        position:relative;
+        z-index:3;
+      }
+
+      .cashPlaceOrderBtn::before{
+        content:"";
+        position:absolute;
+        top:0;
+        left:0;
+        width:0%;
+        height:100%;
+        background:#b90048;
+        z-index:1;
+      }
+
+      .cashPlaceOrderBtn.loading::before{
+        animation:cashOrderFill 3.2s linear forwards;
+      }
+
+      @keyframes cashOrderFill{
+        from{width:0%;}
+        to{width:100%;}
+      }
+
+      .cashCancelBtn{
+        width:100%;
+        margin-top:11px;
+        padding:6px;
+        border:none;
+        background:transparent;
+        color:#ff336d;
+        font-size:14px;
+        font-weight:700;
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+  if(!document.getElementById("cashConfirmOverlay")){
+
+    document.body.insertAdjacentHTML("beforeend", `
+      <div id="cashConfirmOverlay" class="cashConfirmOverlay">
+        <div class="cashConfirmSheet">
+
+          <div class="cashConfirmHandle"></div>
+
+          <h2 class="cashConfirmTitle">Ordering now</h2>
+
+          <p class="cashConfirmSub">
+            Pay with Cash or UPI at the time of delivery.
+          </p>
+
+          <div class="cashInfoRow">
+            <div class="cashInfoIcon">
+              <i class="fa-solid fa-indian-rupee-sign"></i>
+            </div>
+
+            <div class="cashInfoText">
+              <strong id="cashConfirmTotal" class="cashAmount">₹0</strong>
+              <span class="cashSmallText">Amount to Pay</span>
+            </div>
+          </div>
+
+          <div class="cashDashedLine"></div>
+
+          <div class="cashInfoRow">
+            <div class="cashInfoIcon">
+              <i class="fa-solid fa-house"></i>
+            </div>
+
+            <div class="cashInfoText">
+              <h3 class="cashAddressTitle">Delivering to Home</h3>
+              <p id="cashConfirmAddress" class="cashAddressText"></p>
+            </div>
+          </div>
+
+          <button id="cashPlaceOrderNowBtn" class="cashPlaceOrderBtn">
+            <span>Place Order Now</span>
+          </button>
+
+          <button id="cashCancelOrderBtn" class="cashCancelBtn">
+            Cancel Order
+          </button>
+
+        </div>
+      </div>
+    `);
+
+    document.getElementById("cashCancelOrderBtn").onclick = closeCashOrderConfirm;
+
+    document.getElementById("cashConfirmOverlay").onclick = function(e){
+      if(e.target === this){
+        closeCashOrderConfirm();
+      }
+    };
+  }
+
+  document.getElementById("cashConfirmTotal").innerText = total;
+  document.getElementById("cashConfirmAddress").innerText = deliveryAddress;
+
+  const btn = document.getElementById("cashPlaceOrderNowBtn");
+
+  btn.dataset.processing = "false";
+  btn.classList.remove("loading");
+  btn.querySelector("span").innerText = "Place Order Now";
+
+  requestAnimationFrame(function(){
+    document.getElementById("cashConfirmOverlay").classList.add("open");
+  });
+
+  document.body.style.overflow = "hidden";
+
+  setTimeout(function(){
+    startAutoCashOrder();
+  }, 800);
+}
+
+
+function startAutoCashOrder(){
+
+  const btn = document.getElementById("cashPlaceOrderNowBtn");
+
+  if(!btn) return;
+
+  if(btn.dataset.processing === "true") return;
+
+  btn.dataset.processing = "true";
+
+  btn.classList.remove("loading");
+  void btn.offsetWidth;
+
+  btn.classList.add("loading");
+  btn.querySelector("span").innerText = "Place Order";
+
+  setTimeout(function(){
+
+    closeCashOrderConfirm();
+
+    setTimeout(function(){
+      showOrderPlacedPopup();
+    }, 200);
+
     setTimeout(function(){
 
-  // 1. Hide success popup
-  document
-    .getElementById("orderPlacedPopup")
-    ?.classList.remove("show");
+      document.getElementById("orderPlacedPopup")?.classList.remove("show");
+      document.getElementById("cartPagePopup")?.classList.remove("open");
+      document.getElementById("cezooProfilePopup")?.classList.remove("open");
+      document.getElementById("loginPopup")?.classList.remove("open");
+
+      cart = {};
+      localStorage.removeItem("cezooCart");
+
+      document.body.style.overflow = "";
+
+      document.querySelector(".floatBarWrap")?.classList.remove("popupMode");
+
+      if(typeof updateCartFloat === "function"){
+        updateCartFloat();
+      }
+
+      if(typeof restoreCartButtons === "function"){
+        restoreCartButtons(document);
+      }
+
+      btn.dataset.processing = "false";
+      btn.classList.remove("loading");
+      btn.querySelector("span").innerText = "Place Order Now";
+
+      window.scrollTo({
+        top:0,
+        behavior:"smooth"
+      });
+
+    }, 5000);
+
+  }, 3200);
+}
 
 
-  // 2. Close cart page popup
-  document
-    .getElementById("cartPagePopup")
-    ?.classList.remove("open");
+function closeCashOrderConfirm(){
+  document.getElementById("cashConfirmOverlay")?.classList.remove("open");
+  document.body.style.overflow = "hidden";
+}
 
 
-  // 3. Close profile popup
-  document
-    .getElementById("cezooProfilePopup")
-    ?.classList.remove("open");
 
 
-  // 4. Close login popup if open
-  document
-    .getElementById("loginPopup")
-    ?.classList.remove("open");
 
-
-  // 5. Close location sheet
-  document
-    .getElementById("sheet")
-    ?.classList.remove("open");
-
-  document
-    .getElementById("overlay")
-    ?.classList.remove("active");
-
-
-  // 6. Clear cart
-  cart = {};
-
-  localStorage.removeItem("cezooCart");
-
-
-  // 7. Restore page scrolling
-  document.body.style.overflow = "";
-
-
-  // 8. Remove popup mode from floating bar
-  document
-    .querySelector(".floatBarWrap")
-    ?.classList.remove("popupMode");
-
-
-  // 9. Update cart UI
-  if(typeof updateCartFloat === "function"){
-    updateCartFloat();
-  }
-
-  if(typeof restoreCartButtons === "function"){
-    restoreCartButtons(document);
-  }
-
-
-  // 10. Go main page top
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-
-}, 4000);
-
-  });
 
 
 
