@@ -339,6 +339,64 @@ function anyChildPopupOpen(){
     document.getElementById("refundPopup")?.classList.contains("open") ||
     document.getElementById("couponsPopup")?.classList.contains("open") ||
     document.getElementById("notificationsPopup")?.classList.contains("open") ||
-    document.getElementById("sellerPopup")?.classList.contains("open")
+    document.getElementById("sellerPopup")?.classList.contains("open") ||
+    document.getElementById("yourOrdersPopup")?.classList.contains("open")
   );
 }
+window.openYourOrdersPopup = function(){
+
+  document
+    .getElementById("yourOrdersPopup")
+    .classList.add("open");
+
+  document.body.style.overflow = "hidden";
+};
+
+
+window.closeYourOrdersPopup = function(){
+
+  document
+    .getElementById("yourOrdersPopup")
+    .classList.remove("open");
+
+  // profile popup remains open
+  document.body.style.overflow = "hidden";
+};
+
+
+let ordersStartX = 0;
+let ordersStartY = 0;
+
+const yourOrdersPopupBox =
+  document.getElementById("yourOrdersPopup");
+
+
+yourOrdersPopupBox.addEventListener("touchstart", function(e){
+
+  const touch = e.touches[0];
+
+  ordersStartX = touch.clientX;
+  ordersStartY = touch.clientY;
+
+});
+
+
+yourOrdersPopupBox.addEventListener("touchend", function(e){
+
+  const touch = e.changedTouches[0];
+
+  const diffX =
+    touch.clientX - ordersStartX;
+
+  const diffY =
+    touch.clientY - ordersStartY;
+
+
+  if(
+    Math.abs(diffX) > 90 &&
+    Math.abs(diffY) < 70
+  ){
+    closeYourOrdersPopup();
+  }
+
+});
