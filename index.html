@@ -114,7 +114,7 @@ body {
   border-radius: 16px 16px 0 0;
   box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
   transition: bottom 0.3s ease;
-  z-index: 1999999;
+  z-index: 199999999999;
 }
 
 .sheet.open { bottom: 0; }
@@ -8271,11 +8271,11 @@ button{
   <i class="fa-solid fa-chevron-right profileArrow"></i>
 </div>
 
-  <div class="profileListItem">
-    <i class="fa-solid fa-location-dot profileListIcon"></i>
-    <span>Saved Address</span>
-    <i class="fa-solid fa-chevron-right profileArrow"></i>
-  </div>
+ <div class="profileListItem" onclick="openSavedAddressPopup()">
+  <i class="fa-solid fa-location-dot profileListIcon"></i>
+  <span>Saved Address</span>
+  <i class="fa-solid fa-chevron-right profileArrow"></i>
+</div>
 
   <div class="profileListItem" onclick="openTermsPopup()">
   <i class="fa-regular fa-file-lines profileListIcon"></i>
@@ -8972,6 +8972,47 @@ button{
   </div>
 
 </div>
+
+
+
+
+<!-- SAVED ADDRESS POPUP -->
+<div id="savedAddressPopup" class="savedAddressPopup">
+
+
+  <!-- HEADER -->
+  <div class="savedAddressHeader">
+
+    <button
+      class="savedAddressBackBtn"
+      onclick="closeSavedAddressPopup()"
+    >
+      ‹
+    </button>
+
+    <div class="savedAddressTitle">
+      Saved Address
+    </div>
+<button class="savedAddressAddBtn" onclick="openAddressSheetFromProfile()">
+  Add
+</button>
+
+  </div>
+
+
+  <!-- CONTENT -->
+  <div class="savedAddressContent">
+
+    <div id="savedAddressList"></div>
+
+  </div>
+
+
+</div>
+
+
+
+
 </div>
 
 <!--profile page ends-->
