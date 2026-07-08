@@ -83,8 +83,10 @@ cezooProfilePopup.addEventListener("touchstart", function(e){
   profileStartX = touch.clientX;
   profileStartY = touch.clientY;
 });
-
 cezooProfilePopup.addEventListener("touchend", function(e){
+
+  if(anyChildPopupOpen()) return;
+
   const touch = e.changedTouches[0];
 
   const diffX = touch.clientX - profileStartX;
@@ -330,3 +332,13 @@ sellerPopupBox.addEventListener("touchend", function(e){
   }
 
 });
+
+function anyChildPopupOpen(){
+  return (
+    document.getElementById("termsPopup")?.classList.contains("open") ||
+    document.getElementById("refundPopup")?.classList.contains("open") ||
+    document.getElementById("couponsPopup")?.classList.contains("open") ||
+    document.getElementById("notificationsPopup")?.classList.contains("open") ||
+    document.getElementById("sellerPopup")?.classList.contains("open")
+  );
+}
