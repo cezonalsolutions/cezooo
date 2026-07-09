@@ -1306,7 +1306,7 @@ function showHoursSheetFirst(direction = "right"){
 
       <p>1. Day Delivery has no delivery charges.</p>
 <p>2. If you order from morning 6 AM to evening 6 PM, your order will be delivered by 7 PM same day.</p>
-<p>3. If you order after 6 PM, your order will be delivered next day morning.</p>
+<p>3. If you order after 10 PM, your order will be delivered next day morning.</p>
 <p>4. Best for planned grocery orders.</p>
 <p>5. Fresh items are packed safely.</p>
 <p>6. Helpful when urgent delivery is not needed.</p>
