@@ -66,52 +66,227 @@ let deliveryPartnerTip =
 let selectedInstructions = JSON.parse(
   localStorage.getItem("cezooDeliveryInstructions") || "[]"
 );
+
 function getCartTotals(){
+
   const items = Object.values(cart || {});
 
   let mrpTotal = 0;
   let itemTotal = 0;
   let totalQty = 0;
 
+
   items.forEach(item => {
-    const qty = Number(item.qty || 0);
-    const mrp = Number(item.original_price || item.discount_price || 0);
-    const price = Number(item.discount_price || 0);
+
+    const qty =
+      Number(item.qty || 0);
+
+    const mrp =
+      Number(
+        item.original_price ||
+        item.discount_price ||
+        0
+      );
+
+    const price =
+      Number(
+        item.discount_price || 0
+      );
+
 
     mrpTotal += mrp * qty;
+
     itemTotal += price * qty;
+
     totalQty += qty;
+
   });
 
-const deliveryFee = 30;
 
-/* Handling Fee Logic */
-const handlingFee = 10;
+  /* =========================
+     DELIVERY MODE
+  ========================= */
 
-const deliveryPay = itemTotal >= 200 ? 0 : deliveryFee;
-/* ₹10 only if cart has MORE THAN 15 items */
-const handlingPay = totalQty > 15 ? handlingFee : 0;
+  const deliveryMode =
+    localStorage.getItem(
+      "cezooDeliveryMode"
+    ) || "instant";
 
-const toPay = itemTotal + deliveryPay + handlingPay + deliveryPartnerTip;
-const deliverySavings = deliveryPay === 0 ? deliveryFee : 0;
 
-const savings =
-  (mrpTotal - itemTotal) +
-  deliverySavings;
+  /* =========================
+     USER LOCATION
+  ========================= */
+
+  const userLat =
+    Number(
+      localStorage.getItem(
+        "cezooUserLat"
+      )
+    );
+
+
+  const userLon =
+    Number(
+      localStorage.getItem(
+        "cezooUserLon"
+      )
+    );
+
+
+  let deliveryDistance = null;
+
+  let deliveryFee = 35;
+
+
+  /* =========================
+     LOCATION AVAILABLE
+  ========================= */
+
+  if(
+    Number.isFinite(userLat) &&
+    Number.isFinite(userLon) &&
+    userLat !== 0 &&
+    userLon !== 0
+  ){
+
+    deliveryDistance =
+      calculateDeliveryDistanceKm(
+        CEZOO_STORE_LAT,
+        CEZOO_STORE_LON,
+        userLat,
+        userLon
+      );
+
+
+    /* ₹5 PER KM
+       METERS ALSO COUNT
+       MAXIMUM ₹100
+    */
+
+    const calculatedFee =
+      Math.round(
+        deliveryDistance * 5
+      );
+
+
+    deliveryFee =
+      Math.min(
+        100,
+        Math.max(1, calculatedFee)
+      );
+
+  }
+
+
+  /* =========================
+     DELIVERY PAYMENT
+  ========================= */
+
+  let deliveryPay = 0;
+
+
+  if(deliveryMode === "12_hours"){
+
+    // DAY DELIVERY ALWAYS FREE
+
+    deliveryPay = 0;
+
+  }else{
+
+    // INSTANT DELIVERY
+
+    if(itemTotal >= 300){
+
+      // ₹300+ FREE DELIVERY
+
+      deliveryPay = 0;
+
+    }else{
+
+      // LOCATION FEE OR ₹35 FALLBACK
+
+      deliveryPay = deliveryFee;
+
+    }
+
+  }
+
+
+  /* =========================
+     HANDLING FEE
+  ========================= */
+
+  const handlingFee = 10;
+
+  const handlingPay =
+    totalQty > 15
+      ? handlingFee
+      : 0;
+
+
+  /* =========================
+     TOTAL
+  ========================= */
+
+  const toPay =
+    itemTotal +
+    deliveryPay +
+    handlingPay +
+    deliveryPartnerTip;
+
+
+  /* =========================
+     DELIVERY SAVINGS
+  ========================= */
+
+  const deliverySavings =
+    deliveryPay === 0
+      ? deliveryFee
+      : 0;
+
+
+  const savings =
+    (mrpTotal - itemTotal) +
+    deliverySavings;
+
+
   return {
+
     items,
+
     mrpTotal,
+
     itemTotal,
+
     totalQty,
+
+    deliveryMode,
+
+    deliveryDistance,
+
     deliveryFee,
+
     handlingFee,
+
     deliveryPay,
+
     handlingPay,
+
     toPay,
+
     deliverySavings,
+
     savings
+
   };
+
 }
+
+
+
+
+
+
 
 function renderCartPage(){
   const box = document.getElementById("cartPageContent");
@@ -148,8 +323,15 @@ const deliveryTimeDisplay =
 
     <div class="deliveryInfoWrap">
 
-    <div class="deliveryTimeText" id="cartDeliverySchedule">
-  Delivering in 10-15 mins
+   <div
+  class="deliveryTimeText"
+  id="cartDeliverySchedule"
+>
+  ${
+    t.deliveryMode === "12_hours"
+      ? "Same-Day Delivery"
+      : "Delivering in 10-15 mins"
+  }
 </div>
 
       <div class="deliveryItemsText">
@@ -164,17 +346,23 @@ const deliveryTimeDisplay =
 
   <label class="deliveryModeToggle">
     <input
-      type="checkbox"
-      id="deliveryToggleBtn"
-      onchange="changeDeliveryMode(this)"
-    >
+  type="checkbox"
+  id="deliveryToggleBtn"
+  ${t.deliveryMode === "12_hours" ? "checked" : ""}
+  onchange="changeDeliveryMode(this)"
+>
     <span class="deliveryModeSlider"></span>
   </label>
 
-  <div id="deliveryModeText" class="deliveryModeText">
-    Instant
-  </div>
-
+  <div
+  id="deliveryModeText"
+  class="deliveryModeText
+  ${t.deliveryMode === "12_hours" ? "hours" : ""}"
+>
+  ${t.deliveryMode === "12_hours"
+    ? "Day Delivery"
+    : "Instant"}
+</div>
   <div class="deliveryHowWorks" onclick="openDeliveryHowWorks()">
     How it works?
   </div>
@@ -228,13 +416,55 @@ const deliveryTimeDisplay =
             <del>₹${t.mrpTotal}</del> ₹${t.itemTotal}
           </strong>
         </div>
+<div class="billRow deliveryFeeBillRow">
 
-     <div class="billRow">
-  <span>Delivery Fee</span>
+  <span>
+    Delivery Fee
+
+    ${
+      t.deliveryDistance !== null
+        ? `
+          <small class="deliveryDistanceSmall">
+  ${t.deliveryDistance.toFixed(2)} km
+</small>
+        `
+        : `
+          <small
+            class="deliveryDistanceSmall locationNeeded"
+            onclick="openSheet()"
+          >
+            Allow location for exact fee
+          </small>
+        `
+    }
+
+  </span>
+
+
   <strong>
-    ${t.deliveryPay === 0 ? `<del>₹${t.deliveryFee}</del> FREE` : `₹${t.deliveryFee}`}
+
+    ${
+      t.deliveryPay === 0
+
+        ? `<del>₹${t.deliveryFee}</del> FREE`
+
+        : `₹${t.deliveryFee}`
+    }
+
   </strong>
+
 </div>
+
+
+
+
+
+
+
+
+
+
+
    <div class="billRow">
   <span>Handling Fee</span>
   <strong>
@@ -1125,27 +1355,102 @@ function confirmLionSchedule(){
 
 
 function changeDeliveryMode(toggle){
-  const mainText = document.getElementById("cartDeliverySchedule");
-  const modeText = document.getElementById("deliveryModeText");
+
+  const mainText =
+    document.getElementById("cartDeliverySchedule");
+
+  const modeText =
+    document.getElementById("deliveryModeText");
+
 
   if(toggle.checked){
-    localStorage.setItem("cezooDeliveryMode", "12_hours");
 
-    if(mainText) mainText.innerText = "Delivery within 12 hours";
+    // DAY DELIVERY
+    localStorage.setItem(
+      "cezooDeliveryMode",
+      "12_hours"
+    );
+
+    if(mainText){
+      mainText.innerText =
+        "Delivery within the same day";
+    }
 
     if(modeText){
-      modeText.innerText = "12 Hours";
+      modeText.innerText = "Day Delivery";
       modeText.classList.add("hours");
     }
 
-  }else{
-    localStorage.setItem("cezooDeliveryMode", "instant");
 
-    if(mainText) mainText.innerText = "Delivering in 10-15 mins";
+  }else{
+
+    // INSTANT DELIVERY
+    localStorage.setItem(
+      "cezooDeliveryMode",
+      "instant"
+    );
+
+    if(mainText){
+      mainText.innerText =
+        "Delivering in 10-15 mins";
+    }
 
     if(modeText){
       modeText.innerText = "Instant";
       modeText.classList.remove("hours");
     }
+
   }
+
+
+  // UPDATE DELIVERY FEE + TO PAY + SAVINGS
+  renderCartPage();
+
+}
+
+/* =========================
+   STORE LOCATION
+========================= */
+
+const CEZOO_STORE_LAT = 16.7475764;
+const CEZOO_STORE_LON = 81.682095;
+
+
+/* =========================
+   DISTANCE CALCULATION
+========================= */
+
+function calculateDeliveryDistanceKm(
+  lat1,
+  lon1,
+  lat2,
+  lon2
+){
+
+  const R = 6371;
+
+  const dLat =
+    (lat2 - lat1) * Math.PI / 180;
+
+  const dLon =
+    (lon2 - lon1) * Math.PI / 180;
+
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+
+    Math.cos(lat1 * Math.PI / 180) *
+    Math.cos(lat2 * Math.PI / 180) *
+
+    Math.sin(dLon / 2) ** 2;
+
+
+  const c =
+    2 * Math.atan2(
+      Math.sqrt(a),
+      Math.sqrt(1 - a)
+    );
+
+
+  return R * c;
 }
