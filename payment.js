@@ -910,5 +910,486 @@ document
 
 });
 
-  
+function openDeliveryHowWorks(){
+  createHoursSheet();
 
+  const sheet = document.getElementById("hoursSheet");
+  sheet.classList.add("show");
+
+  showHoursSheetFirst();
+}
+
+function closeHoursSheet(){
+  document.getElementById("hoursSheet")?.classList.remove("show");
+}
+
+
+let hoursSheetPage = 1;
+
+let hoursTouchStartX = 0;
+let hoursTouchEndX = 0;
+
+
+function createHoursSheet(){
+
+  if(document.getElementById("hoursSheet")) return;
+
+
+  const style = document.createElement("style");
+
+  style.innerHTML = `
+
+    .hoursSheet{
+      position:fixed;
+      inset:0;
+      z-index:999999999;
+      display:none;
+    }
+
+
+    .hoursSheet.show{
+      display:block;
+    }
+
+
+    .hoursSheetOverlay{
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,.45);
+    }
+
+
+    .hoursSheetBox{
+      position:absolute;
+      left:10px;
+      right:10px;
+      bottom:0;
+
+      background:#fff;
+
+      border-radius:24px 24px 0 0;
+
+      padding:22px 16px 24px;
+
+      text-align:center;
+
+      animation:hoursSheetUp .25s ease;
+
+      overflow:hidden;
+    }
+
+
+    @keyframes hoursSheetUp{
+
+      from{
+        transform:translateY(100%);
+      }
+
+      to{
+        transform:translateY(0);
+      }
+
+    }
+
+
+    .hoursSheetClose{
+
+      position:absolute;
+
+      right:14px;
+      top:12px;
+
+      width:30px;
+      height:30px;
+
+      border:none;
+      border-radius:50%;
+
+      background:#f2f2f2;
+
+      color:#222;
+
+      font-size:20px;
+      font-weight:800;
+
+      z-index:10;
+    }
+
+
+    .hoursSheetContent{
+      width:100%;
+      touch-action:pan-y;
+    }
+
+
+    .hoursSheetImg{
+
+      width:68px;
+      height:68px;
+
+      object-fit:contain;
+
+      display:block;
+
+      margin:8px auto 10px;
+    }
+
+
+    .hoursSheetTitle{
+
+      margin:0 0 12px;
+
+      font-size:16px;
+      font-weight:900;
+
+      color:#111;
+    }
+
+
+    .hoursSheetPoints{
+
+      display:flex;
+
+      flex-direction:column;
+
+      gap:7px;
+
+      text-align:left;
+    }
+
+
+    .hoursSheetPoints p{
+
+      margin:0;
+
+      padding:9px 11px;
+
+      background:#f7f7f7;
+
+      border-radius:10px;
+
+      font-size:12.5px;
+      font-weight:650;
+
+      color:#555;
+
+      line-height:1.32;
+    }
+
+
+    .hoursSlideLeft{
+      animation:hoursSlideLeft .25s ease;
+    }
+
+
+    @keyframes hoursSlideLeft{
+
+      from{
+        opacity:0;
+        transform:translateX(50px);
+      }
+
+      to{
+        opacity:1;
+        transform:translateX(0);
+      }
+
+    }
+
+
+    .hoursSlideRight{
+      animation:hoursSlideRight .25s ease;
+    }
+
+
+    @keyframes hoursSlideRight{
+
+      from{
+        opacity:0;
+        transform:translateX(-50px);
+      }
+
+      to{
+        opacity:1;
+        transform:translateX(0);
+      }
+
+    }
+
+
+    .hoursDots{
+
+      display:flex;
+
+      align-items:center;
+
+      justify-content:center;
+
+      gap:6px;
+
+      margin-top:14px;
+    }
+
+
+    .hoursDot{
+
+      width:6px;
+      height:6px;
+
+      border-radius:50%;
+
+      background:#d0d0d0;
+
+      transition:.2s ease;
+    }
+
+
+    .hoursDot.active{
+
+      width:18px;
+
+      border-radius:10px;
+
+      background:#111;
+    }
+
+  `;
+
+
+  document.head.appendChild(style);
+
+
+  document.body.insertAdjacentHTML("beforeend", `
+
+    <div id="hoursSheet" class="hoursSheet">
+
+      <div
+        class="hoursSheetOverlay"
+        onclick="closeHoursSheet()">
+      </div>
+
+
+      <div class="hoursSheetBox">
+
+        <button
+          class="hoursSheetClose"
+          onclick="closeHoursSheet()">
+          ×
+        </button>
+
+
+        <div
+          id="hoursSheetContent"
+          class="hoursSheetContent">
+        </div>
+
+
+        <div class="hoursDots">
+
+          <span
+            id="hoursDot1"
+            class="hoursDot active">
+          </span>
+
+          <span
+            id="hoursDot2"
+            class="hoursDot">
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `);
+
+
+  const content =
+    document.getElementById("hoursSheetContent");
+
+
+  content.addEventListener(
+    "touchstart",
+    function(e){
+
+      hoursTouchStartX =
+        e.changedTouches[0].screenX;
+
+    },
+    {passive:true}
+  );
+
+
+  content.addEventListener(
+    "touchend",
+    function(e){
+
+      hoursTouchEndX =
+        e.changedTouches[0].screenX;
+
+      handleHoursSwipe();
+
+    },
+    {passive:true}
+  );
+
+}
+
+
+function handleHoursSwipe(){
+
+  const difference =
+    hoursTouchStartX - hoursTouchEndX;
+
+
+  // SWIPE LEFT
+
+  if(difference > 50){
+
+    if(hoursSheetPage === 1){
+
+      showHoursSheetSecond("left");
+
+    }
+
+  }
+
+
+  // SWIPE RIGHT
+
+  if(difference < -50){
+
+    if(hoursSheetPage === 2){
+
+      showHoursSheetFirst("right");
+
+    }
+
+  }
+
+}
+
+
+function showHoursSheetFirst(direction = "right"){
+
+  hoursSheetPage = 1;
+
+
+  const content =
+    document.getElementById("hoursSheetContent");
+
+
+  content.className =
+    "hoursSheetContent " +
+    (
+      direction === "right"
+      ? "hoursSlideRight"
+      : "hoursSlideLeft"
+    );
+
+
+  content.innerHTML = `
+
+    <img
+      src="banner/hours.png"
+      class="hoursSheetImg"
+      alt="">
+
+
+    <h3 class="hoursSheetTitle">
+      Day Delivery
+    </h3>
+
+
+    <div class="hoursSheetPoints">
+
+      <p>1. Day Delivery has no delivery charges.</p>
+<p>2. If you order from morning 6 AM to evening 6 PM, your order will be delivered by 7 PM same day.</p>
+<p>3. If you order after 6 PM, your order will be delivered next day morning.</p>
+<p>4. Best for planned grocery orders.</p>
+<p>5. Fresh items are packed safely.</p>
+<p>6. Helpful when urgent delivery is not needed.</p>
+
+    </div>
+
+  `;
+
+
+  updateHoursDots();
+
+}
+
+
+function showHoursSheetSecond(direction = "left"){
+
+  hoursSheetPage = 2;
+
+
+  const content =
+    document.getElementById("hoursSheetContent");
+
+
+  content.className =
+    "hoursSheetContent " +
+    (
+      direction === "left"
+      ? "hoursSlideLeft"
+      : "hoursSlideRight"
+    );
+
+
+  content.innerHTML = `
+
+    <img
+      src="myimage.png"
+      class="hoursSheetImg"
+      alt="">
+
+
+    <h3 class="hoursSheetTitle">
+      Instant Delivery
+    </h3>
+
+
+    <div class="hoursSheetPoints">
+
+     <p>1. Instant Delivery is for quick and urgent orders.</p>
+<p>2. Delivery charges may apply for instant orders.</p>
+<p>3. Shop above ₹300 and get free delivery.</p>
+<p>4. Your order will be prepared immediately.</p>
+<p>5. Delivery time is usually 10–15 minutes.</p>
+<p>6. Time may change based on distance and delivery partner availability.</p>
+
+    </div>
+
+  `;
+
+
+  updateHoursDots();
+
+}
+
+
+function updateHoursDots(){
+
+  const dot1 =
+    document.getElementById("hoursDot1");
+
+  const dot2 =
+    document.getElementById("hoursDot2");
+
+
+  if(hoursSheetPage === 1){
+
+    dot1.classList.add("active");
+    dot2.classList.remove("active");
+
+  }else{
+
+    dot1.classList.remove("active");
+    dot2.classList.add("active");
+
+  }
+
+}
