@@ -10,8 +10,8 @@ function hideCartLocationBar(){
     ?.classList.remove("show");
 }
 let cartMap;
-let cartMapLat = Number(localStorage.getItem("cezooUserLat")) || 16.5062;
-let cartMapLng = Number(localStorage.getItem("cezooUserLon")) || 81.5212;
+let cartMapLat = 16.5062;
+let cartMapLng = 81.5212;
 let cartMapAddress = "";
 let cartMapSearchTimer;
 
@@ -78,6 +78,7 @@ async function getCartMapAddress(lat,lng){
 }
 
 function confirmCartMapLocation(){
+
   localStorage.setItem("cezooUserLat", cartMapLat);
   localStorage.setItem("cezooUserLon", cartMapLng);
 
@@ -89,9 +90,7 @@ function confirmCartMapLocation(){
     document.getElementById("cartHeaderStreet").innerText = cartMapAddress;
   }
 
-  document
-    .querySelector(".cezooMapNoticeBar")
-    ?.classList.add("locationReady");
+  showCartLocationBar();
 
   if(document.getElementById("cartPagePopup")?.classList.contains("open")){
     renderCartPage();
@@ -99,6 +98,9 @@ function confirmCartMapLocation(){
 
   closeCartLocationMap();
 }
+document.addEventListener("DOMContentLoaded",()=>{
+  hideCartLocationBar();
+});
 
 function cartUseCurrentLocation(){
   navigator.geolocation.getCurrentPosition(pos=>{
@@ -127,8 +129,10 @@ document.addEventListener("DOMContentLoaded",()=>{
 
       cartMapLat = Number(data[0].lat);
       cartMapLng = Number(data[0].lon);
-      cartMap.flyTo([cartMapLat, cartMapLng],17);
-      getCartMapAddress(cartMapLat, cartMapLng);
+    if(cartMap){
+  cartMap.flyTo([cartMapLat, cartMapLng],17);
+  getCartMapAddress(cartMapLat, cartMapLng);
+}
     },600);
   });
 });
