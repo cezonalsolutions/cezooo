@@ -4960,14 +4960,8 @@ button{
   }
 
 }
-.cezooMapNoticeBar{
-  bottom:90px;
-  display:none;
-}
 
-.cezooMapNoticeBar.show{
-  display:flex;
-}
+
 .cezooMapNoticeBar{
   position:absolute;
   left:0;
@@ -4980,12 +4974,17 @@ button{
   background:#fff;
   border-top:1px solid #eee;
 
-  display:flex;
+  display:none;
+
   align-items:center;
   justify-content:space-between;
   gap:10px;
 
   z-index:50;
+}
+
+.cezooMapNoticeBar.show{
+  display:flex;
 }
 
 .cezooMapNoticeInfo{
