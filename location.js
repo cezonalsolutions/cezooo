@@ -102,14 +102,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   hideCartLocationBar();
 });
 
-function cartUseCurrentLocation(){
-  navigator.geolocation.getCurrentPosition(pos=>{
-    cartMapLat = pos.coords.latitude;
-    cartMapLng = pos.coords.longitude;
-    cartMap.setView([cartMapLat, cartMapLng],17);
-    getCartMapAddress(cartMapLat, cartMapLng);
-  });
-}
+
 
 document.addEventListener("DOMContentLoaded",()=>{
   const input = document.getElementById("cartMapSearchInput");
