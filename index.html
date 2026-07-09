@@ -9426,30 +9426,83 @@ function closeSheet() {
 
 /* ===== ASYNC LOCATION HANDLER ===== */
 async function handleLocation(lat, lng) {
+
   try {
+
     clearTimeout(locationTimeout);
 
     const res = await fetch(
       `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`,
-      { headers: { "Accept": "application/json" } }
+      {
+        headers: {
+          "Accept": "application/json"
+        }
+      }
     );
 
     const result = await res.json();
-    const a = result.address || {};
-saveLocation(result.display_name, lat, lng);
-    villageEl.textContent =
-      a.village || a.town || a.city || "Selected";
 
-    streetEl.textContent = limitWords(
-      result.display_name || "",
-      4
+    const a = result.address || {};
+
+
+    /* SAVE RECENT LOCATION */
+    saveLocation(
+      result.display_name,
+      lat,
+      lng
     );
 
+
+    /* SAVE CURRENT DELIVERY LOCATION */
+    localStorage.setItem(
+      "cezooUserLat",
+      lat
+    );
+
+    localStorage.setItem(
+      "cezooUserLon",
+      lng
+    );
+
+
+    /* UPDATE CART IF OPEN */
+    if(
+      document
+        .getElementById("cartPagePopup")
+        ?.classList.contains("open")
+    ){
+      renderCartPage();
+    }
+
+
+    /* SHOW VILLAGE */
+    villageEl.textContent =
+      a.village ||
+      a.town ||
+      a.city ||
+      "Selected";
+
+
+    /* SHOW ADDRESS */
+    streetEl.textContent =
+      limitWords(
+        result.display_name || "",
+        4
+      );
+
+
   } catch (err) {
-    villageEl.textContent = "Location error";
-    streetEl.textContent = "Try again";
+
+    villageEl.textContent =
+      "Location error";
+
+    streetEl.textContent =
+      "Try again";
+
     console.error(err);
+
   }
+
 }
 
 
