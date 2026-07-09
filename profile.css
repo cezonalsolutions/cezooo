@@ -1364,4 +1364,43 @@
   color:#777;
   text-decoration:underline;
   line-height:10px;
+}.cancelDeliveryChargeText{
+  margin-top:-4px;
+  margin-bottom:10px;
+  text-align:right;
+  font-size:11.5px;
+  font-weight:800;
+  color:#10b84f;
+  cursor:pointer;
+}.cancelDeliveryChargeText{
+  margin-top:-4px;
+  margin-bottom:10px;
+  text-align:right;
+  font-size:11.5px;
+  font-weight:800;
+  color:#10b84f;
+  cursor:pointer;
+}
+.deliveryFeeBillRow{
+  align-items:flex-start;
+}
+
+.deliveryFeeBillRow > span{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+
+.deliveryDistanceSmall{
+  display:block;
+  font-size:10px;
+  font-weight:500;
+  color:#888;
+  line-height:1.2;
+}
+
+.deliveryDistanceSmall.locationNeeded{
+  color:#10b84f;
+  font-weight:700;
+  cursor:pointer;
 }
