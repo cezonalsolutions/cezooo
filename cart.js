@@ -60,8 +60,12 @@ function showCartPageShimmer(){
     </div>
   `;
 }
-let deliveryPartnerTip = 0;
-let selectedInstructions = [];
+let deliveryPartnerTip =
+  Number(localStorage.getItem("cezooDeliveryPartnerTip")) || 0;
+
+let selectedInstructions = JSON.parse(
+  localStorage.getItem("cezooDeliveryInstructions") || "[]"
+);
 function getCartTotals(){
   const items = Object.values(cart || {});
 
@@ -79,20 +83,21 @@ function getCartTotals(){
     totalQty += qty;
   });
 
-const deliveryFee = 35;
+const deliveryFee = 30;
 
 /* Handling Fee Logic */
 const handlingFee = 10;
 
-const deliveryPay = 0;
-
+const deliveryPay = itemTotal >= 200 ? 0 : deliveryFee;
 /* ₹10 only if cart has MORE THAN 15 items */
 const handlingPay = totalQty > 15 ? handlingFee : 0;
 
-const toPay = itemTotal + handlingPay + deliveryPartnerTip;
+const toPay = itemTotal + deliveryPay + handlingPay + deliveryPartnerTip;
+const deliverySavings = deliveryPay === 0 ? deliveryFee : 0;
+
 const savings =
   (mrpTotal - itemTotal) +
-  deliveryFee;
+  deliverySavings;
   return {
     items,
     mrpTotal,
@@ -103,6 +108,7 @@ const savings =
     deliveryPay,
     handlingPay,
     toPay,
+    deliverySavings,
     savings
   };
 }
@@ -142,8 +148,8 @@ const deliveryTimeDisplay =
 
     <div class="deliveryInfoWrap">
 
-     <div class="deliveryTimeText">
-  ${deliveryTimeDisplay}
+    <div class="deliveryTimeText" id="cartDeliverySchedule">
+  Delivering in 10-15 mins
 </div>
 
       <div class="deliveryItemsText">
@@ -154,9 +160,25 @@ const deliveryTimeDisplay =
 
   </div>
 
-  <div class="scheduleBtn" onclick="openLionSheet()">
-  <i class="fa-regular fa-calendar"></i>
-  <span>Schedule</span>
+ <div class="deliveryModeBox">
+
+  <label class="deliveryModeToggle">
+    <input
+      type="checkbox"
+      id="deliveryToggleBtn"
+      onchange="changeDeliveryMode(this)"
+    >
+    <span class="deliveryModeSlider"></span>
+  </label>
+
+  <div id="deliveryModeText" class="deliveryModeText">
+    Instant
+  </div>
+
+  <div class="deliveryHowWorks" onclick="openDeliveryHowWorks()">
+    How it works?
+  </div>
+
 </div>
 </div>
 
@@ -210,7 +232,7 @@ const deliveryTimeDisplay =
      <div class="billRow">
   <span>Delivery Fee</span>
   <strong>
-    <del>₹${t.deliveryFee}</del> FREE
+    ${t.deliveryPay === 0 ? `<del>₹${t.deliveryFee}</del> FREE` : `₹${t.deliveryFee}`}
   </strong>
 </div>
    <div class="billRow">
@@ -343,10 +365,12 @@ ${deliveryPartnerTip > 0 ? `
   <strong>₹${t.mrpTotal - t.itemTotal}</strong>
 </div>
 
-<div class="savingLine">
-  <span>FREE delivery savings</span>
-  <strong>₹${t.deliveryFee}</strong>
-</div>
+${t.deliverySavings > 0 ? `
+  <div class="savingLine">
+    <span>FREE delivery savings</span>
+    <strong>₹${t.deliverySavings}</strong>
+  </div>
+` : ""}
       </div>
 
       
@@ -498,18 +522,30 @@ function showTipSection(type, btn){
 }
 
 function toggleDeliveryTip(amount){
-  deliveryPartnerTip = deliveryPartnerTip === amount ? 0 : amount;
+  deliveryPartnerTip =
+    deliveryPartnerTip === amount ? 0 : amount;
+
+  localStorage.setItem(
+    "cezooDeliveryPartnerTip",
+    deliveryPartnerTip
+  );
+
   renderCartPage();
 }
-
 function toggleInstruction(btn, text){
   btn.classList.toggle("active");
 
   if(selectedInstructions.includes(text)){
-    selectedInstructions = selectedInstructions.filter(x => x !== text);
+    selectedInstructions =
+      selectedInstructions.filter(x => x !== text);
   }else{
     selectedInstructions.push(text);
   }
+
+  localStorage.setItem(
+    "cezooDeliveryInstructions",
+    JSON.stringify(selectedInstructions)
+  );
 }
 
 /* DELIVERY SAFETY BOTTOM SHEET - JS ONLY */
@@ -643,8 +679,6 @@ function closeDeliverySafety(){
   document.getElementById("deliverySafetySheet")?.classList.remove("show");
 }
 
-let lionSelectedDate = "";
-let lionSelectedTime = "";
 
 function createLionSheet(){
   if(document.getElementById("lionSheet")) return;
@@ -1088,19 +1122,30 @@ function confirmLionSchedule(){
 
   closeLionSheet();
 }
-function setLionInstantDelivery(){
 
-  localStorage.removeItem("cezooDeliverySchedule");
 
-  lionSelectedDate = "";
-  lionSelectedTime = "";
+function changeDeliveryMode(toggle){
+  const mainText = document.getElementById("cartDeliverySchedule");
+  const modeText = document.getElementById("deliveryModeText");
 
-  const scheduleText = document.querySelector(".scheduleBtn span");
-  if(scheduleText){
-    scheduleText.innerText = "Schedule";
+  if(toggle.checked){
+    localStorage.setItem("cezooDeliveryMode", "12_hours");
+
+    if(mainText) mainText.innerText = "Delivery within 12 hours";
+
+    if(modeText){
+      modeText.innerText = "12 Hours";
+      modeText.classList.add("hours");
+    }
+
+  }else{
+    localStorage.setItem("cezooDeliveryMode", "instant");
+
+    if(mainText) mainText.innerText = "Delivering in 10-15 mins";
+
+    if(modeText){
+      modeText.innerText = "Instant";
+      modeText.classList.remove("hours");
+    }
   }
-
-  renderCartPage();
-
-  closeLionSheet();
 }
