@@ -4960,6 +4960,69 @@ button{
   }
 
 }
+.cezooMapNoticeBar{
+  bottom:90px;
+  display:none;
+}
+
+.cezooMapNoticeBar.show{
+  display:flex;
+}
+.cezooMapNoticeBar{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:90px;
+
+  height:54px;
+  padding:7px 14px;
+
+  background:#fff;
+  border-top:1px solid #eee;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+
+  z-index:50;
+}
+
+.cezooMapNoticeInfo{
+  flex:1;
+  min-width:0;
+}
+
+.cezooMapNoticeHeading{
+  font-size:12px;
+  line-height:14px;
+  font-weight:700;
+  color:#222;
+}
+
+.cezooMapNoticeText{
+  font-size:10px;
+  line-height:13px;
+  color:#777;
+
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.cezooMapNoticeAction{
+  width:64px;
+  height:32px;
+
+  border:1px solid #ddd;
+  border-radius:8px;
+
+  background:#f7f7f7;
+  color:#222;
+
+  font-size:11px;
+  font-weight:700;
+}
 </style>
 <link rel="stylesheet" href="profile.css">
 <link rel="stylesheet" href="xerox.css">
@@ -7796,7 +7859,16 @@ button{
   </div>
 
   <div id="cartPageContent" class="cartPageContent"></div>
+<div class="cezooMapNoticeBar">
+  <div class="cezooMapNoticeInfo">
+    <div class="cezooMapNoticeHeading">Add your location</div>
+    <div class="cezooMapNoticeText">Ensure smooth delivery to your doorstep</div>
+  </div>
 
+<button class="cezooMapNoticeAction" onclick="openCartLocationMap()">
+  Add
+</button>
+</div>
   <div class="cartPayBar">
     <div class="cartPayAmount">
       <span>To Pay</span>
@@ -7814,7 +7886,42 @@ button{
 
 </div>
 
+<div class="cartMapPage" id="cartMapPage">
+  <div id="cartRealMap"></div>
 
+  <div class="cartMapTopArea">
+    <div class="cartMapSearchBox">
+      <button class="cartMapBackBtn" onclick="closeCartLocationMap()">‹</button>
+
+      <input
+        class="cartMapSearchInput"
+        id="cartMapSearchInput"
+        type="text"
+        placeholder="Search village, city or pincode"
+        autocomplete="off">
+    </div>
+  </div>
+
+  <div class="cartMapCenterPin">
+    <div class="cartPinHead"><div class="cartPinDot"></div></div>
+    <div class="cartPinShadow"></div>
+  </div>
+
+  <div class="cartDragText">Drag map to select your location</div>
+
+  <button class="cartCurrentLocationBtn" onclick="cartUseCurrentLocation()">◎</button>
+
+  <div class="cartMapBottomBox">
+    <div class="selectedLocationTitle">Selected location</div>
+    <div class="selectedLocationAddress" id="cartSelectedAddress">
+      Move the map to choose your exact delivery location
+    </div>
+
+    <button class="confirmLocationButton" onclick="confirmCartMapLocation()">
+      Confirm location
+    </button>
+  </div>
+</div>
 <div id="xeroxPopup" class="xeroxPopup">
 
       <div class="xeroxSheet">
@@ -9369,8 +9476,12 @@ button{
 <script src="login.js"></script>
 <script src="xerox.js"></script>
 <script src="cart.js"></script>
+<script src="location.js"></script>
 <script src="profile.js"></script>
 <script src="payment.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
@@ -9463,7 +9574,9 @@ async function handleLocation(lat, lng) {
       "cezooUserLon",
       lng
     );
-
+document
+  .querySelector(".cezooMapNoticeBar")
+  ?.classList.add("locationReady");
 
     /* UPDATE CART IF OPEN */
     if(
