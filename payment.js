@@ -1342,7 +1342,7 @@ function showHoursSheetSecond(direction = "left"){
   content.innerHTML = `
 
     <img
-      src="myimage.png"
+      src="banner/hours.png"
       class="hoursSheetImg"
       alt="">
 
