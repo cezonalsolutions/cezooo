@@ -7909,7 +7909,6 @@ button{
 
   <div class="cartDragText">Drag map to select your location</div>
 
-  <button class="cartCurrentLocationBtn" onclick="cartUseCurrentLocation()">◎</button>
 
   <div class="cartMapBottomBox">
     <div class="selectedLocationTitle">Selected location</div>
@@ -9536,8 +9535,7 @@ function closeSheet() {
 }
 
 /* ===== ASYNC LOCATION HANDLER ===== */
-async function handleLocation(lat, lng) {
-
+async function handleLocation(lat, lng, userChanged = false) {
   try {
 
     clearTimeout(locationTimeout);
@@ -9574,7 +9572,11 @@ async function handleLocation(lat, lng) {
       "cezooUserLon",
       lng
     );
-
+if(userChanged){
+  showCartLocationBar();
+}else{
+  hideCartLocationBar();
+}
 
     /* UPDATE CART IF OPEN */
     if(
@@ -9663,7 +9665,7 @@ data.forEach(item => {
   div.textContent = item.display_name;
 
   div.onclick = () => {
-    handleLocation(item.lat, item.lon);
+    handleLocation(item.lat, item.lon, true);
     closeSheet();
   };
 
@@ -9716,7 +9718,7 @@ function renderRecent() {
     div.textContent = loc.name;
 
     div.onclick = () => {
-      handleLocation(loc.lat, loc.lon);
+      handleLocation(loc.lat, loc.lon, true);
       closeSheet();
     };
 
