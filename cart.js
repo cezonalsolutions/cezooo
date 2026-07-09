@@ -1454,3 +1454,4 @@ function calculateDeliveryDistanceKm(
 
   return R * c;
 }
+
