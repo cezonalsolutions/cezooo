@@ -2,12 +2,43 @@ let gameTimer = null;
 let waterWaveTick = 0;
 const CEZOO_MAX_GAME_ATTEMPTS = 3;
 
+const CEZOO_ATTEMPT_RESET_TIME =
+  5 * 60 * 60 * 1000; // 5 hours
+
 function getCezooGameAttempts(){
+
+  const now = Date.now();
+
+  const lastReset = Number(
+    localStorage.getItem("cezooGameLastReset") || 0
+  );
+
+  /*
+    First time opening the game,
+    or 5 hours completed
+  */
+  if(
+    !lastReset ||
+    now - lastReset >= CEZOO_ATTEMPT_RESET_TIME
+  ){
+
+    localStorage.setItem(
+      "cezooGameAttempts",
+      "0"
+    );
+
+    localStorage.setItem(
+      "cezooGameLastReset",
+      String(now)
+    );
+
+    return 0;
+  }
+
   return Number(
     localStorage.getItem("cezooGameAttempts") || 0
   );
 }
-
 function getCezooAttemptsLeft(){
 
   const left = Math.max(
@@ -400,7 +431,14 @@ function resetGame(){
   displayScore = 0;
   loudFrames = 0;
   timeLeft = 15;
+smoothMicVolume = 0;
+previousMicVolume = 0;
+micSpikeFrames = 0;
 
+if(voiceAnimationFrame){
+  cancelAnimationFrame(voiceAnimationFrame);
+  voiceAnimationFrame = null;
+}
   scoreEl.innerText = "0";
   scoreEl.classList.remove("finalZoom");
   timerEl.innerText = "15s";
@@ -448,6 +486,7 @@ function startTimer(){
   },1000);
 }
 function getDifficultyLimit(){
+
   if(currentScore < 35){
     difficulty = "easy";
     return 55;
@@ -466,179 +505,375 @@ function getDifficultyLimit(){
   difficulty = "superHard";
   return 100;
 }
+
+
 let loudFrames = 0;
+let voiceAnimationFrame = null;
+let smoothMicVolume = 0;
+let previousMicVolume = 0;
+let micSpikeFrames = 0;
 
 function detectVoice(){
-  if(!running) return;
-  if(!analyser || !dataArray) return;
+
+  if(!running){
+    voiceAnimationFrame = null;
+    return;
+  }
+
+  if(!analyser || !dataArray){
+    voiceAnimationFrame = null;
+    return;
+  }
 
   analyser.getByteFrequencyData(dataArray);
+
 
   let total = 0;
   let strongBins = 0;
   let veryStrongBins = 0;
+  let extremeBins = 0;
+
 
   for(let i = 0; i < dataArray.length; i++){
+
     const value = dataArray[i];
 
     total += value;
 
-    if(value > 105){
+
+    if(value > 115){
       strongBins++;
     }
 
-    if(value > 150){
+
+    if(value > 165){
       veryStrongBins++;
     }
+
+
+    if(value > 205){
+      extremeBins++;
+    }
+
   }
 
-  const volume = total / dataArray.length;
 
-  /* Real loud sound must continue for a few frames */
+  const rawVolume =
+  total / dataArray.length;
+
+/* Smooth sudden microphone changes */
+smoothMicVolume =
+  smoothMicVolume === 0
+    ? rawVolume
+    : (smoothMicVolume * 0.82) + (rawVolume * 0.18);
+
+/* Detect impossible sudden spikes */
+const suddenJump =
+  rawVolume - previousMicVolume;
+
+previousMicVolume = rawVolume;
+
+if(suddenJump > 30){
+
+  micSpikeFrames++;
+
+}else{
+
+  micSpikeFrames =
+    Math.max(0, micSpikeFrames - 1);
+
+}
+
+/*
+  Ignore a single-frame microphone glitch.
+  Accept it only if loud input continues.
+*/
+const volume =
+  micSpikeFrames === 1
+    ? smoothMicVolume
+    : rawVolume;
+
+
+  /*
+    SHOUT LEVEL CHECKS
+  */
+
   const isRealShout =
-    volume > 32 &&
-    strongBins > 10 &&
-    veryStrongBins > 2;
+    volume > 39 &&
+    strongBins > 15 &&
+    veryStrongBins > 4;
+
+
+  const isVeryStrongShout =
+    volume > 58 &&
+    strongBins > 22 &&
+    veryStrongBins > 9;
+
+
+  const isExtremeShout =
+    volume > 76 &&
+    strongBins > 30 &&
+    veryStrongBins > 14 &&
+    extremeBins > 4;
+
+
+  /*
+    USER MUST HOLD THE SHOUT
+  */
 
   if(isRealShout){
-    loudFrames = Math.min(loudFrames + 1, 20);
+
+    loudFrames =
+      Math.min(
+        loudFrames + 1,
+        30
+      );
+
   }else{
-    loudFrames = Math.max(loudFrames - 2, 0);
-  }
 
-
-  /* NORMAL SOUND / NOISE */
-  if(volume < 28 || strongBins < 6){
-
-    targetScore = Math.max(0, targetScore - 4);
+    loudFrames =
+      Math.max(
+        loudFrames - 3,
+        0
+      );
 
   }
 
-  /* VOICE, BUT NOT STRONG SHOUT */
-  else if(!isRealShout || loudFrames < 3){
+
+  /*
+    BACKGROUND NOISE
+  */
+
+  if(
+    volume < 30 ||
+    strongBins < 7
+  ){
+
+    targetScore =
+      Math.max(
+        0,
+        targetScore - 5
+      );
+
+  }
+
+
+  /*
+    NORMAL VOICE OR MODERATE SHOUT
+
+    Maximum score: 44
+    This cannot win because winning starts at 50.
+  */
+
+  else if(
+    !isRealShout ||
+    loudFrames < 6
+  ){
 
     targetScore = Math.min(
-      48,
-      Math.max(10, Math.floor((volume - 22) * 1.35))
+      44,
+      Math.max(
+        5,
+        Math.floor(
+          (volume - 27) * 1.05
+        )
+      )
     );
 
   }
 
-  /* REAL SHOUT */
+
+  /*
+    PROPER SUSTAINED SHOUT
+
+    Score range: 50–67
+  */
+
+  else if(
+    isRealShout &&
+    !isVeryStrongShout
+  ){
+
+    targetScore = Math.min(
+      67,
+      Math.floor(
+        50 +
+        ((volume - 39) * 0.72)
+      )
+    );
+
+  }
+
+
+  /*
+    STRONG SUSTAINED SHOUT
+
+    Score range: 68–85
+  */
+
+  else if(
+    isVeryStrongShout &&
+    !isExtremeShout
+  ){
+
+    targetScore = Math.min(
+      85,
+      Math.floor(
+        68 +
+        ((volume - 58) * 0.68)
+      )
+    );
+
+  }
+
+
+  /*
+    EXTREME SUSTAINED SHOUT
+
+    Score range: 86–100
+  */
+
   else{
-
-    let calculatedScore;
-
-    if(volume < 42){
-
-      /* 50–59 */
-      calculatedScore =
-        50 + ((volume - 32) * 0.9);
-
-    }
-    else if(volume < 55){
-
-      /* 60–69 */
-      calculatedScore =
-        60 + ((volume - 42) * 0.75);
-
-    }
-    else if(volume < 72){
-
-      /* 70–84 */
-      calculatedScore =
-        70 + ((volume - 55) * 0.85);
-
-    }
-    else{
-
-      /* 85–100 */
-      calculatedScore =
-        85 + ((volume - 72) * 0.55);
-
-    }
 
     targetScore = Math.min(
       100,
-      Math.floor(calculatedScore)
+      Math.floor(
+        86 +
+        ((volume - 76) * 0.42)
+      )
     );
+
   }
 
 
-  /* Smooth movement */
+  /*
+    SCORE MOVEMENT
+
+    Rise slowly.
+    Fall faster.
+  */
+
   if(targetScore > currentScore){
+
     currentScore +=
-      (targetScore - currentScore) * 0.075;
+      (targetScore - currentScore) *
+      0.055;
+
   }else{
+
     currentScore +=
-      (targetScore - currentScore) * 0.10;
+      (targetScore - currentScore) *
+      0.13;
+
   }
 
 
   currentScore = Math.max(
     0,
-    Math.min(100, currentScore)
+    Math.min(
+      100,
+      currentScore
+    )
   );
 
-  const showScore = Math.round(currentScore);
+
+  const showScore =
+    Math.round(currentScore);
 
 
-  /* Display score */
+  /*
+    DISPLAY SCORE SMOOTHLY
+  */
+
   if(displayScore < showScore){
+
     displayScore++;
+
   }
   else if(displayScore > showScore){
+
     displayScore--;
+
   }
 
 
-  if(displayScore !== Number(scoreEl.innerText)){
-    scoreEl.classList.remove("scoreJump");
+  if(
+    displayScore !==
+    Number(scoreEl.innerText)
+  ){
+
+    scoreEl.classList.remove(
+      "scoreJump"
+    );
+
     void scoreEl.offsetWidth;
-    scoreEl.classList.add("scoreJump");
+
+    scoreEl.classList.add(
+      "scoreJump"
+    );
+
   }
 
-  scoreEl.innerText = displayScore;
+
+  scoreEl.innerText =
+    displayScore;
 
 
   if(displayScore > maxScore){
-    maxScore = displayScore;
+
+    maxScore =
+      displayScore;
+
   }
 
 
-  /* Water movement */
+  /*
+    WATER MOVEMENT
+  */
+
   let moveUp;
 
+
   if(showScore >= 100){
-    moveUp = window.innerHeight;
+
+    moveUp =
+      window.innerHeight;
+
   }else{
-    moveUp = showScore * 4.2;
+
+    moveUp =
+      showScore * 4.2;
+
   }
 
 
   waterWaveTick += 0.12;
 
+
   const waveX =
     Math.sin(waterWaveTick) * 8;
+
 
   const waveRotate =
     Math.sin(waterWaveTick) * 0.8;
 
 
-  waterLayer.style.transform =
-    `translate3d(
+  waterLayer.style.transform = `
+    translate3d(
       ${waveX}px,
       -${moveUp}px,
       0
     )
-    rotate(${waveRotate}deg)`;
+    rotate(${waveRotate}deg)
+  `;
 
 
-  requestAnimationFrame(detectVoice);
+  voiceAnimationFrame =
+  requestAnimationFrame(
+    detectVoice
+  );
+
 }
-
-
-
 function generateCouponCode(){
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const numbers = "0123456789";
@@ -862,7 +1097,13 @@ function stopGameVideo(){
   v.currentTime = 0;
 }
 function stopMic(){
+
   running = false;
+
+  if(voiceAnimationFrame){
+    cancelAnimationFrame(voiceAnimationFrame);
+    voiceAnimationFrame = null;
+  }
 
   if(micStream){
     micStream.getTracks().forEach(track => track.stop());
