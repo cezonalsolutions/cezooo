@@ -381,7 +381,10 @@ function confirmCartMapLocation() {
     "cezooLastLocationCity",
     cartMapCity
   );
-
+localStorage.setItem(
+  "cezooLastLocationAddress",
+  cartMapAddress || ""
+);
   localStorage.setItem(
     "cezooLastLocationStreet",
     cartMapStreet
