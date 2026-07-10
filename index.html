@@ -9555,7 +9555,20 @@ async function handleLocation(lat, lng, userChanged = false) {
     );
 
     const result = await res.json();
+localStorage.setItem(
+  "cezooLastLocationAddress",
+  result.display_name || ""
+);
 
+localStorage.setItem(
+  "cezooLastLocationLat",
+  String(lat)
+);
+
+localStorage.setItem(
+  "cezooLastLocationLon",
+  String(lng)
+);
     const a = result.address || {};
 
 
