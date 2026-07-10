@@ -948,6 +948,8 @@
   color:#202124;
 
   text-align:left;
+
+  transform:translateY(3px);
 }
 
 
@@ -1626,34 +1628,7 @@
 }
 
 
-/* CURRENT LOCATION */
 
-.cartCurrentLocationBtn{
-  position:absolute;
-
-  right:14px;
-  bottom:165px;
-
-  width:42px;
-  height:42px;
-
-  border:none;
-
-  border-radius:12px;
-
-  background:#fff;
-
-  color:#222;
-
-  font-size:18px;
-
-  box-shadow:
-    0 4px 14px rgba(0,0,0,.12);
-
-  cursor:pointer;
-
-  z-index:10;
-}
 
 
 /* BOTTOM LOCATION BOX */
@@ -1749,4 +1724,1025 @@
 
 .cartMapPage .leaflet-pane{
   z-index:auto;
+}
+
+
+/* =====================================================
+   YOUR ORDERS LIST
+===================================================== */
+
+.yourOrdersPopup{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100dvh;
+  background:#f5f6f8;
+  z-index:10000005;
+  display:none;
+  overflow:hidden;
+}
+
+.yourOrdersPopup.open{
+  display:block;
+}
+
+.yourOrdersListPage{
+  width:100%;
+  height:100%;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+
+.yourOrdersHeader{
+  position:sticky;
+  top:0;
+  width:100%;
+  padding:
+    calc(48px + env(safe-area-inset-top))
+    16px
+    14px;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  border-bottom:1px solid #eeeeee;
+  z-index:20;
+}
+
+.yourOrdersBackBtn{
+  width:36px;
+  height:36px;
+  margin:0;
+  padding:0 0 3px;
+  border:none;
+  background:transparent;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:Arial,sans-serif;
+  font-size:36px;
+  line-height:1;
+  font-weight:300;
+  color:#4d4d4d;
+  cursor:pointer;
+}
+
+
+
+.yourOrdersContent{
+  width:100%;
+  padding:14px 12px 50px;
+}
+
+
+/* =====================================================
+   ORDER CARD
+===================================================== */
+
+.userOrderCard{
+  width:100%;
+  margin-bottom:12px;
+  padding:15px;
+  background:#fff;
+  border:1px solid #e7e7e7;
+  border-radius:15px;
+  box-shadow:0 2px 8px rgba(0,0,0,.035);
+  cursor:pointer;
+}
+
+.userOrderCard:active{
+  transform:scale(.995);
+  background:#fafafa;
+}
+
+.userOrderTopRow{
+  display:block;
+}.userOrderImagesViewport{
+  width:100%;
+  overflow:hidden;
+  margin-bottom:13px;
+}
+
+.userOrderImagesRow{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  overflow-x:auto;
+  overflow-y:hidden;
+
+  padding:2px 36px 7px 1px;
+
+  scroll-snap-type:x proximity;
+  -webkit-overflow-scrolling:touch;
+
+  scrollbar-width:none;
+}
+
+.userOrderImagesRow::-webkit-scrollbar{
+  display:none;
+}
+
+.userOrderMiniImage{
+  position:relative;
+
+  width:82px;
+  height:82px;
+
+  min-width:82px;
+  flex:0 0 82px;
+
+  border:1px solid #ededed;
+  border-radius:12px;
+
+  background:#fafafa;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  overflow:hidden;
+
+  scroll-snap-align:start;
+
+  color:#bbb;
+  font-size:22px;
+}
+
+.userOrderMiniImage img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+
+.userOrderMiniImage span{
+  position:absolute;
+  right:5px;
+  bottom:5px;
+
+  min-width:20px;
+  height:20px;
+
+  padding:0 5px;
+
+  border-radius:999px;
+
+  background:rgba(0,0,0,.72);
+  color:#fff;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:9px;
+  font-weight:800;
+}
+
+.userOrderMainInfo{
+  width:100%;
+  min-width:0;
+  text-align:left;
+}
+
+.userOrderArrow{
+  display:none;
+}
+
+.userOrderImage{
+  width:76px;
+  height:76px;
+  flex-shrink:0;
+  border:1px solid #eeeeee;
+  border-radius:11px;
+  background:#f8f8f8;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.userOrderImage img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+
+.userOrderImagePlaceholder{
+  font-size:25px;
+  color:#b6b6b6;
+}
+
+.userOrderMainInfo{
+  flex:1;
+  min-width:0;
+  text-align:left;
+}
+
+.userOrderProductName{
+  margin:1px 0 5px;
+  font-size:15px;
+  line-height:1.35;
+  font-weight:700;
+  color:#202124;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+.userOrderQuantity{
+  margin-bottom:7px;
+  font-size:12px;
+  color:#777;
+}
+
+.userOrderId{
+  font-size:11.5px;
+  line-height:1.4;
+  color:#80868b;
+  overflow-wrap:anywhere;
+}
+
+.userOrderArrow{
+  width:20px;
+  padding-top:27px;
+  text-align:right;
+  flex-shrink:0;
+  font-size:13px;
+  color:#999;
+}
+
+.userOrderDivider{
+  width:100%;
+  height:1px;
+  margin:13px 0 11px;
+  background:#eeeeee;
+}
+
+.userOrderAddress{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  margin-bottom:11px;
+  font-size:12px;
+  line-height:1.5;
+  color:#62676d;
+  text-align:left;
+}
+
+.userOrderAddress i{
+  width:15px;
+  margin-top:2px;
+  color:#777;
+  flex-shrink:0;
+}
+
+.userOrderBottomRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.userOrderStatus{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#fff4df;
+  color:#d87700;
+  font-size:10.5px;
+  font-weight:800;
+  text-transform:capitalize;
+}
+
+.userOrderStatus.delivered{
+  background:#e8f9ee;
+  color:#109447;
+}
+
+.userOrderStatus.cancelled,
+.userOrderStatus.canceled{
+  background:#ffeded;
+  color:#dc3030;
+}
+
+.userOrderStatus.packed{
+  background:#e9f2ff;
+  color:#2d73c8;
+}
+
+.userOrderStatus.on_the_way{
+  background:#f0eaff;
+  color:#714cc4;
+}
+
+.userOrderPrice{
+  font-size:15px;
+  font-weight:800;
+  color:#202124;
+}
+
+
+/* =====================================================
+   ORDER DETAILS PAGE
+===================================================== */
+
+.userOrderDetailsPage{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100dvh;
+  background:#f5f6f8;
+  z-index:10000007;
+  display:none;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+
+.userOrderDetailsPage.open{
+  display:block;
+}
+
+.userOrderDetailsHeader{
+  position:sticky;
+  top:0;
+  width:100%;
+  padding:
+    calc(48px + env(safe-area-inset-top))
+    16px
+    14px;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  border-bottom:1px solid #eeeeee;
+  z-index:20;
+}
+
+.userOrderDetailsBackBtn{
+  width:36px;
+  height:36px;
+  margin:0;
+  padding:0 0 3px;
+  border:none;
+  background:transparent;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:36px;
+  line-height:1;
+  font-weight:300;
+  color:#4d4d4d;
+}
+
+.userOrderDetailsTitle{
+  font-size:19px;
+  font-weight:700;
+  color:#202124;
+}
+
+.userOrderDetailsContent{
+  width:100%;
+  padding:14px 12px 60px;
+}
+
+.userOrderDetailCard{
+  width:100%;
+  margin-bottom:12px;
+  padding:15px;
+  background:#fff;
+  border:1px solid #e7e7e7;
+  border-radius:15px;
+}
+
+.userOrderDetailHeading{
+  margin-bottom:14px;
+  padding-bottom:11px;
+  border-bottom:1px solid #eeeeee;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:15px;
+  font-weight:800;
+  color:#202124;
+}
+
+.userOrderDetailHeading i{
+  color:#666;
+}
+
+.userOrderDetailRow{
+  padding:7px 0;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:15px;
+  font-size:12.5px;
+  line-height:1.45;
+}
+
+.userOrderDetailRow span{
+  color:#74787d;
+  flex-shrink:0;
+}
+
+.userOrderDetailRow strong{
+  color:#25282c;
+  font-weight:700;
+  text-align:right;
+  overflow-wrap:anywhere;
+}
+
+.userOrderDetailTotal{
+  margin-top:8px;
+  padding-top:12px;
+  border-top:1px dashed #d9d9d9;
+  font-size:15px;
+}
+
+.userOrderDetailTotal span,
+.userOrderDetailTotal strong{
+  color:#16181b;
+  font-weight:800;
+}
+
+
+/* =====================================================
+   PRODUCTS INSIDE DETAILS
+===================================================== */
+
+.userOrderedProduct{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid #eeeeee;
+}
+
+.userOrderedProduct:last-child{
+  border-bottom:none;
+}
+
+.userOrderedProductImage{
+  width:64px;
+  height:64px;
+  border:1px solid #eeeeee;
+  border-radius:10px;
+  background:#fafafa;
+  overflow:hidden;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.userOrderedProductImage img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+.userOrderedProductInfo{
+  flex:1;
+  min-width:0;
+  text-align:left;
+}
+
+.userOrderedProductName{
+  margin-bottom:4px;
+  font-size:13.5px;
+  line-height:1.35;
+  font-weight:700;
+  color:#202124;
+}
+
+.userOrderedProductPack{
+  margin-bottom:4px;
+  font-size:11px;
+  color:#858585;
+}
+
+.userOrderedProductQty{
+  font-size:11.5px;
+  color:#666;
+}
+
+.userOrderedProductPrice{
+  flex-shrink:0;
+  text-align:right;
+  font-size:13px;
+  font-weight:800;
+  color:#202124;
+}
+
+
+/* =====================================================
+   LOADING / EMPTY / ERROR
+===================================================== */
+
+.userOrdersState{
+  width:100%;
+  padding:90px 20px;
+  text-align:center;
+  color:#777;
+}
+
+.userOrdersState i{
+  margin-bottom:15px;
+  font-size:42px;
+  color:#d0d0d0;
+}
+
+.userOrdersState h3{
+  margin:0 0 7px;
+  font-size:17px;
+  color:#333;
+}
+
+.userOrdersState p{
+  margin:0;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.userOrdersSpinner{
+  width:31px;
+  height:31px;
+  margin:0 auto 15px;
+  border:3px solid #eeeeee;
+  border-top-color:#0BD957;
+  border-radius:50%;
+  animation:userOrdersSpin .75s linear infinite;
+}
+
+@keyframes userOrdersSpin{
+  to{
+    transform:rotate(360deg);
+  }
+}
+.orderInstructionGrid{
+  display:flex;
+  align-items:flex-start;
+  gap:16px;
+  padding:12px 2px 5px;
+  overflow-x:auto;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+
+.orderInstructionGrid::-webkit-scrollbar{
+  display:none;
+}
+
+.orderInstructionItem{
+  width:72px;
+  min-width:72px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  text-align:center;
+}
+
+.orderInstructionIcon{
+  width:52px;
+  height:52px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  margin-bottom:8px;
+
+  border:1px solid #e8e8e8;
+  border-radius:50%;
+
+  background:#f8f8f8;
+
+  color:#222;
+}
+
+.orderInstructionIcon i{
+  font-size:19px;
+  color:#222;
+}
+
+.orderInstructionText{
+  width:100%;
+
+  font-size:10.5px;
+  line-height:1.3;
+  font-weight:600;
+
+  color:#555;
+
+  text-align:center;
+}
+
+/* =====================================================
+   ORDER DETAILS - MAP TOP DESIGN
+===================================================== */
+
+.userOrderDetailsPage{
+  position:fixed;
+  inset:0;
+
+  width:100%;
+  height:100dvh;
+
+  background:#f5f6f8;
+
+  z-index:10000007;
+
+  display:none;
+
+  overflow-y:auto;
+  overflow-x:hidden;
+
+  -webkit-overflow-scrolling:touch;
+}
+
+.userOrderDetailsPage.open{
+  display:block;
+}
+
+
+/* REMOVE OLD HEADER */
+
+.userOrderDetailsHeader{
+  display:none !important;
+}
+
+
+/* CONTENT */
+
+.userOrderDetailsContent{
+  width:100%;
+
+  padding:
+    0
+    12px
+    calc(60px + env(safe-area-inset-bottom));
+}
+
+
+/* =====================================================
+   ORDER MAP AREA
+===================================================== */
+
+.userOrderTrackingMapWrap{
+  position:relative;
+
+  width:calc(100% + 24px);
+  height:300px;
+
+  margin-left:-12px;
+  margin-bottom:14px;
+
+  background:#e9e9e9;
+
+  overflow:hidden;
+}
+
+
+/* REAL LEAFLET MAP */
+
+#userOrderTrackingMap{
+  position:absolute;
+
+  inset:0;
+
+  width:100%;
+  height:100%;
+
+  z-index:1;
+}
+
+
+/* BACK BUTTON ON MAP */
+
+.userOrderMapBackBtn{
+  position:absolute;
+
+  top:calc(50px + env(safe-area-inset-top));
+  left:14px;
+
+  width:42px;
+  height:42px;
+
+  margin:0;
+  padding:0 0 3px;
+
+  border:none;
+  border-radius:50%;
+
+  background:#fff;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-family:Arial,sans-serif;
+  font-size:32px;
+  line-height:1;
+  font-weight:300;
+
+  color:#333;
+
+  z-index:500;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 3px 14px rgba(0,0,0,.18);
+}
+
+
+/* MAP BOTTOM FADE */
+
+.userOrderTrackingMapWrap::after{
+  content:"";
+
+  position:absolute;
+
+  left:0;
+  right:0;
+  bottom:0;
+
+  height:45px;
+
+  background:linear-gradient(
+    to bottom,
+    rgba(245,246,248,0),
+    rgba(245,246,248,.95)
+  );
+
+  z-index:400;
+
+  pointer-events:none;
+}
+
+
+/* USER LOCATION MARKER */
+
+.userOrderMapMarker{
+  width:22px;
+  height:22px;
+
+  background:#111;
+
+  border:5px solid #fff;
+
+  border-radius:50%;
+
+  box-shadow:
+    0 2px 10px rgba(0,0,0,.30);
+}
+
+
+/* =====================================================
+   FIRST CARD AFTER MAP
+===================================================== */
+
+.userOrderTrackingMapWrap +
+.userOrderDetailCard{
+  margin-top:0;
+}
+
+
+/* =====================================================
+   LEAFLET FIXES
+===================================================== */
+
+.userOrderTrackingMapWrap .leaflet-container{
+  width:100%;
+  height:100%;
+}
+
+.userOrderTrackingMapWrap .leaflet-control-attribution{
+  font-size:8px;
+}
+
+.userOrderTrackingMapWrap .leaflet-control-zoom{
+  display:none;
+}
+
+
+/* =====================================================
+   ORDER DETAIL CARDS
+===================================================== */
+
+.userOrderDetailCard{
+  width:100%;
+
+  margin-bottom:12px;
+  padding:15px;
+
+  background:#fff;
+
+  border:1px solid #e7e7e7;
+  border-radius:15px;
+}
+
+
+/* MOBILE SMALL SCREEN */
+
+@media(max-width:380px){
+
+  .userOrderTrackingMapWrap{
+    height:270px;
+  }
+
+  .userOrderMapBackBtn{
+    width:39px;
+    height:39px;
+
+    font-size:30px;
+  }
+
+}
+
+.userOrderMapNoLocation{
+  width:100%;
+  height:100%;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  gap:8px;
+
+  background:#ededed;
+  color:#777;
+
+  font-size:12px;
+  font-weight:600;
+}
+
+.userOrderMapNoLocation i{
+  font-size:27px;
+  color:#aaa;
+}
+
+.orderDeliveryPartnerCard{
+  width:100%;
+  min-height:76px;
+
+  margin:0 0 12px;
+  padding:12px 14px;
+
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  background:#fff;
+
+  border:1px solid #e7e7e7;
+  border-radius:15px;
+}
+
+.orderDeliveryPartnerProfile{
+  width:48px;
+  height:48px;
+  flex-shrink:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:#f2f3f5;
+  border-radius:50%;
+
+  color:#333;
+  font-size:18px;
+}
+
+.orderDeliveryPartnerInfo{
+  flex:1;
+  min-width:0;
+
+  text-align:left;
+}
+
+.orderDeliveryPartnerLabel{
+  margin-bottom:4px;
+
+  font-size:11px;
+  line-height:1.2;
+  font-weight:500;
+
+  color:#888;
+}
+
+.orderDeliveryPartnerName{
+  font-size:15px;
+  line-height:1.25;
+  font-weight:700;
+
+  color:#222;
+}
+
+.orderDeliveryPartnerCall{
+  width:42px;
+  height:42px;
+  flex-shrink:0;
+
+  margin:0;
+  padding:0;
+
+  border:none;
+  border-radius:50%;
+
+  background:#f1f1f1;
+  color:#222;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+}
+
+.orderDeliveryPartnerCall i{
+  font-size:16px;
+  color:#222;
+}
+
+.orderDeliveryPartnerCall:active{
+  transform:scale(.95);
+  background:#e9e9e9;
+}
+
+.userOrderCancelArea{
+  width:100%;
+  padding:8px 0 25px;
+}
+
+.userOrderCancelBtn{
+  width:100%;
+  height:48px;
+
+  margin:0;
+  padding:0;
+
+  border:1px solid #d8d8d8;
+  border-radius:12px;
+
+  background:#fff;
+  color:#333;
+
+  font-size:14px;
+  font-weight:600;
+
+  cursor:pointer;
+}
+
+.userOrderCancelBtn:active{
+  background:#f5f5f5;
+  transform:scale(.99);
+}
+.userOrderCustomerName,
+.userOrderCustomerMobile{
+  margin-top:4px;
+  font-size:11px;
+  line-height:1.35;
+  font-weight:500;
+  color:#777;
+}
+
+.userOrderMapRefreshBtn{
+  position:absolute;
+  right:14px;
+  bottom:18px;
+
+  z-index:600;
+
+  width:36px;
+  height:36px;
+
+  margin:0;
+  padding:0;
+
+  border:none;
+  background:transparent;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:#222;
+  font-size:21px;
+
+  cursor:pointer;
+}
+
+.userOrderMapRefreshBtn:active{
+  transform:scale(.92);
 }
