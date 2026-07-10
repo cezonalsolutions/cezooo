@@ -518,63 +518,12 @@ function showCouponResult(){
   document.getElementById("gameIntroScreen").style.display = "none";
   hideIntroSteps();
 
-  const result = getDiscountByScore(maxScore);
-
   coupon.style.display = "flex";
   coupon.classList.add("playArc");
 
   document.getElementById("couponScoreNumber").innerText = maxScore;
-
-
-  /* REDEEM BUTTON SHOW / HIDE */
-  const redeemBtn = coupon.querySelector(".redeemBtn");
-
-  if(maxScore < 50){
-    redeemBtn.style.display = "none";
-  }else{
-    redeemBtn.style.display = "block";
-  }
-
-
-  const topText = coupon.querySelector(".topi");
-  const offerBox = coupon.querySelector(".offered");
-  const uptoBox = coupon.querySelector(".upto");
-  const bottomText = coupon.querySelector(".bottom");
-
-  if(result.won){
-    topText.innerText = "YOU WON EXTRA";
-
-    offerBox.innerHTML = `
-      <span>${result.percent}</span>
-      <span>OFF</span>
-    `;
-
-    uptoBox.style.display = "block";
-    uptoBox.innerHTML = `UP TO ₹<span>${result.amount}</span>`;
-
-  }else{
-
-    topText.innerText = "OOPS!";
-
-    offerBox.innerHTML = `
-      <span style="font-size:30px;line-height:1.1;">
-        BETTER LUCK
-      </span><br>
-
-      <span style="font-size:30px;line-height:1.1;">
-        NEXT TIME
-      </span>
-    `;
-
-    uptoBox.style.display = "block";
-    uptoBox.innerHTML = "&nbsp;";
-  }
-
-  bottomText.innerHTML = `
-    Applicable on Ordering Select Items<br>
-    above ₹150
-  `;
 }
+
 function generateCouponCode(){
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const numbers = "0123456789";
