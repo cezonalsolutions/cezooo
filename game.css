@@ -977,83 +977,390 @@
 }
 
 
-/* ==============================
-   GAME REWARD BOTTOM SHEET
-============================== */
+/* =================================
+   CEZOO REWARD OVERLAY
+================================= */
 
 .cezooRewardOverlay{
-    position:absolute;
-    inset:0;
+  position:absolute;
+  inset:0;
 
-    z-index:999999999;
+  z-index:999999999;
 
-    background:rgba(0,0,0,.48);
+  background:rgba(0,0,0,.48);
 
-    opacity:0;
-    visibility:hidden;
-    pointer-events:none;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
 
-    transition:
-        opacity .25s ease,
-        visibility .25s ease;
+  transition:
+    opacity .25s ease,
+    visibility .25s ease;
 }
 
 .cezooRewardOverlay.open{
-    opacity:1;
-    visibility:visible;
-    pointer-events:auto;
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
 }
 
+
+/* =================================
+   REWARD BOTTOM SHEET
+================================= */
+
 .cezooRewardSheet{
-    position:absolute;
+  position:absolute;
 
-    left:0;
-    right:0;
-    bottom:0;
+  left:0;
+  right:0;
+  bottom:0;
 
-    width:100%;
-    height:72%;
+  width:100%;
+  height:82%;
 
-    background:#fff;
+  background:#fff;
 
-    border-radius:28px 28px 0 0;
+  border-radius:28px 28px 0 0;
 
-    transform:translateY(105%);
+  transform:translateY(105%);
 
-    transition:
-        transform .35s cubic-bezier(.22,.8,.25,1);
+  transition:
+    transform .35s cubic-bezier(.22,.8,.25,1);
 
-    display:flex;
-    flex-direction:column;
-    align-items:center;
+  display:flex;
+  flex-direction:column;
 
-    overflow:hidden;
+  overflow:hidden;
 
-    box-shadow:0 -12px 35px rgba(0,0,0,.22);
+  box-shadow:
+    0 -12px 38px rgba(0,0,0,.22);
+
+  box-sizing:border-box;
 }
 
 .cezooRewardOverlay.open .cezooRewardSheet{
-    transform:translateY(0);
+  transform:translateY(0);
 }
 
+
+/* =================================
+   TOP HANDLE
+================================= */
+
 .cezooRewardHandle{
-    width:48px;
-    height:5px;
+  width:46px;
+  height:5px;
 
-    margin-top:10px;
+  margin:10px auto 4px;
 
-    border-radius:50px;
-    background:#d5d5d5;
+  border-radius:999px;
+  background:#d6d6d6;
 
-    flex-shrink:0;
+  flex-shrink:0;
+}
+
+
+/* =================================
+   TOP IMAGE
+================================= */
+
+.cezooRewardImageBox{
+  width:100%;
+  height:128px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:2px 0 4px;
+
+  flex-shrink:0;
+
+  box-sizing:border-box;
 }
 
 .cezooRewardTopImage{
-    width:145px;
-    height:145px;
+  width:145px;
+  height:120px;
 
-    margin-top:18px;
+  object-fit:contain;
+  display:block;
 
-    object-fit:contain;
-    display:block;
+  user-select:none;
+  pointer-events:none;
+}
+
+
+/* =================================
+   PRODUCTS GRID
+================================= */
+
+.rewardProductsGrid{
+  width:100%;
+  flex:1;
+
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+
+  column-gap:12px;
+  row-gap:22px;
+
+  padding:8px 13px 45px;
+
+  overflow-y:auto;
+  overflow-x:hidden;
+
+  align-content:start;
+  align-items:start;
+
+  box-sizing:border-box;
+
+  -webkit-overflow-scrolling:touch;
+}
+
+
+/* =================================
+   PRODUCT CARD
+================================= */
+
+.rewardProductsGrid .productCard{
+  width:100%;
+  min-width:0;
+  max-width:100%;
+
+  display:block;
+
+  box-sizing:border-box;
+}
+
+
+/* =================================
+   PRODUCT IMAGE AREA
+================================= */
+
+.rewardProductsGrid .productImageWrap{
+  position:relative;
+
+  width:100%;
+  height:132px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  margin-bottom:12px;
+
+  overflow:visible;
+
+  box-sizing:border-box;
+}
+
+.rewardProductsGrid .productImage{
+  width:88%;
+  height:118px;
+
+  object-fit:contain;
+  display:block;
+
+  user-select:none;
+  -webkit-user-drag:none;
+}
+
+
+/* =================================
+   ADD BUTTON
+================================= */
+
+.rewardProductsGrid .addBtn{
+  position:absolute;
+
+  right:3px;
+  bottom:-8px;
+
+  width:42px;
+  min-width:42px;
+  height:36px;
+
+  padding:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:1.5px solid #11d957;
+  border-radius:10px;
+
+  background:#fff;
+  color:#0aae43;
+
+  font-size:22px;
+  font-weight:800;
+  line-height:1;
+
+  z-index:20;
+
+  box-shadow:
+    0 3px 9px rgba(0,0,0,.12);
+
+  box-sizing:border-box;
+}
+
+
+/* =================================
+   QUANTITY BUTTON
+================================= */
+
+.rewardProductsGrid .addBtn.qtyMode{
+  width:94px;
+  min-width:94px;
+  height:36px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:0 2px;
+
+  background:#11d957;
+  border-color:#11d957;
+  color:#fff;
+}
+
+.rewardProductsGrid .addBtn.qtyMode button{
+  width:29px;
+  height:32px;
+
+  padding:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:none;
+  background:transparent;
+  color:#fff;
+
+  font-size:20px;
+  font-weight:800;
+  line-height:1;
+
+  cursor:pointer;
+}
+
+.rewardProductsGrid .addBtn.qtyMode .qty{
+  min-width:24px;
+
+  text-align:center;
+
+  color:#fff;
+
+  font-size:15px;
+  font-weight:800;
+}
+
+
+/* =================================
+   PRODUCT DETAILS
+================================= */
+
+.rewardProductsGrid .productInfo{
+  width:100%;
+
+  padding:2px 3px 0;
+
+  box-sizing:border-box;
+}
+
+.rewardProductsGrid .priceRow{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+
+  gap:5px;
+
+  margin-bottom:5px;
+}
+
+.rewardProductsGrid .discountPrice{
+  color:#111;
+
+  font-size:15px;
+  font-weight:800;
+}
+
+.rewardProductsGrid .originalPrice{
+  color:#999;
+
+  font-size:12px;
+  font-weight:500;
+
+  text-decoration:line-through;
+}
+
+.rewardProductsGrid .productName{
+  min-height:20px;
+
+  color:#171717;
+
+  font-size:13px;
+  font-weight:650;
+  line-height:1.35;
+
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+
+  overflow:hidden;
+}
+
+.rewardProductsGrid .productNameTelugu{
+  margin-top:2px;
+
+  color:#777;
+
+  font-size:11px;
+  line-height:1.25;
+
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.rewardProductsGrid .productQty{
+  margin-top:5px;
+
+  color:#777;
+
+  font-size:12px;
+  font-weight:500;
+}
+
+
+/* =================================
+   SMALL MOBILE
+================================= */
+
+@media (max-height:680px){
+
+  .cezooRewardSheet{
+    height:88%;
+  }
+
+  .cezooRewardImageBox{
+    height:105px;
+  }
+
+  .cezooRewardTopImage{
+    width:125px;
+    height:98px;
+  }
+
+  .rewardProductsGrid .productImageWrap{
+    height:115px;
+  }
+
+  .rewardProductsGrid .productImage{
+    height:102px;
+  }
 }
