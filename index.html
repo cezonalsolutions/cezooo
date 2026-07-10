@@ -8247,7 +8247,29 @@ button{
         </div>
     </div>
 
-    <button class="redeemBtn">REDEEM NOW</button>
+   <button
+  type="button"
+  class="redeemBtn"
+  onclick="openCezooRewardSheet()"
+>
+  REDEEM NOW
+</button>
+</div>
+
+<!-- REWARD BOTTOM SHEET -->
+<div id="cezooRewardOverlay" class="cezooRewardOverlay" onclick="closeCezooRewardSheet(event)">
+
+  <div class="cezooRewardSheet" onclick="event.stopPropagation()">
+
+    <div class="cezooRewardHandle"></div>
+
+    <img
+      src="game/ice.png"
+      class="cezooRewardTopImage"
+      alt="Reward"
+    >
+
+  </div>
 
 </div>
 
@@ -9480,6 +9502,7 @@ button{
 <script src="login.js"></script>
 <script src="xerox.js"></script>
 <script src="cart.js"></script>
+
 <script src="location.js"></script>
 <script src="profile.js"></script>
 <script src="payment.js"></script>
