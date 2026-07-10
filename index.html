@@ -9097,35 +9097,53 @@ button{
 
 </div>
 
-
-
 <div id="yourOrdersPopup" class="yourOrdersPopup">
 
-  <div class="yourOrdersHeader">
+  <!-- ORDERS LIST PAGE -->
+  <div id="yourOrdersListPage" class="yourOrdersListPage">
 
-    <button
-      class="yourOrdersBackBtn"
-      onclick="closeYourOrdersPopup()"
-      aria-label="Back"
+    <div class="yourOrdersHeader">
+
+      <button
+        class="yourOrdersBackBtn"
+        onclick="closeYourOrdersPopup()"
+        aria-label="Back"
+      >
+        ‹
+      </button>
+
+      <div class="yourOrdersTitle">
+        Your Orders
+      </div>
+
+    </div>
+
+    <div
+      id="yourOrdersContent"
+      class="yourOrdersContent"
     >
-      ‹
-    </button>
-
-    <div class="yourOrdersTitle">
-      Your Orders
+      <!-- USER ORDERS WILL LOAD HERE -->
     </div>
 
   </div>
 
-  <div class="yourOrdersContent">
 
-    <!-- ORDERS WILL COME HERE -->
+  <!-- SINGLE ORDER DETAILS PAGE -->
+  <div
+    id="userOrderDetailsPage"
+    class="userOrderDetailsPage"
+  >
+
+    <div
+      id="userOrderDetailsContent"
+      class="userOrderDetailsContent"
+    >
+      <!-- MAP AND SELECTED ORDER DETAILS LOAD HERE -->
+    </div>
 
   </div>
 
 </div>
-
-
 
 
 <!-- SAVED ADDRESS POPUP -->
