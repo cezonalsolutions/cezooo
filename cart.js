@@ -1455,3 +1455,426 @@ function calculateDeliveryDistanceKm(
   return R * c;
 }
 
+
+
+
+
+/* =====================================================
+   CEZOO — SAVE ORDERS TO SUPABASE
+   Requires existing:
+   - supabaseClient
+   - cart
+   - getCartTotals()
+   - deliveryPartnerTip
+   - selectedInstructions
+===================================================== */
+
+let cezooCashOrderSaving = false;
+let cezooCashOrderPromise = null;
+
+let cezooUpiOrderSaving = false;
+
+/* =====================================================
+   CREATE UNIQUE ORDER ID
+===================================================== */
+
+function createCezooOrderId(paymentType){
+
+  const now = new Date();
+
+  const datePart =
+    now.getFullYear() +
+    String(now.getMonth() + 1).padStart(2, "0") +
+    String(now.getDate()).padStart(2, "0");
+
+  const timePart =
+    String(now.getHours()).padStart(2, "0") +
+    String(now.getMinutes()).padStart(2, "0") +
+    String(now.getSeconds()).padStart(2, "0");
+
+  const randomPart =
+    Math.floor(1000 + Math.random() * 9000);
+
+  return `CEZOO-${paymentType}-${datePart}-${timePart}-${randomPart}`;
+}
+
+
+/* =====================================================
+   GET FULL DELIVERY ADDRESS
+===================================================== */
+
+function getCezooOrderAddress(){
+
+  const latitude =
+    Number(localStorage.getItem("cezooUserLat"));
+
+  const longitude =
+    Number(localStorage.getItem("cezooUserLon"));
+
+
+  /* Cart map selected address */
+
+  if(
+    typeof cartMapAddress !== "undefined" &&
+    cartMapAddress
+  ){
+    return cartMapAddress;
+  }
+
+
+  /* Try full address from recent locations */
+
+  const recentLocations = JSON.parse(
+    localStorage.getItem("recentLocations") || "[]"
+  );
+
+  const matchingLocation =
+    recentLocations.find(location => {
+
+      const savedLat = Number(location.lat);
+      const savedLon = Number(location.lon);
+
+      return (
+        Math.abs(savedLat - latitude) < 0.00001 &&
+        Math.abs(savedLon - longitude) < 0.00001
+      );
+
+    });
+
+  if(matchingLocation?.name){
+    return matchingLocation.name;
+  }
+
+
+  /* Final fallback */
+
+  return (
+    document.getElementById("cartHeaderStreet")?.innerText ||
+    document.getElementById("street")?.innerText ||
+    "Delivery address"
+  );
+}
+
+
+/* =====================================================
+   PREPARE COMMON ORDER DATA
+===================================================== */
+
+function prepareCezooOrderData(paymentMethod){
+
+  const user = JSON.parse(
+    localStorage.getItem("cezooUser") || "null"
+  );
+
+  if(!user || !user.name || !user.mobile){
+    throw new Error("Please login before placing the order.");
+  }
+
+
+  const totals = getCartTotals();
+
+  if(!totals.items || totals.items.length === 0){
+    throw new Error("Your cart is empty.");
+  }
+
+
+  const latitude =
+    Number(localStorage.getItem("cezooUserLat"));
+
+  const longitude =
+    Number(localStorage.getItem("cezooUserLon"));
+
+
+  if(
+    !Number.isFinite(latitude) ||
+    !Number.isFinite(longitude) ||
+    latitude === 0 ||
+    longitude === 0
+  ){
+    throw new Error("Please select your delivery location.");
+  }
+
+
+  const deliveryMode =
+    localStorage.getItem("cezooDeliveryMode") ||
+    "instant";
+
+
+  const savedSchedule = JSON.parse(
+    localStorage.getItem("cezooDeliverySchedule") ||
+    "null"
+  );
+
+
+  /*
+    Save only:
+    product_id
+    product_table
+    qty selected by customer
+  */
+
+  const orderItems = totals.items.map(item => ({
+    product_id: Number(item.id),
+    product_table: item.table,
+    qty: Number(item.qty || 1)
+  }));
+
+
+  /*
+    For Instant:
+      delivery_date = null
+      delivery_time = null
+
+    For Day Delivery:
+      saved schedule is included when available
+  */
+
+  const deliveryDate =
+    deliveryMode === "12_hours"
+      ? savedSchedule?.date || null
+      : null;
+
+  const deliveryTime =
+    deliveryMode === "12_hours"
+      ? savedSchedule?.time || null
+      : null;
+
+
+  return {
+
+    user_name: user.name.trim(),
+
+    user_mobile: String(user.mobile).trim(),
+
+    village:
+      document.getElementById("cartHeaderVillage")?.innerText ||
+      document.getElementById("village")?.innerText ||
+      "Selected Location",
+
+    address: getCezooOrderAddress(),
+
+    latitude: latitude,
+
+    longitude: longitude,
+
+    items: orderItems,
+
+    total_items: Number(totals.totalQty || 0),
+
+    mrp_total: Number(totals.mrpTotal || 0),
+
+    item_total: Number(totals.itemTotal || 0),
+
+    /*
+      Automatically saves:
+      "instant"
+      OR
+      "12_hours"
+    */
+
+    delivery_mode: deliveryMode,
+
+    delivery_distance:
+      totals.deliveryDistance !== null
+        ? Number(totals.deliveryDistance.toFixed(2))
+        : null,
+
+    /*
+      Actual amount charged to customer.
+      Day Delivery or free delivery = ₹0.
+    */
+
+    delivery_fee: Number(totals.deliveryPay || 0),
+
+    handling_fee: Number(totals.handlingPay || 0),
+
+    delivery_tip: Number(deliveryPartnerTip || 0),
+
+    total_amount: Number(totals.toPay || 0),
+
+    total_savings: Number(totals.savings || 0),
+
+    delivery_date: deliveryDate,
+
+    delivery_time: deliveryTime,
+
+    delivery_instructions:
+      Array.isArray(selectedInstructions)
+        ? selectedInstructions
+        : [],
+
+    payment_method: paymentMethod,
+
+    order_status: "placed"
+
+  };
+}
+
+
+/* =====================================================
+   SAVE CASH ON DELIVERY ORDER
+===================================================== */
+async function saveCashOrderToSupabase(){
+
+  if(cezooCashOrderPromise){
+    return await cezooCashOrderPromise;
+  }
+
+  cezooCashOrderSaving = true;
+
+  cezooCashOrderPromise = (async function(){
+
+    try{
+
+      const orderData =
+        prepareCezooOrderData("cash_on_delivery");
+
+      orderData.order_id =
+        createCezooOrderId("CASH");
+
+      orderData.payment_status = "pending";
+
+      const { data, error } =
+        await supabaseClient
+          .from("cash_delivery_orders")
+          .insert([orderData])
+          .select()
+          .single();
+
+      if(error){
+        throw error;
+      }
+
+      console.log(
+        "✅ Cash order saved:",
+        data
+      );
+
+      return {
+        success: true,
+        order: data,
+        orderId: data.order_id
+      };
+
+    }catch(error){
+
+      console.error(
+        "❌ Cash order save failed:",
+        error
+      );
+
+      return {
+        success: false,
+        message:
+          error.message ||
+          "Unable to place cash order."
+      };
+
+    }finally{
+
+      cezooCashOrderSaving = false;
+      cezooCashOrderPromise = null;
+
+    }
+
+  })();
+
+  return await cezooCashOrderPromise;
+}
+
+/* =====================================================
+   SAVE SUCCESSFUL UPI ORDER
+===================================================== */
+
+async function saveUpiOrderToSupabase(paymentData = {}){
+
+  if(cezooUpiOrderSaving){
+    return {
+      success: false,
+      message: "UPI order is already being saved."
+    };
+  }
+
+  cezooUpiOrderSaving = true;
+
+  try{
+
+    const orderData =
+      prepareCezooOrderData("upi");
+
+    orderData.order_id =
+      createCezooOrderId("UPI");
+
+    orderData.payment_status = "paid";
+
+
+    /*
+      Supports Razorpay or your custom UPI names.
+    */
+
+    orderData.transaction_id =
+      paymentData.transaction_id ||
+      paymentData.transactionId ||
+      paymentData.razorpay_payment_id ||
+      null;
+
+    orderData.razorpay_order_id =
+      paymentData.razorpay_order_id ||
+      null;
+
+    orderData.razorpay_payment_id =
+      paymentData.razorpay_payment_id ||
+      null;
+
+    orderData.razorpay_signature =
+      paymentData.razorpay_signature ||
+      null;
+
+
+    const { data, error } =
+      await supabaseClient
+        .from("upi_orders")
+        .insert([orderData])
+        .select()
+        .single();
+
+
+    if(error){
+      throw error;
+    }
+
+
+    console.log(
+      "✅ UPI order saved:",
+      data
+    );
+
+
+    return {
+      success: true,
+      order: data,
+      orderId: data.order_id
+    };
+
+  }catch(error){
+
+    console.error(
+      "❌ UPI order save failed:",
+      error
+    );
+
+    return {
+      success: false,
+      message:
+        error.message ||
+        "UPI payment completed, but order could not be saved."
+    };
+
+  }finally{
+
+    cezooUpiOrderSaving = false;
+
+  }
+}
+
+
