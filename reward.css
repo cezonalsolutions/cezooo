@@ -1,0 +1,408 @@
+/* =================================
+   APSARA PRODUCTS ROW
+================================= */
+
+.apsaraProductsHeading{
+  width:100%;
+  margin:4px 0 12px;
+
+  font-size:17px;
+  font-weight:800;
+  color:#111;
+
+  text-align:left;
+}
+
+
+
+
+
+/* ADD BUTTON */
+
+.apsaraProductAddBtn{
+  position:absolute;
+  right:2px;
+  bottom:2px;
+
+  width:32px;
+  height:32px;
+
+  margin:0;
+  padding:0;
+
+  border:1px solid #dff5e8;
+  border-radius:10px;
+
+  background:#f8fffb;
+  color:#0BD957;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+
+  line-height:1;
+
+  transition:.2s ease;
+
+  z-index:5;
+}
+
+.apsaraProductAddBtn > span{
+  font-size:18px;
+  font-weight:700;
+  line-height:1;
+}
+
+
+/* QUANTITY MODE */
+
+.apsaraProductAddBtn.apsaraQtyMode{
+  width:70px;
+
+  justify-content:space-between;
+
+  padding:0 7px;
+}
+
+.apsaraProductAddBtn.apsaraQtyMode button{
+  width:18px;
+  height:18px;
+
+  margin:0;
+  padding:0;
+
+  border:none;
+  border-radius:0;
+
+  background:transparent;
+  color:#0BD957;
+
+  font-size:18px;
+  font-weight:800;
+  line-height:18px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+}
+
+.apsaraProductAddBtn.apsaraQtyMode .apsaraProductQtyCount{
+  min-width:14px;
+
+  color:#111;
+
+  font-size:13px;
+  font-weight:800;
+  line-height:1;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+
+/* PRODUCT INFORMATION */
+
+.apsaraProductInfo{
+  text-align:left;
+  padding-left:3px;
+
+  cursor:pointer;
+}
+
+.apsaraProductPriceRow{
+  display:flex;
+  align-items:center;
+  gap:4px;
+
+  margin-bottom:3px;
+}
+
+.apsaraProductDiscountPrice{
+  padding:2px 6px;
+
+  border-radius:6px;
+
+  background:#f5f6f7;
+  color:#111;
+
+  font-size:13px;
+  font-weight:900;
+}
+
+.apsaraProductOriginalPrice{
+  font-size:8px;
+  color:#999;
+
+  text-decoration:line-through;
+}
+
+.apsaraProductName{
+  width:100%;
+
+  margin-bottom:2px;
+
+  color:#111;
+
+  font-size:11px;
+  font-weight:700;
+  line-height:1.35;
+
+  white-space:normal;
+  overflow:visible;
+}
+
+.apsaraProductQuantity{
+  color:#666;
+
+  font-size:10px;
+  font-weight:600;
+}
+
+
+/* =================================
+   APSARA PRODUCT SHIMMER
+================================= */
+/* EXACTLY 2 PRODUCTS IN EACH ROW */
+.apsaraProductsRow{
+  width:100% !important;
+
+  display:grid !important;
+  grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+
+  gap:18px 12px !important;
+  padding:8px 2px 90px !important;
+
+  overflow-x:hidden !important;
+  overflow-y:visible !important;
+
+  align-items:start;
+  box-sizing:border-box;
+}
+
+
+/* EACH PRODUCT OCCUPIES ONE GRID COLUMN */
+.apsaraProductCard{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+
+  flex:none !important;
+
+  display:block;
+  box-sizing:border-box;
+}
+
+
+/* IMAGE AREA */
+.apsaraProductImageWrap{
+  position:relative !important;
+
+  width:100% !important;
+  height:125px !important;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  margin-bottom:5px;
+}
+
+
+/* PRODUCT IMAGE */
+.apsaraProductImage{
+  width:90% !important;
+  height:90% !important;
+
+  object-fit:contain;
+  display:block;
+}
+
+
+/* SHIMMER ALSO 2 PER ROW */
+.apsaraShimmerCard{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+
+  flex:none !important;
+}
+
+.apsaraShimmerImage{
+  width:100% !important;
+  height:125px !important;
+}
+
+/* APSARA LIGHT PINK PRODUCT SHIMMER */
+
+.apsaraShimmerCard{
+  width:100% !important;
+  min-width:0 !important;
+  flex:none !important;
+}
+
+
+/* COMMON LIGHT PINK BASE */
+.apsaraShimmerImage,
+.apsaraShimmerPrice,
+.apsaraShimmerName,
+.apsaraShimmerQuantity{
+  position:relative;
+  overflow:hidden;
+
+  background:#fff0f5;
+
+  border-radius:8px;
+}
+
+
+/* PRODUCT IMAGE SHAPE */
+.apsaraShimmerImage{
+  width:100%;
+  height:125px;
+
+  border-radius:14px;
+}
+
+
+/* PRICE SHAPE */
+.apsaraShimmerPrice{
+  width:58px;
+  height:20px;
+
+  margin-top:6px;
+}
+
+
+/* PRODUCT NAME SHAPE */
+.apsaraShimmerName{
+  width:85%;
+  height:12px;
+
+  margin-top:7px;
+}
+
+
+/* QUANTITY SHAPE */
+.apsaraShimmerQuantity{
+  width:45%;
+  height:10px;
+
+  margin-top:6px;
+}
+
+
+/* MOVING PINK SHINE */
+.apsaraShimmerImage::after,
+.apsaraShimmerPrice::after,
+.apsaraShimmerName::after,
+.apsaraShimmerQuantity::after{
+  content:"";
+
+  position:absolute;
+  inset:0;
+
+  transform:translateX(-100%);
+
+  background:linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,.85) 45%,
+    rgba(255,220,232,.65) 55%,
+    transparent 100%
+  );
+
+  animation:apsaraPinkShimmerMove 1.15s infinite;
+}
+
+
+@keyframes apsaraPinkShimmerMove{
+  100%{
+    transform:translateX(100%);
+  }
+}
+
+.apsaraProductBrand{
+  margin-bottom:3px;
+
+  font-size:9px;
+  font-weight:600;
+
+  color:#888;
+
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.apsaraShimmerImage{
+  height:82px;
+}
+
+.apsaraShimmerPrice{
+  width:55px;
+  height:20px;
+
+  margin-top:4px;
+}
+
+.apsaraShimmerName{
+  width:90px;
+  height:13px;
+
+  margin-top:7px;
+}
+
+.apsaraShimmerQuantity{
+  width:45px;
+  height:10px;
+
+  margin-top:5px;
+}
+
+.apsaraShimmerImage::after,
+.apsaraShimmerPrice::after,
+.apsaraShimmerName::after,
+.apsaraShimmerQuantity::after{
+  content:"";
+
+  position:absolute;
+  inset:0;
+
+  transform:translateX(-100%);
+
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.8),
+    transparent
+  );
+
+  animation:apsaraProductShimmerMove 1s infinite;
+}
+
+@keyframes apsaraProductShimmerMove{
+  100%{
+    transform:translateX(100%);
+  }
+}
+
+
+.floatBarWrap.apsaraCartVisible{
+  display:flex !important;
+
+  position:fixed !important;
+
+  left:50% !important;
+  bottom:18px !important;
+
+  transform:translateX(-50%) !important;
+
+  z-index:1000000001 !important;
+}
