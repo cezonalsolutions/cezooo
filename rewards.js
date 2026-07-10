@@ -1,3 +1,5 @@
+let apsaraSavedScrollTop = 0;
+
 function openApsaraRewardSheet(){
 
   const overlay =
@@ -5,9 +7,22 @@ function openApsaraRewardSheet(){
 
   if(!overlay) return;
 
+  /* Save current page position */
+  apsaraSavedScrollTop =
+    document.body.scrollTop ||
+    document.documentElement.scrollTop ||
+    window.scrollY ||
+    0;
+
   overlay.classList.add("apsaraRewardShow");
 
-  document.body.style.overflow = "hidden";
+  /*
+    Do not use:
+    document.body.style.overflow = "hidden";
+  */
+
+  document.documentElement.classList.add("apsaraSheetOpen");
+  document.body.classList.add("apsaraSheetOpen");
 
   const cartBar =
     document.querySelector(".floatBarWrap");
@@ -19,6 +34,7 @@ function openApsaraRewardSheet(){
   loadApsaraProducts();
 }
 
+
 function closeApsaraRewardSheet(){
 
   const overlay =
@@ -28,7 +44,8 @@ function closeApsaraRewardSheet(){
 
   overlay.classList.remove("apsaraRewardShow");
 
-  document.body.style.overflow = "";
+  document.documentElement.classList.remove("apsaraSheetOpen");
+  document.body.classList.remove("apsaraSheetOpen");
 
   const cartBar =
     document.querySelector(".floatBarWrap");
@@ -36,7 +53,13 @@ function closeApsaraRewardSheet(){
   if(cartBar){
     cartBar.classList.remove("apsaraCartVisible");
   }
+
+  requestAnimationFrame(() => {
+    document.body.scrollTop = apsaraSavedScrollTop;
+    document.documentElement.scrollTop = apsaraSavedScrollTop;
+  });
 }
+
 
 
 document
