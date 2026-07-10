@@ -1,5 +1,103 @@
 let gameTimer = null;
 let waterWaveTick = 0;
+const CEZOO_MAX_GAME_ATTEMPTS = 3;
+
+function getCezooGameAttempts(){
+  return Number(
+    localStorage.getItem("cezooGameAttempts") || 0
+  );
+}
+
+function getCezooAttemptsLeft(){
+
+  const left = Math.max(
+    0,
+    CEZOO_MAX_GAME_ATTEMPTS - getCezooGameAttempts()
+  );
+
+  console.log(
+    "Cezoo attempts left:",
+    left
+  );
+
+  return left;
+}
+
+function useCezooGameAttempt(){
+
+  const used = getCezooGameAttempts();
+
+  console.log(
+    "Cezoo attempts used before:",
+    used
+  );
+
+  if(used >= CEZOO_MAX_GAME_ATTEMPTS){
+
+    console.log(
+      "No Cezoo attempts remaining"
+    );
+
+    return false;
+  }
+
+  localStorage.setItem(
+    "cezooGameAttempts",
+    String(used + 1)
+  );
+
+  console.log(
+    "Cezoo attempt used. Attempts left:",
+    CEZOO_MAX_GAME_ATTEMPTS - (used + 1)
+  );
+
+  updateCezooAttemptUI();
+
+  return true;
+}
+function updateCezooAttemptUI(){
+
+  const attemptsLeft = getCezooAttemptsLeft();
+
+  let attemptText =
+    document.getElementById("cezooAttemptText");
+
+  if(!attemptText){
+
+    attemptText = document.createElement("div");
+    attemptText.id = "cezooAttemptText";
+
+    attemptText.style.cssText = `
+      width:100%;
+      margin-top:10px;
+      text-align:center;
+      font-size:12px;
+      font-weight:700;
+      color:#666;
+    `;
+
+    const playButton =
+      document.querySelector(".playNowBtn");
+
+    if(playButton){
+      playButton.insertAdjacentElement(
+        "afterend",
+        attemptText
+      );
+    }
+  }
+
+  attemptText.innerText =
+    `Attempts left: ${attemptsLeft}`;
+
+  // NEVER HIDE PLAY BUTTON
+  const playButton =
+    document.querySelector(".playNowBtn");
+
+  if(playButton){
+    playButton.style.display = "";
+  }
+}
 function resetGameStart(){
   clearTimeout(gameTimer);
 
@@ -20,6 +118,7 @@ function resetGameStart(){
 }
 
 function openGamePopup(){
+  updateCezooAttemptUI();
   document.getElementById("gamePopup").classList.add("show");
   document.body.style.overflow = "hidden";
 
@@ -122,9 +221,10 @@ function hideIntroSteps(){
   document.querySelectorAll(".introStep")
     .forEach(step => step.classList.remove("active"));
 }
-
 async function startGameIntro(){
-    stopGameVideo();
+
+
+  stopGameVideo();
 
   clearTimeout(introTimer1);
   clearTimeout(introTimer2);
@@ -206,10 +306,36 @@ async function startGameIntro(){
           document.getElementById("welcomeStep").classList.add("active");
 
           // 15 sec game starts here
-          resetGame();
-          running = true;
-          detectVoice();
-          startTimer();
+          // Count only when real game starts
+if(!useCezooGameAttempt()){
+
+  hideIntroSteps();
+
+  document.getElementById("gameIntroScreen")
+    .style.display = "none";
+
+  document.getElementById("mainScreen")
+    .style.display = "block";
+
+  updateCezooAttemptUI();
+
+  showNoAttemptsMessage();
+
+  return;
+}
+function showNoAttemptsMessage(){
+
+  const text = document.getElementById("cezooAttemptText");
+
+  if(text){
+    text.innerText = "No attempts left";
+  }
+
+}
+resetGame();
+running = true;
+detectVoice();
+startTimer();
 
         },700);
       }
@@ -512,17 +638,6 @@ function detectVoice(){
 }
 
 
-function showCouponResult(){
-  const coupon = document.getElementById("couponResultScreen");
-
-  document.getElementById("gameIntroScreen").style.display = "none";
-  hideIntroSteps();
-
-  coupon.style.display = "flex";
-  coupon.classList.add("playArc");
-
-  document.getElementById("couponScoreNumber").innerText = maxScore;
-}
 
 function generateCouponCode(){
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -559,26 +674,51 @@ function getDiscountByScore(score){
 
   return { won:true, percent:"20%", amount:"250" };
 }
-
 function showCouponResult(){
-  const coupon = document.getElementById("couponResultScreen");
 
-  document.getElementById("gameIntroScreen").style.display = "none";
+  const coupon =
+    document.getElementById("couponResultScreen");
+
+  document.getElementById("gameIntroScreen")
+    .style.display = "none";
+
   hideIntroSteps();
 
-  const result = getDiscountByScore(maxScore);
+  const result =
+    getDiscountByScore(maxScore);
+
+  const attemptsLeft =
+    getCezooAttemptsLeft();
 
   coupon.style.display = "flex";
   coupon.classList.add("playArc");
 
-  document.getElementById("couponScoreNumber").innerText = maxScore;
+  document.getElementById(
+    "couponScoreNumber"
+  ).innerText = maxScore;
 
-  const topText = coupon.querySelector(".topi");
-  const offerBox = coupon.querySelector(".offered");
-  const uptoBox = coupon.querySelector(".upto");
-  const bottomText = coupon.querySelector(".bottom");
+  const topText =
+    coupon.querySelector(".topi");
+
+  const offerBox =
+    coupon.querySelector(".offered");
+
+  const uptoBox =
+    coupon.querySelector(".upto");
+
+  const bottomText =
+    coupon.querySelector(".bottom");
+
+  const actionBtn =
+    coupon.querySelector(".redeemBtn");
+
+
+  /* =========================
+     USER WON
+  ========================= */
 
   if(result.won){
+
     topText.innerText = "YOU WON EXTRA";
 
     offerBox.innerHTML = `
@@ -587,23 +727,119 @@ function showCouponResult(){
     `;
 
     uptoBox.style.display = "block";
-    uptoBox.innerHTML = `UP TO ₹<span>${result.amount}</span>`;
-  }else{
+
+    uptoBox.innerHTML = `
+      UP TO ₹<span>${result.amount}</span>
+    `;
+
+    bottomText.innerHTML = `
+      Applicable on Ordering Select Items<br>
+      above ₹150
+    `;
+
+
+    localStorage.setItem(
+      "cezooGameCoupon",
+      JSON.stringify({
+        code: "CREAMKULFY",
+        score: maxScore,
+        percent: Number(
+          result.percent.replace("%","")
+        ),
+        maxDiscount: Number(result.amount)
+      })
+    );
+
+
+    /* Winning button */
+
+    actionBtn.style.display = "block";
+    actionBtn.innerText = "REDEEM NOW";
+
+    actionBtn.onclick = function(){
+      openCezooRewardSheet();
+    };
+
+  }
+
+
+  /* =========================
+     USER LOST
+  ========================= */
+
+  else{
+
     topText.innerText = "OOPS!";
 
     offerBox.innerHTML = `
-      <span style="font-size:30px;line-height:1.1;">BETTER LUCK</span><br>
-      <span style="font-size:30px;line-height:1.1;">NEXT TIME</span>
+      <span style="
+        font-size:30px;
+        line-height:1.1;
+      ">
+        BETTER LUCK
+      </span>
+
+      <br>
+
+      <span style="
+        font-size:30px;
+        line-height:1.1;
+      ">
+        NEXT TIME
+      </span>
     `;
 
     uptoBox.style.display = "block";
     uptoBox.innerHTML = "&nbsp;";
-  }
+
+
+    /* ATTEMPTS STILL AVAILABLE */
+
+    if(attemptsLeft > 0){
+
+      bottomText.innerHTML = `
+        Attempts left: ${attemptsLeft}
+      `;
+
+      actionBtn.style.display = "block";
+      actionBtn.innerText = "TRY AGAIN";
+
+      actionBtn.onclick = function(){
+
+        coupon.style.display = "none";
+        coupon.classList.remove("playArc");
+
+        document.getElementById(
+          "gameIntroScreen"
+        ).style.display = "none";
+
+        hideIntroSteps();
+
+        const mainScreen =
+          document.getElementById("mainScreen");
+
+        mainScreen.style.display = "block";
+
+        updateCezooAttemptUI();
+        playGameVideo();
+      };
+
+    }
+
+
+    /* NO ATTEMPTS LEFT */
+
+    else{
 
   bottomText.innerHTML = `
-    Applicable on Ordering Select Items<br>
-    above ₹150
+    No attempts left
   `;
+
+  actionBtn.style.display = "none";
+
+}
+  }
+
 }
 function gameVideo(){
   return document.querySelector(".videoBox video");
@@ -643,13 +879,18 @@ function stopMic(){
 }
 
 
+let rewardProductsLoaded = false;
+
 function openCezooRewardSheet(){
 
-    const overlay = document.getElementById("cezooRewardOverlay");
+  const overlay =
+    document.getElementById("cezooRewardOverlay");
 
-    if(!overlay) return;
+  if(!overlay) return;
 
-    overlay.classList.add("open");
+  overlay.classList.add("open");
+
+  loadRewardIceCreamProducts();
 }
 
 function closeCezooRewardSheet(event){
@@ -664,4 +905,141 @@ function closeCezooRewardSheet(event){
     document
         .getElementById("cezooRewardOverlay")
         ?.classList.remove("open");
+}
+async function loadRewardIceCreamProducts(){
+
+  if(rewardProductsLoaded){
+    restoreCartButtons(
+      document.getElementById("rewardProductsGrid")
+    );
+    return;
+  }
+
+  const grid =
+    document.getElementById("rewardProductsGrid");
+
+  if(!grid) return;
+
+  grid.innerHTML = Array(6).fill(`
+    <div class="freshProductShimmerCard">
+      <div class="freshProductShimmerImg"></div>
+      <div class="freshProductShimmerPrice"></div>
+      <div class="freshProductShimmerName"></div>
+      <div class="freshProductShimmerQty"></div>
+    </div>
+  `).join("");
+
+  const rewardIds =
+    Array.from({length:26}, (_,i) => i + 1);
+
+  const { data, error } =
+    await supabaseClient
+      .from("icecreams")
+      .select("*")
+      .in("id", rewardIds)
+      .order("id", { ascending:true });
+
+  if(error){
+    console.error("Reward products error:", error);
+
+    grid.innerHTML = `
+      <div style="
+        grid-column:1/-1;
+        padding:30px 15px;
+        text-align:center;
+        font-weight:700;
+      ">
+        Products not loaded
+      </div>
+    `;
+
+    return;
+  }
+
+  renderRewardIceCreamProducts(data || []);
+  rewardProductsLoaded = true;
+}
+
+function renderRewardIceCreamProducts(products){
+
+  const grid =
+    document.getElementById("rewardProductsGrid");
+
+  grid.innerHTML = products.map(p => `
+
+    <div
+      class="productCard"
+      data-id="${p.id}"
+      data-table="icecreams"
+    >
+
+      <div class="productImageWrap">
+
+        <img
+          class="productImage"
+          src="${p.image1 || ''}"
+          loading="lazy"
+          alt="${p.name || ''}"
+        >
+
+        <button
+          type="button"
+          class="addBtn"
+        >
+          <span>+</span>
+        </button>
+
+      </div>
+
+      <div class="productInfo">
+
+        <div class="priceRow">
+
+          <span class="discountPrice">
+            ₹${p.discount_price || 0}
+          </span>
+
+          <span class="originalPrice">
+            ₹${p.original_price || 0}
+          </span>
+
+        </div>
+
+        <div class="productName">
+          ${p.name || ''}
+        </div>
+
+        <div class="productNameTelugu">
+          ${p.name_telugu || ''}
+        </div>
+
+        <div class="productQty">
+          ${p.quantity || ''} ${p.unit || ''}
+        </div>
+
+      </div>
+
+    </div>
+
+  `).join("");
+
+  grid.querySelectorAll(".productCard")
+    .forEach(card => {
+
+      const id = Number(card.dataset.id);
+
+      const product = products.find(
+        p => Number(p.id) === id
+      );
+
+      const addBtn =
+        card.querySelector(".addBtn");
+
+      addBtn.onclick = e => {
+        return addToCart(e, addBtn, product);
+      };
+
+    });
+
+  restoreCartButtons(grid);
 }
