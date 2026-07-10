@@ -3106,7 +3106,8 @@ position:relative;
   height:58px;
   display:flex;
   gap:10px;
-  z-index:999999;
+  z-index:1000000000 !important;
+
   transition:bottom .35s ease;
 }
 .floatBarWrap.popupMode{
@@ -5027,6 +5028,7 @@ button{
 </style>
 <link rel="stylesheet" href="profile.css">
 <link rel="stylesheet" href="xerox.css">
+<link rel="stylesheet" href="reward.css">
 <link rel="stylesheet" href="game.css">
 <link rel="stylesheet" href="banners.css">
 </head>
@@ -8247,8 +8249,9 @@ button{
         </div>
     </div>
 
-    <button class="redeemBtn">REDEEM NOW</button>
-
+  <button class="redeemBtn" onclick="openApsaraRewardSheet()">
+  REDEEM NOW
+</button>
 </div>
 
     </div>
@@ -8258,7 +8261,41 @@ button{
 </div>
 
 
+<!-- APSARA REDEEM BOTTOM SHEET -->
+<div class="apsaraRewardOverlay" id="apsaraRewardOverlay">
 
+  <div class="apsaraRewardSheet">
+
+    <button
+      class="apsaraRewardCloseBtn"
+      onclick="closeApsaraRewardSheet()"
+      aria-label="Close"
+    >
+      ×
+    </button>
+
+    <div class="apsaraRewardTopLogoBox">
+      <img
+        src="game/ice.png"
+        class="apsaraRewardTopLogo"
+        alt=""
+      >
+    </div>
+
+   <div class="apsaraRewardContent">
+
+ 
+
+  <div
+    class="apsaraProductsRow"
+    id="apsaraProductsRow"
+  ></div>
+
+</div>
+
+  </div>
+
+</div>
 
 
 
@@ -9475,6 +9512,7 @@ button{
 
 </div>
 </div>
+<script src="rewards.js"></script>
 <script src="banners.js"></script>
 <script src="game.js"></script>
 <script src="login.js"></script>
