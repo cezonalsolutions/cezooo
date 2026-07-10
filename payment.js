@@ -199,17 +199,48 @@ function openCashOrderConfirm(){
 
   const total = document.getElementById("cartToPayBottom")?.innerText || "₹0";
 
-  const savedLocations = JSON.parse(localStorage.getItem("recentLocations") || "[]");
+ const savedLocations = JSON.parse(
+  localStorage.getItem("recentLocations") || "[]"
+);
 
-  let deliveryAddress = "Selected delivery address";
+const changedMapAddress =
+  localStorage.getItem("cezooLastLocationAddress") || "";
 
-  if(savedLocations.length > 0 && savedLocations[0].name){
-    deliveryAddress = savedLocations[0].name;
-  }else{
-    const village = document.getElementById("village")?.innerText || "";
-    const street = document.getElementById("street")?.innerText || "";
-    deliveryAddress = `${village} ${street}`;
-  }
+let deliveryAddress = "Selected delivery address";
+
+/*
+  If user changed location from cart map,
+  use the newly changed address.
+*/
+if(changedMapAddress){
+
+  deliveryAddress = changedMapAddress;
+
+/*
+  Otherwise keep your original first address.
+*/
+}else if(
+  savedLocations.length > 0 &&
+  savedLocations[0].name
+){
+
+  deliveryAddress = savedLocations[0].name;
+
+}else{
+
+  const village =
+    document.getElementById("village")
+      ?.innerText
+      ?.trim() || "";
+
+  const street =
+    document.getElementById("street")
+      ?.innerText
+      ?.trim() || "";
+
+  deliveryAddress =
+    `${village} ${street}`.trim();
+}
 
   if(!document.getElementById("cashConfirmStyle")){
     const style = document.createElement("style");
