@@ -8257,17 +8257,31 @@ button{
 </div>
 
 <!-- REWARD BOTTOM SHEET -->
-<div id="cezooRewardOverlay" class="cezooRewardOverlay" onclick="closeCezooRewardSheet(event)">
+<div
+  id="cezooRewardOverlay"
+  class="cezooRewardOverlay"
+  onclick="closeCezooRewardSheet(event)"
+>
 
-  <div class="cezooRewardSheet" onclick="event.stopPropagation()">
+  <div
+    class="cezooRewardSheet"
+    onclick="event.stopPropagation()"
+  >
 
     <div class="cezooRewardHandle"></div>
 
-    <img
-      src="game/ice.png"
-      class="cezooRewardTopImage"
-      alt="Reward"
-    >
+    <div class="cezooRewardImageBox">
+      <img
+        src="game/ice.png"
+        class="cezooRewardTopImage"
+        alt="Ice Cream"
+      >
+    </div>
+
+    <div
+      id="rewardProductsGrid"
+      class="rewardProductsGrid"
+    ></div>
 
   </div>
 
