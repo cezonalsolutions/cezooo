@@ -641,3 +641,27 @@ function stopMic(){
   analyser = null;
   dataArray = null;
 }
+
+
+function openCezooRewardSheet(){
+
+    const overlay = document.getElementById("cezooRewardOverlay");
+
+    if(!overlay) return;
+
+    overlay.classList.add("open");
+}
+
+function closeCezooRewardSheet(event){
+
+    if(
+        event &&
+        event.target.id !== "cezooRewardOverlay"
+    ){
+        return;
+    }
+
+    document
+        .getElementById("cezooRewardOverlay")
+        ?.classList.remove("open");
+}
