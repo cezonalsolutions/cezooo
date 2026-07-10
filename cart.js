@@ -285,12 +285,38 @@ function getCartTotals(){
 
 
 
-
+let savedCouponInput = "";
 
 
 function renderCartPage(){
   const box = document.getElementById("cartPageContent");
   const t = getCartTotals();
+  const appliedCoupon = JSON.parse(
+  localStorage.getItem("cezooAppliedCoupon") || "null"
+);
+
+const couponDiscountAmount =
+  Object.values(cart || {}).reduce((total, item) => {
+
+    if(
+      item.table !== "icecreams" ||
+      item.coupon_original_price == null
+    ){
+      return total;
+    }
+
+    const oldPrice =
+      Number(item.coupon_original_price || 0);
+
+    const newPrice =
+      Number(item.discount_price || 0);
+
+    const qty =
+      Number(item.qty || 0);
+
+    return total + ((oldPrice - newPrice) * qty);
+
+  }, 0);
 const savedSchedule = JSON.parse(
   localStorage.getItem("cezooDeliverySchedule") || "null"
 );
@@ -385,11 +411,13 @@ const deliveryTimeDisplay =
 
   <div class="couponRow">
 
-    <input
-      type="text"
-      id="couponCode"
-      class="couponInput"
-      placeholder="Enter coupon code">
+   <input
+  type="text"
+  id="couponCode"
+  class="couponInput"
+  placeholder="Enter coupon code"
+  value="${savedCouponInput}"
+  oninput="savedCouponInput=this.value">
 
     <button
       class="applyCouponBtn"
@@ -398,7 +426,40 @@ const deliveryTimeDisplay =
     </button>
 
   </div>
+<div
+  id="couponMessage"
+  style="
+    display:${
+      localStorage.getItem("cezooAppliedCoupon")
+        ? "flex"
+        : "none"
+    };
 
+    width:100%;
+    margin-top:12px;
+    text-align:center;
+    font-size:12px;
+    font-weight:600;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    color:#0aaa43;
+  "
+>
+  ${
+    localStorage.getItem("cezooAppliedCoupon")
+      ? `
+        <span style="flex:1;height:1px;background:#ddd;"></span>
+
+        <span style="white-space:nowrap;">
+          Coupon applied successfully
+        </span>
+
+        <span style="flex:1;height:1px;background:#ddd;"></span>
+      `
+      : ""
+  }
+</div>
 </div>
     <div class="cartBillCard">
 
@@ -477,7 +538,48 @@ ${deliveryPartnerTip > 0 ? `
     <strong>₹${deliveryPartnerTip}</strong>
   </div>
 ` : ""}
+${
+  appliedCoupon && couponDiscountAmount > 0
+    ? `
+      <div class="billRow">
 
+        <span>
+          Game Coupon
+          <small style="
+            margin-left:5px;
+            color:#0aaa43;
+            font-size:11px;
+            font-weight:700;
+          ">
+            ${Number(appliedCoupon.percent || 0)}% OFF
+          </small>
+        </span>
+
+        <strong>
+          <del style="
+            color:#999;
+            font-weight:500;
+            margin-right:5px;
+          ">
+            ₹${Math.round(
+              couponDiscountAmount /
+              (Number(appliedCoupon.percent) / 100)
+            )}
+          </del>
+
+          <span style="color:#0aaa43;">
+            ₹${Math.round(
+              (couponDiscountAmount /
+              (Number(appliedCoupon.percent) / 100))
+              - couponDiscountAmount
+            )}
+          </span>
+        </strong>
+
+      </div>
+    `
+    : ""
+}
 
         <div class="billRow billTotal">
           <span>To Pay</span>
@@ -655,13 +757,19 @@ function renderCartItemRow(item){
 
 
 function cartPageDecrease(key){
+
   if(!cart[key]) return;
 
   cart[key].qty--;
 
+
   if(cart[key].qty <= 0){
     delete cart[key];
   }
+
+
+  validateGameCoupon();
+
 
   saveCart();
   updateCartFloat();
@@ -669,6 +777,9 @@ function cartPageDecrease(key){
   restoreCartButtons(document);
   renderCartPage();
 }
+
+
+
 function cartPageIncrease(key){
   if(!cart[key]) return;
 
@@ -681,11 +792,174 @@ function cartPageIncrease(key){
   renderCartPage();
 }
 function applyCoupon(){
-  const code = document.getElementById("couponCode").value.trim();
 
-  if(!code) return;
+  const input =
+    document.getElementById("couponCode");
 
-  console.log("Coupon:", code);
+  savedCouponInput = input.value;
+
+  const code =
+    input.value
+      .trim()
+      .toUpperCase();
+
+  const msg =
+    document.getElementById("couponMessage");
+
+
+  function showMessage(text, success = false){
+
+    msg.innerHTML = `
+      <span style="flex:1;height:1px;background:#ddd;"></span>
+      <span style="white-space:nowrap;">${text}</span>
+      <span style="flex:1;height:1px;background:#ddd;"></span>
+    `;
+
+    msg.style.display = "flex";
+
+    msg.style.color =
+      success ? "#0aaa43" : "#e53935";
+    clearTimeout(window.couponMsgTimer);
+
+    window.couponMsgTimer = setTimeout(() => {
+      msg.style.display = "none";
+      msg.innerHTML = "";
+    }, 5000);
+  }
+
+
+  if(!code){
+    showMessage("Please enter a coupon code");
+    return;
+  }
+
+
+  if(code !== "CREAMKULFY"){
+    showMessage("Invalid coupon code");
+    return;
+  }
+
+
+  const gameCoupon = JSON.parse(
+    localStorage.getItem("cezooGameCoupon") || "null"
+  );
+
+
+  if(!gameCoupon){
+    showMessage("Play the game first to unlock this coupon");
+    return;
+  }
+
+
+  const iceCreamItems =
+    Object.values(cart || {}).filter(
+      item => item.table === "icecreams"
+    );
+
+
+  const iceCreamTotal =
+    iceCreamItems.reduce((total, item) => {
+
+      const basePrice = Number(
+        item.coupon_original_price ||
+        item.discount_price ||
+        0
+      );
+
+      return total +
+        basePrice * Number(item.qty || 0);
+
+    }, 0);
+
+
+  if(iceCreamTotal < 150){
+
+    const remaining =
+      Math.ceil(150 - iceCreamTotal);
+
+    showMessage(
+      `Add ₹${remaining} more ice creams to use this coupon`
+    );
+
+    return;
+  }
+
+
+  const percent =
+    Number(gameCoupon.percent || 0);
+
+  const maxDiscount =
+    Number(gameCoupon.maxDiscount || 0);
+
+
+  const percentageDiscount =
+    iceCreamTotal * percent / 100;
+
+  const finalDiscount =
+    Math.min(
+      percentageDiscount,
+      maxDiscount
+    );
+
+
+  const effectivePercent =
+    iceCreamTotal > 0
+      ? (finalDiscount / iceCreamTotal) * 100
+      : 0;
+
+
+  Object.keys(cart).forEach(key => {
+
+    const item = cart[key];
+
+    if(item.table !== "icecreams"){
+      return;
+    }
+
+
+    if(!item.coupon_original_price){
+
+      item.coupon_original_price =
+        Number(item.discount_price || 0);
+
+    }
+
+
+    const originalPrice =
+      Number(item.coupon_original_price || 0);
+
+
+    item.discount_price =
+      Math.max(
+        0,
+        Math.round(
+          originalPrice *
+          (1 - effectivePercent / 100)
+        )
+      );
+
+
+    item.game_coupon_applied = true;
+    item.game_coupon_percent = percent;
+
+  });
+
+
+  localStorage.setItem(
+    "cezooAppliedCoupon",
+    JSON.stringify(gameCoupon)
+  );
+
+
+  saveCart();
+  updateCartFloat();
+  updatePopupCartSummary();
+  restoreCartButtons(document);
+  renderCartPage();
+
+
+ 
+
 }
 let cartSwipeStartX = 0;
 let cartSwipeStartY = 0;
@@ -1877,4 +2151,74 @@ async function saveUpiOrderToSupabase(paymentData = {}){
   }
 }
 
+function validateGameCoupon(){
 
+  const appliedCoupon = JSON.parse(
+    localStorage.getItem("cezooAppliedCoupon") || "null"
+  );
+
+  if(!appliedCoupon) return;
+
+
+  let iceCreamTotal = 0;
+
+
+  Object.values(cart || {}).forEach(item => {
+
+    if(item.table !== "icecreams") return;
+
+    const originalPrice = Number(
+      item.coupon_original_price ??
+      item.discount_price ??
+      0
+    );
+
+    iceCreamTotal +=
+      originalPrice * Number(item.qty || 0);
+
+  });
+
+
+  /* COUPON NO LONGER VALID */
+
+  if(iceCreamTotal < 150){
+
+    Object.keys(cart).forEach(key => {
+
+      const item = cart[key];
+
+      if(
+        item.table === "icecreams" &&
+        item.coupon_original_price != null
+      ){
+
+        /* RESTORE ORIGINAL PRODUCT PRICE */
+
+        item.discount_price =
+          Number(item.coupon_original_price);
+
+
+        delete item.coupon_original_price;
+        delete item.game_coupon_applied;
+        delete item.game_coupon_percent;
+
+      }
+
+    });
+
+
+    /* REMOVE ONLY APPLIED STATE */
+
+    localStorage.removeItem(
+      "cezooAppliedCoupon"
+    );
+
+
+    saveCart();
+
+    return false;
+  }
+
+
+  return true;
+}
