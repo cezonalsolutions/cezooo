@@ -1348,7 +1348,6 @@ const totalItemCount = items.reduce((total, item) => {
     cards.join("");
 
 }
-
 function initializeUserOrderMap(order){
 
   const mapBox =
@@ -1360,10 +1359,7 @@ function initializeUserOrderMap(order){
 
   const latitude =
     Number(order.latitude);
-currentUserOrderMapLocation = {
-  latitude,
-  longitude
-};
+
   const longitude =
     Number(order.longitude);
 
@@ -1375,6 +1371,11 @@ currentUserOrderMapLocation = {
   ){
     return;
   }
+
+  currentUserOrderMapLocation = {
+    latitude,
+    longitude
+  };
 
   if(userOrderTrackingMap){
 
@@ -1399,14 +1400,12 @@ currentUserOrderMapLocation = {
       16
     );
 
-
   L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
       maxZoom:19
     }
   ).addTo(userOrderTrackingMap);
-
 
   const locationMarkerIcon =
     L.divIcon({
@@ -1418,14 +1417,12 @@ currentUserOrderMapLocation = {
       iconAnchor:[11,11]
     });
 
-
   L.marker(
     [latitude, longitude],
     {
       icon:locationMarkerIcon
     }
   ).addTo(userOrderTrackingMap);
-
 
   setTimeout(function(){
 
@@ -1434,7 +1431,6 @@ currentUserOrderMapLocation = {
   }, 200);
 
 }
-
 window.openUserOrderDetails =
 async function(index){
 
