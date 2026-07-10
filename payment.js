@@ -451,9 +451,30 @@ function openCashOrderConfirm(){
 
   const btn = document.getElementById("cashPlaceOrderNowBtn");
 
+btn.dataset.processing = "false";
+btn.classList.remove("loading");
+btn.querySelector("span").innerText = "Place Order Now";
+
+
+/* CLICK BUTTON = PLACE ORDER IMMEDIATELY */
+
+btn.onclick = function(){
+
+  // Order is already being saved—ignore extra click
+  if(cezooCashOrderSaving){
+    return;
+  }
+
+  clearTimeout(cashAutoStartTimer);
+  cashAutoStartTimer = null;
+
+  clearTimeout(cashOrderTimer);
+  cashOrderTimer = null;
+
   btn.dataset.processing = "false";
-  btn.classList.remove("loading");
-  btn.querySelector("span").innerText = "Place Order Now";
+
+  startAutoCashOrder(0);
+};
 
   requestAnimationFrame(function(){
     document.getElementById("cashConfirmOverlay").classList.add("open");
@@ -481,8 +502,7 @@ let cashOrderTimer = null;
 let cashAutoStartTimer = null;
 
 
-function startAutoCashOrder(){
-
+function startAutoCashOrder(delay = 3200){
   const btn = document.getElementById("cashPlaceOrderNowBtn");
 
   if(!btn) return;
@@ -506,17 +526,43 @@ function startAutoCashOrder(){
   btn.querySelector("span").innerText = "Place Order Now";
 
 
-  cashOrderTimer = setTimeout(function(){
+ cashOrderTimer = setTimeout(async function(){
 
-    cashOrderTimer = null;
+  cashOrderTimer = null;
 
-    closeCashOrderConfirm(false);
+  const cashResult =
+    await saveCashOrderToSupabase();
 
-    setTimeout(function(){
+  if(!cashResult.success){
 
-      showOrderPlacedPopup();
+  // Ignore duplicate trigger without showing alert
+  if(cashResult.message === "Order is already being placed."){
+    return;
+  }
 
-    }, 200);
+  alert(cashResult.message);
+
+  btn.dataset.processing = "false";
+  btn.classList.remove("loading");
+
+  btn.querySelector("span").innerText =
+    "Place Order Now";
+
+  return;
+}
+
+  console.log(
+    "Cash Order ID:",
+    cashResult.orderId
+  );
+
+  closeCashOrderConfirm(false);
+
+  setTimeout(function(){
+
+    showOrderPlacedPopup();
+
+  }, 200);
 
 
     setTimeout(function(){
@@ -576,7 +622,7 @@ function startAutoCashOrder(){
 
     }, 5000);
 
-  }, 3200);
+ }, delay);
 }
 
 
@@ -846,11 +892,40 @@ document
         color:"#0BD957"
       },
 
-      handler:function(paymentResponse){
+      handler:async function(paymentResponse){
 
-        console.log("Payment Success:", paymentResponse);
+  console.log(
+    "Payment Success:",
+    paymentResponse
+  );
 
-        showOrderPlacedPopup();
+  const upiResult =
+    await saveUpiOrderToSupabase({
+
+      razorpay_order_id:
+        paymentResponse.razorpay_order_id,
+
+      razorpay_payment_id:
+        paymentResponse.razorpay_payment_id,
+
+      razorpay_signature:
+        paymentResponse.razorpay_signature
+
+    });
+
+  if(!upiResult.success){
+
+    alert(upiResult.message);
+
+    return;
+  }
+
+  console.log(
+    "UPI Order ID:",
+    upiResult.orderId
+  );
+
+  showOrderPlacedPopup();
 
         setTimeout(function(){
 
