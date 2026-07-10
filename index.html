@@ -8248,7 +8248,7 @@ button{
         </div>
     </div>
 
-  <button class="redeemBtn" onclick="openRedeemSheet()">
+  <button class="redeemBtn" onclick="openApsaraRewardSheet()">
   REDEEM NOW
 </button>
 </div>
@@ -8262,6 +8262,41 @@ button{
 
 
 
+
+<!-- APSARA REDEEM BOTTOM SHEET -->
+<div class="apsaraRewardOverlay" id="apsaraRewardOverlay">
+
+  <div class="apsaraRewardSheet">
+
+    <button
+      type="button"
+      class="apsaraRewardCloseBtn"
+      onclick="closeApsaraRewardSheet()"
+      aria-label="Close"
+    >
+      ×
+    </button>
+
+    <div class="apsaraRewardTopLogoBox">
+      <img
+        src="game/ice.png"
+        class="apsaraRewardTopLogo"
+        alt=""
+      >
+    </div>
+
+    <div class="apsaraRewardContent">
+
+      <div
+        class="apsaraProductsRow"
+        id="apsaraProductsRow"
+      ></div>
+
+    </div>
+
+  </div>
+
+</div>
 
 
 
@@ -9481,41 +9516,6 @@ button{
 
 
 
-
-<!-- APSARA REDEEM BOTTOM SHEET -->
-<div class="apsaraRewardOverlay" id="apsaraRewardOverlay">
-
-  <div class="apsaraRewardSheet">
-
-    <button
-      type="button"
-      class="apsaraRewardCloseBtn"
-      onclick="closeApsaraRewardSheet()"
-      aria-label="Close"
-    >
-      ×
-    </button>
-
-    <div class="apsaraRewardTopLogoBox">
-      <img
-        src="game/ice.png"
-        class="apsaraRewardTopLogo"
-        alt=""
-      >
-    </div>
-
-    <div class="apsaraRewardContent">
-
-      <div
-        class="apsaraProductsRow"
-        id="apsaraProductsRow"
-      ></div>
-
-    </div>
-
-  </div>
-
-</div>
 <script src="rewards.js"></script>
 <script src="banners.js"></script>
 <script src="game.js"></script>
