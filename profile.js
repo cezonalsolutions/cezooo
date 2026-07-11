@@ -1001,21 +1001,13 @@ async function loadLoggedUserOrders(){
 
       <h3>Loading your orders</h3>
 
-      <p>
-        Fetching orders linked to your mobile number.
-      </p>
+      
 
     </div>
   `;
 
 
-  /*
-    Supports database mobile values such as:
-    9502877675
-    919502877675
-    +919502877675
-    +91 9502877675
-  */
+  
 
   const mobileVariants = [
     mobile,
