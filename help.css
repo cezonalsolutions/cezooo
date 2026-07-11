@@ -527,3 +527,36 @@
   font-weight:500;
   line-height:1.35;
 }
+.helpChangeIssueWrap{
+  margin:
+    -6px
+    0
+    16px
+    43px;
+}
+
+.helpChangeIssueBtn{
+  width:auto;
+  height:auto;
+
+  margin:0;
+  padding:7px 11px;
+
+  border:1px solid #dddddd;
+  border-radius:18px;
+
+  background:#ffffff;
+  color:#555555;
+
+  font-size:10.5px;
+  font-weight:700;
+
+  cursor:pointer;
+
+  -webkit-tap-highlight-color:transparent;
+}
+
+.helpChangeIssueBtn i{
+  margin-right:5px;
+  font-size:9px;
+}
