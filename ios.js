@@ -8,11 +8,8 @@ window.onCezooDeviceTokenReceived = function(tokenData){
 
     let deviceToken = "";
 
-    const statusEl =
-      document.getElementById(
-        "cezooDeviceTokenStatus"
-      );
 
+    /* GET TOKEN */
 
     if(typeof tokenData === "string"){
 
@@ -31,39 +28,16 @@ window.onCezooDeviceTokenReceived = function(tokenData){
     }
 
 
-    deviceToken =
-      String(deviceToken)
-        .trim();
+    deviceToken = String(deviceToken).trim();
 
 
-    /* TOKEN NOT RECEIVED */
+    /* TOKEN EMPTY */
 
     if(!deviceToken){
 
       console.warn(
         "CEZOO device token is empty"
       );
-
-
-      if(statusEl){
-
-        statusEl.innerHTML = `
-          Device Token Not Received
-          <i
-            class="fa-solid fa-circle-xmark"
-            style="
-              color:#e53935;
-              font-size:11px;
-              margin-left:4px;
-            "
-          ></i>
-        `;
-
-        statusEl.style.color =
-          "#e53935";
-
-      }
-
 
       return false;
 
@@ -90,34 +64,14 @@ window.onCezooDeviceTokenReceived = function(tokenData){
     );
 
 
-    /* SHOW GREEN RECEIVED STATUS */
-
-    if(statusEl){
-
-      statusEl.innerHTML = `
-        Device Token Received
-        <i
-          class="fa-solid fa-circle-check"
-          style="
-            color:#10b84f;
-            font-size:11px;
-            margin-left:4px;
-          "
-        ></i>
-      `;
-
-      statusEl.style.color =
-        "#10b84f";
-
-    }
-
+    /* NOTIFY OTHER JS */
 
     window.dispatchEvent(
       new CustomEvent(
         "cezooDeviceTokenUpdated",
         {
           detail:{
-            token:deviceToken
+            token: deviceToken
           }
         }
       )
@@ -134,98 +88,8 @@ window.onCezooDeviceTokenReceived = function(tokenData){
       error
     );
 
-
-    const statusEl =
-      document.getElementById(
-        "cezooDeviceTokenStatus"
-      );
-
-
-    if(statusEl){
-
-      statusEl.innerHTML = `
-        Device Token Not Received
-        <i
-          class="fa-solid fa-circle-xmark"
-          style="
-            color:#e53935;
-            font-size:11px;
-            margin-left:4px;
-          "
-        ></i>
-      `;
-
-      statusEl.style.color =
-        "#e53935";
-
-    }
-
-
     return false;
 
   }
 
 };
-
-
-/* =========================================
-   CHECK SAVED TOKEN ON PAGE LOAD
-========================================= */
-
-document.addEventListener(
-  "DOMContentLoaded",
-  function(){
-
-    const statusEl =
-      document.getElementById(
-        "cezooDeviceTokenStatus"
-      );
-
-
-    if(!statusEl) return;
-
-
-    const savedToken =
-      localStorage.getItem(
-        "cezooDeviceToken"
-      );
-
-
-    if(savedToken){
-
-      statusEl.innerHTML = `
-        Device Token Received
-        <i
-          class="fa-solid fa-circle-check"
-          style="
-            color:#10b84f;
-            font-size:11px;
-            margin-left:4px;
-          "
-        ></i>
-      `;
-
-      statusEl.style.color =
-        "#10b84f";
-
-    }else{
-
-      statusEl.innerHTML = `
-        Device Token Not Received
-        <i
-          class="fa-solid fa-circle-xmark"
-          style="
-            color:#e53935;
-            font-size:11px;
-            margin-left:4px;
-          "
-        ></i>
-      `;
-
-      statusEl.style.color =
-        "#e53935";
-
-    }
-
-  }
-);
