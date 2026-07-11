@@ -26,7 +26,7 @@ window.openCezooProfile = function(){
       .classList.add("open");
 
     document.body.style.overflow = "hidden";
-
+loadProfileRecentOrders();
   }else{
 
     openLoginPopup();
@@ -1247,7 +1247,7 @@ const totalItemCount = items.reduce((total, item) => {
 
             <div
               class="userOrderCard"
-              onclick="openUserOrderDetails(${index})"
+              onclick="openRecentOrderDetails(${index})"
             >
 
               <div class="userOrderTopRow">
@@ -2063,4 +2063,303 @@ window.refreshUserOrderMap = function(){
     }
   );
 
+};
+
+
+async function loadProfileRecentOrders(){
+
+  const container =
+    document.getElementById("profileRecentOrders");
+
+  if(!container) return;
+
+
+  const mobile = getLoggedUserMobile();
+
+  if(!mobile){
+    container.innerHTML = "";
+    return;
+  }
+
+
+  container.innerHTML = `
+    <div class="userOrdersState">
+      <div class="userOrdersSpinner"></div>
+      <p>Loading recent orders...</p>
+    </div>
+  `;
+
+
+  const mobileVariants = [
+    mobile,
+    `91${mobile}`,
+    `+91${mobile}`,
+    `+91 ${mobile}`
+  ];
+
+
+  try{
+
+    const [cashResponse, upiResponse] =
+      await Promise.all([
+
+        getOrdersSupabaseClient()
+          .from("cash_delivery_orders")
+          .select("*")
+          .in("user_mobile", mobileVariants)
+          .order("created_at", {
+            ascending:false
+          })
+          .limit(3),
+
+        getOrdersSupabaseClient()
+          .from("upi_orders")
+          .select("*")
+          .in("user_mobile", mobileVariants)
+          .order("created_at", {
+            ascending:false
+          })
+          .limit(3)
+
+      ]);
+
+
+    const cashOrders =
+      (cashResponse.data || []).map(order => ({
+        ...order,
+        _order_type:"cash"
+      }));
+
+
+    const upiOrders =
+      (upiResponse.data || []).map(order => ({
+        ...order,
+        _order_type:"upi"
+      }));
+
+
+    loggedUserOrders = [
+      ...cashOrders,
+      ...upiOrders
+    ]
+    .sort((a,b) =>
+      new Date(b.created_at) -
+      new Date(a.created_at)
+    )
+    .slice(0,3);
+
+
+    await renderProfileRecentOrders();
+
+  }
+  catch(error){
+
+    console.error(error);
+
+    container.innerHTML = `
+      <div class="userOrdersState">
+        <p>Could not load recent orders</p>
+      </div>
+    `;
+
+  }
+
+}
+async function renderProfileRecentOrders(){
+
+  const container =
+    document.getElementById("profileRecentOrders");
+
+  if(!container) return;
+
+
+  if(loggedUserOrders.length === 0){
+
+    container.innerHTML = `
+      <div class="userOrdersState">
+        <i class="fa-regular fa-box-open"></i>
+        <p>No recent orders found</p>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  const cards = await Promise.all(
+
+    loggedUserOrders.map(async (order, index) => {
+
+      const items =
+        parseUserOrderItems(order.items);
+
+
+      const products =
+        await loadAllUserOrderProducts(items);
+
+
+      const imagesHtml = products.map(product => `
+
+        <div class="userOrderMiniImage">
+
+          ${
+            product.image1
+              ? `
+                <img
+                  src="${userOrderEscape(product.image1)}"
+                  loading="lazy"
+                >
+              `
+              : `
+                <i class="fa-solid fa-box"></i>
+              `
+          }
+
+          <span>
+            ×${product.ordered_qty || 1}
+          </span>
+
+        </div>
+
+      `).join("");
+
+
+      const totalItems = items.reduce(
+        (total, item) =>
+          total + (userOrderNumber(item.qty) || 1),
+        0
+      );
+
+
+    return `
+
+  <div
+    class="recentOrderCard"
+  onclick="openRecentOrderDetails(${index})"
+  >
+
+    <div class="recentOrderHeader">
+
+      <div class="recentOrderIcon">
+        <i class="fa-solid fa-bag-shopping"></i>
+      </div>
+
+      <div class="recentOrderHeaderInfo">
+
+        <div class="recentOrderId">
+          ${userOrderEscape(order.order_id || "Order")}
+        </div>
+
+        <div class="recentOrderDate">
+          ${userOrderEscape(userOrderDate(order.created_at))}
+        </div>
+
+      </div>
+
+      <div class="recentOrderArrow">
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+
+    </div>
+
+
+    <div class="recentOrderProducts">
+
+      <div class="recentOrderImages">
+        ${imagesHtml}
+      </div>
+
+    </div>
+
+
+   <div class="recentOrderMeta">
+
+  <div class="recentOrderMetaItem">
+
+    <i class="fa-solid fa-box"></i>
+
+    <span>
+      ${totalItems}
+      ${totalItems === 1 ? "Item" : "Items"}
+    </span>
+
+  </div>
+
+</div>
+
+
+<div class="recentOrderLocation">
+
+  <i class="fa-solid fa-location-dot"></i>
+
+  <span>
+    ${userOrderEscape(
+      order.village ||
+      order.address ||
+      "Delivery address"
+    )}
+  </span>
+
+</div>
+
+    </div>
+
+
+    <div class="recentOrderFooter">
+
+      <div class="recentOrderStatus ${
+        String(order.order_status || "placed")
+          .toLowerCase()
+          .replace(/[^a-z_]/g, "")
+      }">
+
+        <span class="recentOrderStatusDot"></span>
+
+        ${userOrderEscape(
+          userOrderStatusText(order.order_status)
+        )}
+
+      </div>
+
+      <div class="recentOrderAmount">
+        ${userOrderMoney(order.total_amount)}
+      </div>
+
+    </div>
+
+  </div>
+
+`;
+
+    })
+
+  );
+
+
+  container.innerHTML = cards.join("");
+
+}
+window.openRecentOrderDetails = async function(index){
+
+  const ordersPopup =
+    document.getElementById("yourOrdersPopup");
+
+  const detailsPage =
+    document.getElementById("userOrderDetailsPage");
+
+  if(!ordersPopup || !detailsPage){
+    console.error("Orders popup or details page not found");
+    return;
+  }
+
+  // Open parent first
+  ordersPopup.classList.add("open");
+
+  // Open details page
+  detailsPage.classList.add("open");
+
+  document.body.style.overflow = "hidden";
+
+  // Load selected order details
+  await window.openUserOrderDetails(index);
 };
