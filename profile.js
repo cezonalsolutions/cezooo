@@ -70,82 +70,6 @@ window.logoutUser = function(){
   }, 150);
 };
 
-let profileStartX = 0;
-let profileStartY = 0;
-let profileSwipeBlocked = false;
-
-const cezooProfilePopup =
-  document.getElementById("cezooProfilePopup");
-
-
-cezooProfilePopup.addEventListener("touchstart", function(e){
-
-  profileSwipeBlocked = false;
-
-  // NEVER trigger back swipe from map or horizontal image rows
-  if(
-    e.target.closest("#userOrderTrackingMap") ||
-    e.target.closest(".userOrderTrackingMapWrap") ||
-    e.target.closest(".recentOrderImages") ||
-    e.target.closest(".recentOrderProducts") ||
-    e.target.closest(".userOrderImagesRow") ||
-    e.target.closest(".userOrderImagesViewport")
-  ){
-    profileSwipeBlocked = true;
-    profileStartX = 0;
-    profileStartY = 0;
-    return;
-  }
-
-  const touch = e.touches[0];
-
-  profileStartX = touch.clientX;
-  profileStartY = touch.clientY;
-
-}, { passive:true });
-
-
-cezooProfilePopup.addEventListener("touchend", function(e){
-
-  if(profileSwipeBlocked){
-    profileSwipeBlocked = false;
-    return;
-  }
-
-  if(anyChildPopupOpen()) return;
-
-  if(!profileStartX && !profileStartY) return;
-
-  const touch = e.changedTouches[0];
-
-  const diffX = touch.clientX - profileStartX;
-  const diffY = touch.clientY - profileStartY;
-
-  if(
-    Math.abs(diffX) > 90 &&
-    Math.abs(diffY) < 70
-  ){
-    closeCezooProfile();
-  }
-
-  profileStartX = 0;
-  profileStartY = 0;
-
-}, { passive:true });
-document.addEventListener("touchstart", function(e){
-
-  if(
-    e.target.closest("#userOrderTrackingMap") ||
-    e.target.closest(".userOrderTrackingMapWrap") ||
-    e.target.closest(".recentOrderImages") ||
-    e.target.closest(".recentOrderProducts") ||
-    e.target.closest(".userOrderImagesRow") ||
-    e.target.closest(".userOrderImagesViewport")
-  ){
-    e.stopPropagation();
-  }
-
-}, true);
 function openTermsPopup(){
   document.getElementById("termsPopup").classList.add("open");
   document.body.style.overflow = "hidden";
@@ -426,141 +350,6 @@ window.closeYourOrdersPopup = function(){
 };
 
 
-let ordersStartX = 0;
-let ordersStartY = 0;
-let ordersTouchCount = 0;
-
-const yourOrdersPopupBox =
-  document.getElementById("yourOrdersPopup");
-
-
-yourOrdersPopupBox.addEventListener("touchstart", function(e){
-
-  ordersTouchCount = e.touches.length;
-
-  /*
-    Do not start popup swipe when:
-    - order details page is open
-    - user touches the map
-    - user scrolls product images
-  */
-  if(
-    document
-      .getElementById("userOrderDetailsPage")
-      ?.classList.contains("open") ||
-
-    e.target.closest("#userOrderTrackingMap") ||
-
-    e.target.closest(".userOrderTrackingMapWrap") ||
-
-    e.target.closest(".recentOrderImages") ||
-
-    e.target.closest(".userOrderImagesRow") ||
-
-    e.target.closest(".userOrderImagesViewport")
-  ){
-    ordersStartX = 0;
-    ordersStartY = 0;
-    return;
-  }
-
-  const touch = e.touches[0];
-
-  ordersStartX = touch.clientX;
-  ordersStartY = touch.clientY;
-
-});
-
-
-yourOrdersPopupBox.addEventListener("touchend", function(e){
-
-  /*
-    Ignore popup swipe while order details are open
-  */
-  if(
-    document
-      .getElementById("userOrderDetailsPage")
-      ?.classList.contains("open")
-  ){
-    return;
-  }
-
-  /*
-    Ignore map and image scrolling
-  */
-  if(
-    e.target.closest("#userOrderTrackingMap") ||
-
-    e.target.closest(".userOrderTrackingMapWrap") ||
-
-    e.target.closest(".recentOrderImages") ||
-
-    e.target.closest(".userOrderImagesRow") ||
-
-    e.target.closest(".userOrderImagesViewport")
-  ){
-    return;
-  }
-
-  /*
-    Ignore two-finger map zoom
-  */
-  if(ordersTouchCount > 1){
-    return;
-  }
-
-  if(!ordersStartX && !ordersStartY){
-    return;
-  }
-
-  const touch = e.changedTouches[0];
-
-  const diffX =
-    touch.clientX - ordersStartX;
-
-  const diffY =
-    touch.clientY - ordersStartY;
-
-  if(
-    Math.abs(diffX) > 90 &&
-    Math.abs(diffY) < 70
-  ){
-    closeYourOrdersPopup();
-  }
-
-  ordersStartX = 0;
-  ordersStartY = 0;
-  ordersTouchCount = 0;
-
-});
-
-const userOrderDetailsPageBox =
-  document.getElementById("userOrderDetailsPage");
-
-if(userOrderDetailsPageBox){
-
-  userOrderDetailsPageBox.addEventListener(
-    "touchstart",
-    function(e){
-      e.stopPropagation();
-    }
-  );
-
-  userOrderDetailsPageBox.addEventListener(
-    "touchmove",
-    function(e){
-      e.stopPropagation();
-    }
-  );
-
-  userOrderDetailsPageBox.addEventListener(
-    "touchend",
-    function(e){
-      e.stopPropagation();
-    }
-  );
-
-}
 
 /* ================================
    OPEN SAVED ADDRESS
@@ -773,7 +562,7 @@ let loggedUserOrders = [];
 
 const userOrdersProductCache = {};
 let userOrderTrackingMap = null;
-
+let userOrderDetailsOpenedFrom = "orders";
 /* =====================================================
    HELPERS
 ===================================================== */
@@ -966,9 +755,17 @@ window.closeYourOrdersPopup = function(){
 
 window.closeUserOrderDetails = function(){
 
-  document
-    .getElementById("userOrderDetailsPage")
-    ?.classList.remove("open");
+  const detailsPage =
+    document.getElementById("userOrderDetailsPage");
+
+  const ordersPopup =
+    document.getElementById("yourOrdersPopup");
+
+  const profilePopup =
+    document.getElementById("cezooProfilePopup");
+
+
+  detailsPage?.classList.remove("open");
 
 
   if(userOrderTrackingMap){
@@ -980,10 +777,24 @@ window.closeUserOrderDetails = function(){
   }
 
 
+  if(userOrderDetailsOpenedFrom === "orders"){
+
+    // Return to Your Orders list
+    ordersPopup?.classList.add("open");
+    profilePopup?.classList.add("open");
+
+  }else{
+
+    // Return directly to Profile
+    ordersPopup?.classList.remove("open");
+    profilePopup?.classList.add("open");
+
+  }
+
+
   document.body.style.overflow = "hidden";
 
 };
-
 
 /* =====================================================
    LOAD FIRST PRODUCT FOR ORDER CARD
@@ -1401,7 +1212,7 @@ const totalItemCount = items.reduce((total, item) => {
 
             <div
               class="userOrderCard"
-              onclick="openRecentOrderDetails(${index})"
+              onclick="openUserOrderDetailsFromOrders(${index})"
             >
 
               <div class="userOrderTopRow">
@@ -1538,37 +1349,23 @@ function initializeUserOrderMap(order){
     userOrderTrackingMap = null;
 
   }
-
-  userOrderTrackingMap =
-    L.map(
-      mapBox,
-      {
-        zoomControl:false,
-        attributionControl:false,
-        dragging:true,
-        scrollWheelZoom:false,
-doubleClickZoom:true,
-touchZoom:true,
-boxZoom:true
-      }
-    ).setView(
-      [latitude, longitude],
-      16
-    );
+userOrderTrackingMap = L.map(mapBox, {
+  zoomControl: false,
+  attributionControl: false,
+  dragging: true,
+  scrollWheelZoom: false,
+  doubleClickZoom: true,
+  touchZoom: true,
+  boxZoom: false,
+  tap: false
+}).setView(
+  [latitude, longitude],
+  16
+);
 L.DomEvent.disableClickPropagation(mapBox);
 L.DomEvent.disableScrollPropagation(mapBox);
 
-mapBox.addEventListener("touchstart", function(e){
-  e.stopPropagation();
-});
 
-mapBox.addEventListener("touchmove", function(e){
-  e.stopPropagation();
-});
-
-mapBox.addEventListener("touchend", function(e){
-  e.stopPropagation();
-});
 
   L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -2511,6 +2308,8 @@ async function renderProfileRecentOrders(){
 }
 window.openRecentOrderDetails = async function(index){
 
+  userOrderDetailsOpenedFrom = "profile";
+
   const ordersPopup =
     document.getElementById("yourOrdersPopup");
 
@@ -2522,14 +2321,82 @@ window.openRecentOrderDetails = async function(index){
     return;
   }
 
-  // Open parent first
-  ordersPopup.classList.add("open");
+  /*
+    Keep Your Orders popup closed because this order
+    was opened directly from the Profile recent orders.
+  */
+  ordersPopup.classList.remove("open");
 
-  // Open details page
   detailsPage.classList.add("open");
 
   document.body.style.overflow = "hidden";
 
-  // Load selected order details
+  await window.openUserOrderDetails(index);
+};
+
+let detailSwipeStartX = 0;
+let detailSwipeStartY = 0;
+let detailSwipeAllowed = false;
+
+const orderDetailsPage =
+  document.getElementById("userOrderDetailsPage");
+
+
+orderDetailsPage.addEventListener("touchstart", function(e){
+
+  const touch = e.touches[0];
+
+  detailSwipeStartX = touch.clientX;
+  detailSwipeStartY = touch.clientY;
+
+  // Only allow swipe-back when finger starts
+  // from left 35px edge
+  detailSwipeAllowed =
+    detailSwipeStartX <= 35;
+
+}, { passive:true });
+
+
+orderDetailsPage.addEventListener("touchend", function(e){
+
+  if(!detailSwipeAllowed){
+    return;
+  }
+
+  const touch = e.changedTouches[0];
+
+  const diffX =
+    touch.clientX - detailSwipeStartX;
+
+  const diffY =
+    touch.clientY - detailSwipeStartY;
+
+  // Right swipe only
+  if(
+    diffX > 90 &&
+    Math.abs(diffY) < 70
+  ){
+    closeUserOrderDetails();
+  }
+
+  detailSwipeAllowed = false;
+
+}, { passive:true });
+
+window.openUserOrderDetailsFromOrders = async function(index){
+
+  userOrderDetailsOpenedFrom = "orders";
+
+  const ordersPopup =
+    document.getElementById("yourOrdersPopup");
+
+  if(!ordersPopup){
+    return;
+  }
+
+  ordersPopup.classList.add("open");
+
+  document.body.style.overflow = "hidden";
+
   await window.openUserOrderDetails(index);
 };
