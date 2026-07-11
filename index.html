@@ -7924,6 +7924,7 @@ button{
     </button>
   </div>
 </div>
+
 <div id="xeroxPopup" class="xeroxPopup">
 
       <div class="xeroxSheet">
@@ -7935,134 +7936,242 @@ button{
  <div class="xeroxApp">
 
   <section class="hero">
-
     <div class="safe">SAFE ✦ SECURE ✦ INSTANT</div>
-
     <div class="logi">cezooprints</div>
-
     <div class="tag">in 4 mins</div>
 
     <div class="table"></div>
-
     <div class="scissor">✂️</div>
     <div class="paper"></div>
 
-    <!-- Insert your printer image here -->
     <div class="printer-box">
       <img src="printer.webp" alt="Printer Image">
     </div>
-
   </section>
 
-  <section class="offer">
-       <h2 class="offerTitle">
-    Get your first print <span class="freeText">FREE</span>
-</h2>
+  <section class="offere">
+    <h2>Get your first print <span>FREE</span></h2>
     <p>• A4 size prints</p>
     <p>• 75 GSM paper quality</p>
 
-    <input type="file" id="pdfUpload" accept="application/pdf" hidden>
+    <input type="file" id="pdfUpload" accept="application/pdf" multiple hidden>
 
-<label for="pdfUpload" class="upload">
-  Upload Document
-</label>
+    <label for="pdfUpload" class="upload">Upload Document</label>
+    <p class="file-name" id="fileName">Only PDF files are allowed</p>
 
+    <div class="upload-popup" id="uploadPopup">
+      <button class="upload-close-top" id="cancelUploadTop" type="button">×</button>
+      <div class="upload-card" id="uploadCard">
+        <h3 id="uploadTitle">Validating Document</h3>
+        <p class="upload-subtitle" id="uploadText">1 document</p>
 
-<div class="upload-popup" id="uploadPopup">
-  <div class="upload-card" id="uploadCard">
-    <button class="upload-close" id="cancelUpload" type="button" aria-label="Cancel upload">×</button>
+        <div class="scanner-area">
+          <div class="scan-document">
+            <div class="scan-line"></div>
+            <div class="doc-lines">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        </div>
 
-    <div class="upload-top">
-      <div class="upload-symbol">⬆️</div>
-      <div class="upload-info">
-        <h3 id="uploadTitle">Uploading PDF...</h3>
-        <p id="uploadText">Please wait while your document is uploading.</p>
+        <div class="progress-wrap">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <p class="scan-status" id="scanStatus">Ensuring it's all set to print...</p>
+
+        <button class="cancel-upload-btn" id="cancelUpload" type="button">
+          Cancel Upload
+        </button>
       </div>
     </div>
 
-    <div class="progress-wrap">
-      <div class="progress-bar" id="progressBar"></div>
-    </div>
-
-    <div class="progress-percent" id="progressPercent">0%</div>
-  </div>
-</div>
-
-    <p class="note">*Offer applies to 10 pages of BW or ₹30 max discount on color</p>
+<p class="note">* Your documents are securely handled and deleted after printing.</p>
   </section>
 
-<section class="promise-section">
+  <section class="promise-section">
+    <h2 class="promise-title">WE PROMISE</h2>
 
-  <h2 class="promise-title">WE PROMISE</h2>
+    <div class="promise-board">
+      <div class="sticky-card">
+        <div class="promise-icon">🛡️</div>
+        <h3>Safety</h3>
+        <p>Documents are deleted once printed.</p>
+        <span class="fold"></span>
+      </div>
 
-  <div class="promise-board">
+      <div class="sticky-card">
+        <div class="promise-icon">🔒</div>
+        <h3>Security</h3>
+        <p>Prints are sealed before delivery.</p>
+      </div>
 
-    <div class="sticky-card safety-card">
-      <div class="promise-icon">🛡️</div>
-      <h3>Safety</h3>
-      <p>Documents are deleted once printed.</p>
-      <span class="fold"></span>
+      <div class="wide-policy-card">
+        <div class="policy-icon">🙈</div>
+        <div>
+          <h3>No Peek Policy</h3>
+          <p>Our staff will not look at your documents.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq-section">
+    <div class="faq-head">
+      <span>HELP CENTER</span>
+      <h2>FAQ</h2>
+      <p>Common questions about CEZOO Prints.</p>
     </div>
 
-    <div class="sticky-card security-card">
-      <div class="promise-icon">🔒</div>
-      <h3>Security</h3>
-      <p>Prints are sealed before delivery.</p>
-    </div>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary>What document format can I print?</summary>
+        <p>You can upload PDF documents for preview and print settings.</p>
+      </details>
 
-    <div class="wide-policy-card">
-      <div class="policy-icon">🙈</div>
-      <div>
-        <h3>No Peek Policy</h3>
-        <p>Our staff will not look at your documents.</p>
+      <details class="faq-item">
+        <summary>What printing options can I choose from?</summary>
+        <p>You can choose black & white, colour, paper size, side, orientation, binding and delivery type.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>How do I upload my documents?</summary>
+        <p>Click Upload Document, select your PDF files, choose print options and add the order to cart.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>Are my documents safe?</summary>
+        <p>Yes. Your documents are handled securely and deleted after printing.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>How fast will my prints be delivered?</summary>
+        <p>CEZOO Prints delivers quickly based on your location and selected delivery type.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>Can I order bulk printing?</summary>
+        <p>Yes. You can upload multiple PDF files and manage every file in the preview section.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="print-page" id="printPage">
+    <div class="print-header">
+      <button class="back-print" id="backPrint" type="button">‹</button>
+      <div class="print-title">
+        <h2>Printing Settings</h2>
       </div>
     </div>
 
-  </div>
+    <div class="print-scroll-content">
+      <div class="preview-section">
+       <div class="previewHeaderBar">
+  <h3 class="previewHeaderTitle">Uploaded Files Preview</h3>
 
-</section>
+  <button
+    class="previewAddDocumentBtn"
+    id="addDocumentBtn"
+    type="button">
+    Add
+  </button>
+</div>
 
-  <div class="faq-head">
-    <span>HELP CENTER</span>
-    <h2>FAQ</h2>
-    <p>Common questions about CEZOO Prints.</p>
-  </div>
+        <input type="file" id="addPdfUpload" accept="application/pdf" multiple hidden>
 
-  <div class="faq-list">
+        <div class="preview-files-list" id="previewFilesList"></div>
 
-    <details class="faq-item">
-      <summary>What document format can I print?</summary>
-      <p>You can upload PDF, JPG, PNG, Word documents, assignments, resumes and office files.</p>
-    </details>
+        <p class="preview-meta" id="previewMeta">Color • A4 • Single side • Portrait</p>
+      </div>
 
-    <details class="faq-item">
-      <summary>What printing options can I choose from?</summary>
-      <p>You can choose black & white, colour print, A4 size, photo print, binding, business cards and labels.</p>
-    </details>
+      <div class="settings-section">
+        <h3>Print Update</h3>
 
-    <details class="faq-item">
-      <summary>How do I upload my documents?</summary>
-      <p>Click the Upload Document button, select your file, choose print options and place your order.</p>
-    </details>
+        <div class="settings-grid">
+          <div class="setting-card">
+            <label for="pagesInput">Pages</label>
+            <input id="pagesInput" type="number" value="0" min="0" readonly aria-readonly="true" title="Pages are counted automatically from uploaded PDFs">
+          </div>
 
-    <details class="faq-item">
-      <summary>Are my documents safe?</summary>
-      <p>Yes. Your documents are handled securely and deleted after printing.</p>
-    </details>
+          <div class="setting-card">
+            <label for="copiesInput">Copies</label>
+            <div class="copy-stepper">
+              <button class="copy-btn" id="decreaseCopies" type="button">−</button>
+              <input id="copiesInput" type="number" value="1" min="1" readonly>
+              <button class="copy-btn" id="increaseCopies" type="button">+</button>
+            </div>
+          </div>
 
-    <details class="faq-item">
-      <summary>How fast will my prints be delivered?</summary>
-      <p>CEZOO Prints delivers your printed documents quickly to your doorstep based on your location.</p>
-    </details>
+          <div class="setting-card">
+            <label for="printType">Print Type</label>
+            <select id="printType">
+              <option value="color">Color</option>
+              <option value="bw">Black & White</option>
+            </select>
+          </div>
 
-    <details class="faq-item">
-      <summary>Can I order bulk printing?</summary>
-      <p>Yes. You can order bulk prints for offices, schools, colleges, events and business needs.</p>
-    </details>
+          <div class="setting-card">
+            <label for="paperSize">Paper Size</label>
+            <select id="paperSize">
+              <option value="a4">A4</option>
+              <option value="a3">A3</option>
+            </select>
+          </div>
 
-  </div>
+          <div class="setting-card">
+            <label for="sideType">Side</label>
+            <select id="sideType">
+              <option value="single">Single Side</option>
+              <option value="double">Double Side</option>
+            </select>
+          </div>
 
-</section>
+          <div class="setting-card">
+            <label for="orientation">Orientation</label>
+            <select id="orientation">
+              <option value="portrait">Portrait</option>
+              <option value="landscape">Landscape</option>
+            </select>
+          </div>
+
+          <div class="setting-card">
+            <label for="binding">Binding</label>
+            <select id="binding">
+              <option value="none">No Binding</option>
+              <option value="staple">Staple</option>
+              
+            </select>
+          </div>
+
+          <div class="setting-card">
+            <label for="delivery">Delivery</label>
+            <select id="delivery">
+              <option value="normal">Normal</option>
+              <option value="fast">Fast</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="print-bottom-bar">
+      <div class="final-cost">
+        <span>Final Cost</span>
+        <b id="totalPrice">₹0</b>
+      </div>
+      <button class="add-cart-btn" id="addToCartBtn" type="button">Add to Cart</button>
+    </div>
+  </section>
+
+ 
+
+
+
+
+
+
 
 </div>
 
@@ -10980,15 +11089,23 @@ function updateCartFloat(){
     (a,b) => Number(b.addedTime || b.id || 0) - Number(a.addedTime || a.id || 0)
   )[0];
 
+  if(lastItem.imageType === "fontawesome"){
+  imgBox.innerHTML = `
+    <div class="xeroxCartFloatIcon">
+      <i class="${lastItem.iconClass || "fa-solid fa-print"}"></i>
+    </div>
+  `;
+}else{
   imgBox.innerHTML = `
     <div class="cartImgLoader"></div>
 
     <img
-      src="${lastItem.image1 || ''}"
-      onload="this.previousElementSibling.remove()"
-      onerror="this.previousElementSibling.remove()"
+      src="${lastItem.image1 || ""}"
+      onload="this.previousElementSibling?.remove()"
+      onerror="this.previousElementSibling?.remove()"
     >
   `;
+}
 }
 document.addEventListener("DOMContentLoaded", () => {
   updateCartFloat();
