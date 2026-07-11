@@ -2444,3 +2444,36 @@ body.print-open{
 .xeroxEditCartBtn:active{
   transform:scale(.96);
 }
+
+.cartItemRight{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:0;
+}
+
+.xeroxEditBtn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+margin-left:6px;
+  width:34px;      /* Reduce to 30px if you want smaller */
+  height:16px;
+
+  margin-top:3px;
+  padding:0;
+
+  border:1px solid #ddd;
+  border-radius:4px;
+
+  background:#fff;
+  color:#444;
+
+  font-size:9px;
+  font-weight:600;
+
+  line-height:1;
+  text-decoration:none;
+  cursor:pointer;
+}
