@@ -2463,9 +2463,36 @@
     0 3px 14px rgba(0,0,0,.18);
 }
 
+.userOrderMapBackBtn,
+.userOrderMapRefreshBtn,
+.orderDeliveryPartnerCall,
+.userOrderCancelBtn,
+.recentOrderCard{
+  cursor:default;
+  box-shadow:none;
+  transition:none;
+}
 
-/* MAP BOTTOM FADE */
+.userOrderMapBackBtn:active,
+.userOrderMapRefreshBtn:active,
+.orderDeliveryPartnerCall:active,
+.userOrderCancelBtn:active,
+.recentOrderCard:active{
+  transform:none;
+  box-shadow:none;
+}
+.recentOrderImages,
+.userOrderImagesViewport,
+.userOrderImagesRow{
+  touch-action:pan-x;
+  overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;
+}
 
+#userOrderTrackingMap,
+.userOrderTrackingMapWrap .leaflet-container{
+  touch-action:none;
+}
 .userOrderTrackingMapWrap::after{
   content:"";
 
