@@ -790,12 +790,28 @@ function renderCartItemRow(item){
       </div>
 
       <div class="cartItemRight">
-        <div class="cartQtyBox">
-          <button onclick="cartPageDecrease('${key}')">−</button>
-          <span>${item.qty}</span>
-          <button onclick="cartPageIncrease('${key}')">+</button>
-        </div>
-      </div>
+
+  <div class="cartQtyBox">
+    <button onclick="cartPageDecrease('${key}')">−</button>
+    <span>${item.qty}</span>
+    <button onclick="cartPageIncrease('${key}')">+</button>
+  </div>
+
+  ${
+    item.type === "print_order"
+      ? `
+        <button
+          type="button"
+          class="xeroxEditBtn"
+          onclick="editXeroxCartProduct('${key}')"
+        >
+          Edit
+        </button>
+      `
+      : ""
+  }
+
+</div>
 
     </div>
   `;
