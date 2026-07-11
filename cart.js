@@ -712,32 +712,81 @@ ${t.deliverySavings > 0 ? `
     
   `;
 }
-
 function renderCartItemRow(item){
   const key = `${item.table}_${item.id}`;
+
+  const itemQty = Math.max(
+    1,
+    Number(item.qty || 1)
+  );
+
+  const sellingUnitPrice =
+    Number(item.discount_price || 0);
+
+  const originalUnitPrice =
+    item.type === "print_order"
+      ? sellingUnitPrice + 10
+      : Number(
+          item.original_price ||
+          item.discount_price ||
+          0
+        );
+
+  const itemImage =
+    item.imageType === "fontawesome"
+      ? `
+        <div class="xeroxCartProductIcon">
+          <i class="${item.iconClass || "fa-solid fa-print"}"></i>
+        </div>
+      `
+      : `
+        <div class="cartImgLoader"></div>
+
+        <img
+          src="${item.image1 || ""}"
+          alt="${item.name || "Product"}"
+          onload="this.previousElementSibling?.remove()"
+          onerror="
+            this.previousElementSibling?.remove();
+            this.style.display='none';
+          "
+        >
+      `;
+
+  const itemDetails =
+    item.type === "print_order"
+      ? `
+        ${item.pages || 0} pages •
+        ${item.copies || 1} copies<br>
+        ${item.printTypeText || ""} •
+        ${item.paperSize || ""}
+      `
+      : `
+        ${item.quantity || ""} ${item.unit || ""}
+      `;
 
   return `
     <div class="cartItem">
 
       <div class="cartItemImg">
-        <div class="cartImgLoader"></div>
-        <img
-          src="${item.image1 || ""}"
-          onload="this.previousElementSibling.remove()"
-          onerror="this.previousElementSibling.remove()">
+        ${itemImage}
       </div>
 
       <div class="cartItemMiddle">
-        <div class="cartItemName">${item.name || ""}</div>
+
+        <div class="cartItemName">
+          ${item.name || ""}
+        </div>
 
         <div class="cartItemQty">
-          ${item.quantity || ""} ${item.unit || ""}
+          ${itemDetails}
         </div>
 
         <div class="cartPriceBox">
-          <del>₹${Number(item.original_price || 0) * Number(item.qty || 1)}</del>
-          <span>₹${Number(item.discount_price || 0) * Number(item.qty || 1)}</span>
+          <del>₹${originalUnitPrice * itemQty}</del>
+          <span>₹${sellingUnitPrice * itemQty}</span>
         </div>
+
       </div>
 
       <div class="cartItemRight">
@@ -751,10 +800,6 @@ function renderCartItemRow(item){
     </div>
   `;
 }
-
-
-
-
 
 function cartPageDecrease(key){
 
