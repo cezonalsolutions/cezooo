@@ -313,8 +313,20 @@ function openPrintPage(){
 }
 
 function closePrintPage(){
+
   printPage?.classList.remove("show");
   document.body.classList.remove("print-open");
+
+  /* Hide Xerox parent also */
+  document
+    .getElementById("xeroxPopup")
+    ?.classList.remove("show");
+
+  document
+    .querySelector(".floatBarWrap")
+    ?.classList.remove("popupMode");
+
+  document.body.style.overflow = "";
 }
 
 
@@ -839,8 +851,20 @@ async function editXeroxCartProduct(cartKey){
 
     addToCartBtn.textContent = "Update Cart";
 
-    closeCartPagePopup();
-    openPrintPage();
+   closeCartPagePopup();
+
+/* Keep parent available without showing upload screen */
+document
+  .getElementById("xeroxPopup")
+  ?.classList.add("show");
+
+document
+  .querySelector(".floatBarWrap")
+  ?.classList.add("popupMode");
+
+requestAnimationFrame(() => {
+  openPrintPage();
+});
 
   }catch(error){
 
