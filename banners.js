@@ -825,3 +825,51 @@ const phagwaraBannerObserver =
 phagwaraBannerImages.forEach(img=>{
   phagwaraBannerObserver.observe(img);
 });
+function initializePriyaaShimmer(){
+
+  document
+    .querySelectorAll(".priyaaProductArea img")
+    .forEach(img => {
+
+      if(img.dataset.priyaaReady === "true"){
+        return;
+      }
+
+      img.dataset.priyaaReady = "true";
+
+      function finishPriyaaLoading(){
+
+        img.classList.add("priyaaLoaded");
+
+        img
+          .closest(".priyaaProductArea")
+          ?.querySelector(".priyaaShimmer")
+          ?.remove();
+      }
+
+      if(img.complete && img.naturalWidth > 0){
+
+        finishPriyaaLoading();
+
+      }else{
+
+        img.addEventListener(
+          "load",
+          finishPriyaaLoading,
+          { once:true }
+        );
+
+        img.addEventListener(
+          "error",
+          finishPriyaaLoading,
+          { once:true }
+        );
+      }
+
+    });
+}
+
+document.addEventListener(
+  "DOMContentLoaded",
+  initializePriyaaShimmer
+);
