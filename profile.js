@@ -1133,11 +1133,7 @@ async function renderLoggedUserOrders(){
 
         <h3>No orders found</h3>
 
-        <p>
-          Orders placed using this mobile number
-          will appear here.
-        </p>
-
+       
       </div>
     `;
 
