@@ -8412,9 +8412,7 @@ button{
     <div class="profileDetails">
       <h1 class="profileName" id="profileUserName">Sundar Reddy</h1>
       <div class="profileMobile" id="profileUserMobile">+91 - 9502877675</div>
-        <div id="cezooDeviceTokenStatus">
-    Checking device token...
-  </div>
+        <div id="cezooDeviceTokenStatus"></div>
     </div>
 
   </section>
@@ -8460,11 +8458,24 @@ button{
   <i class="fa-solid fa-chevron-right profileArrow"></i>
 </div>
 
+<div class="profileListItem" onclick="openReportIssuePopup()">
+  <i class="fa-solid fa-triangle-exclamation profileListIcon"></i>
+  <span>Report an Issue</span>
+  <i class="fa-solid fa-chevron-right profileArrow"></i>
+</div>
+<div class="profileListItem" onclick="openFaqPopup()">
+  <i class="fa-solid fa-circle-question profileListIcon"></i>
+  <span>FAQs</span>
+  <i class="fa-solid fa-chevron-right profileArrow"></i>
+</div>
 </div>
 
 <h2 class="recentOrdersHeading">
   Recent Orders
 </h2>
+
+
+<div id="profileRecentOrders"></div>
 </div>
 
 
