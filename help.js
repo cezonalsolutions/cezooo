@@ -28,8 +28,14 @@ window.closeHelpPopup = function(){
 
   popup.classList.remove("open");
 
-  // Profile remains open behind Help
   document.body.style.overflow = "hidden";
+
+  setTimeout(function(){
+
+    resetHelpChat();
+
+  },250);
+
 };
 
 
@@ -128,10 +134,13 @@ if(helpPopupBox){
    CEZOO HELP CHAT — JAVASCRIPT ONLY
 ===================================================== */
 
+
+
 let cezooHelpChatReady = false;
 let selectedHelpIssue = "";
 
-
+let helpConversation = [];
+let helpTicketCreated = false;
 /* GET USER NAME */
 
 function getHelpUserName(){
@@ -684,22 +693,20 @@ function createHelpChat(){
   }
 
   .helpChatInputArea{
-    width:100%;
+  width:100%;
 
-    padding:
-      10px
-      12px
-      calc(10px + env(safe-area-inset-bottom));
+  padding:
+  10px
+  12px
+  calc(29px + env(safe-area-inset-bottom));
+  display:flex;
+  align-items:center;
+  gap:9px;
 
-    display:flex;
-    align-items:center;
-    gap:9px;
+  border-top:1px solid #e6e6e6;
 
-    border-top:1px solid #e6e6e6;
-
-    background:#ffffff;
-  }
-
+  background:#ffffff;
+}
   .helpChatInput{
     flex:1;
     height:45px;
@@ -959,7 +966,55 @@ function renderHelpChatHome(){
 
 }
 
+function showChangeHelpIssueButton(){
 
+  const messages =
+    document.getElementById("helpChatMessages");
+
+  if(!messages){
+    return;
+  }
+
+  document
+    .getElementById("helpChangeIssueWrap")
+    ?.remove();
+
+  messages.insertAdjacentHTML(
+    "beforeend",
+    `
+      <div
+        id="helpChangeIssueWrap"
+        class="helpChangeIssueWrap"
+      >
+        <button
+          class="helpChangeIssueBtn"
+          type="button"
+          onclick="changeHelpIssue()"
+        >
+          <i class="fa-solid fa-rotate-left"></i>
+          Change issue
+        </button>
+      </div>
+    `
+  );
+}
+window.changeHelpIssue = function(){
+
+  selectedHelpIssue = "";
+  selectedHelpOrder = null;
+  helpUserOrders = [];
+
+  const input =
+    document.getElementById("helpChatInput");
+
+  if(input){
+    input.value = "";
+    input.disabled = false;
+    input.placeholder = "Type your message...";
+  }
+
+  renderHelpChatHome();
+};
 /* SELECT ISSUE */
 async function selectHelpIssue(issue, button){
 
@@ -977,7 +1032,7 @@ async function selectHelpIssue(issue, button){
 
   button.classList.add("selected");
 
-
+showChangeHelpIssueButton();
   const messages =
     document.getElementById("helpChatMessages");
 
@@ -1104,10 +1159,222 @@ async function selectHelpIssue(issue, button){
   }, 650);
 
 }
+async function createHelpSupportTicket(reason){
+
+  if(helpTicketCreated){
+    return;
+  }
+
+  helpTicketCreated = true;
+
+  const messages =
+    document.getElementById("helpChatMessages");
+
+  const input =
+    document.getElementById("helpChatInput");
+
+  const client =
+    window._supabaseClient;
+
+  if(
+    !client ||
+    typeof client.from !== "function"
+  ){
+
+    console.error(
+      "Ticket failed: Supabase client is unavailable"
+    );
+
+    helpTicketCreated = false;
+
+    return;
+  }
+
+  const ticketId =
+    "CZT-" +
+    Date.now()
+      .toString()
+      .slice(-8);
+
+  const userName =
+    getHelpUserName();
+
+  const userMobile =
+    getLoggedUserMobile();
+
+  const orderId =
+    selectedHelpOrder?.order_id
+      ? String(selectedHelpOrder.order_id)
+      : null;
+
+  const orderStatus =
+    selectedHelpOrder?.order_status ||
+    null;
+
+  const orderTotal =
+    Number(
+      selectedHelpOrder?.total_amount || 0
+    );
+
+  const priority =
+    selectedHelpIssue === "Payment issue"
+      ? "High"
+      : "Normal";
+
+  try{
+
+    const { error } =
+      await client
+        .from("support_tickets")
+        .insert([{
+          ticket_id:ticketId,
+
+          user_name:userName,
+          user_mobile:userMobile,
+
+          issue_type:
+            selectedHelpIssue ||
+            "Other issue",
+
+          order_id:orderId,
+          order_status:orderStatus,
+          order_total:orderTotal,
+
+          conversation:helpConversation,
+
+          ai_summary:reason,
+
+          status:"Open",
+          priority:priority,
+
+          assigned_to:null
+        }]);
+
+    if(error){
+      throw error;
+    }
+
+    if(messages){
+
+      messages.insertAdjacentHTML(
+        "beforeend",
+        `
+          <div class="helpSupportMessage">
+
+            <div class="helpSupportIcon">
+              <i class="fa-solid fa-headset"></i>
+            </div>
+
+            <div class="helpSupportBubble">
+              I understand that this has been frustrating.
+
+              <br><br>
+
+              I have created a support ticket for you.
+
+              <br><br>
+
+              <strong>Ticket ID: ${escapeHelpMessage(ticketId)}</strong>
+
+              <br>
+
+              Our CEZOO support team will review it shortly.
+            </div>
+
+          </div>
+        `
+      );
+
+      messages.scrollTo({
+        top:messages.scrollHeight,
+        behavior:"smooth"
+      });
+    }
+
+    if(input){
+      input.disabled = true;
+      input.placeholder =
+        "Support ticket created";
+    }
+
+    console.log(
+      "Support ticket created:",
+      ticketId
+    );
+
+  }catch(error){
+
+    console.error(
+      "Ticket creation failed:",
+      error
+    );
+
+    helpTicketCreated = false;
+
+    if(messages){
+
+      messages.insertAdjacentHTML(
+        "beforeend",
+        `
+          <div class="helpSupportMessage">
+
+            <div class="helpSupportIcon">
+              <i class="fa-solid fa-headset"></i>
+            </div>
+
+            <div class="helpSupportBubble">
+              I couldn't create the support ticket right now. Please try again.
+            </div>
+
+          </div>
+        `
+      );
+    }
+  }
+}
 /* SEND USER MESSAGE */
+function isHelpUserIrritated(message){
 
-function sendHelpMessage(){
+  const text =
+    String(message || "")
+      .toLowerCase()
+      .trim();
 
+  const irritationWords = [
+    "angry",
+    "very angry",
+    "worst",
+    "worst service",
+    "bad service",
+    "very bad",
+    "useless",
+    "not helping",
+    "you are not helping",
+    "waste",
+    "fraud",
+    "cheating",
+    "scam",
+    "complaint",
+    "manager",
+    "human support",
+    "talk to human",
+    "connect me to human",
+    "customer care",
+    "call me",
+    "fed up",
+    "frustrated",
+    "irritated",
+    "resolve immediately",
+    "solve immediately",
+    "enough",
+    "cancel everything"
+  ];
+
+  return irritationWords.some(word =>
+    text.includes(word)
+  );
+}
+async function sendHelpMessage(){
   const input =
     document.getElementById("helpChatInput");
 
@@ -1115,6 +1382,10 @@ function sendHelpMessage(){
     document.getElementById("helpChatMessages");
 
   if(!input || !messages){
+    return;
+  }
+
+  if(helpTicketCreated){
     return;
   }
 
@@ -1128,7 +1399,6 @@ function sendHelpMessage(){
   messages.insertAdjacentHTML(
     "beforeend",
     `
-
       <div class="helpUserMessage">
 
         <div class="helpUserBubble">
@@ -1136,9 +1406,13 @@ function sendHelpMessage(){
         </div>
 
       </div>
-
     `
   );
+
+  helpConversation.push({
+    role:"user",
+    content:message
+  });
 
   input.value = "";
 
@@ -1146,13 +1420,26 @@ function sendHelpMessage(){
     top:messages.scrollHeight,
     behavior:"smooth"
   });
+const ticketStatusHandled =
+  await checkHelpTicketStatus(message);
+
+if(ticketStatusHandled){
+  return;
+}
+  if(isHelpUserIrritated(message)){
+
+    createHelpSupportTicket(
+      `User appeared frustrated and requested escalation. Latest message: ${message}`
+    );
+
+    return;
+  }
 
   showHelpAutoReply(message);
 }
 
-
-/* AUTOMATIC REPLY */
-function showHelpAutoReply(message){
+/* AUTOMATIC AI REPLY */
+async function showHelpAutoReply(message){
 
   const messages =
     document.getElementById("helpChatMessages");
@@ -1167,7 +1454,6 @@ function showHelpAutoReply(message){
   messages.insertAdjacentHTML(
     "beforeend",
     `
-
       <div
         id="${typingId}"
         class="helpTyping"
@@ -1176,35 +1462,59 @@ function showHelpAutoReply(message){
         <span></span>
         <span></span>
       </div>
-
     `
   );
-
 
   messages.scrollTo({
     top:messages.scrollHeight,
     behavior:"smooth"
   });
 
+  try{
 
-  setTimeout(function(){
+    const response = await fetch(
+      "https://cezoohelpbot.onrender.com/chat",
+      {
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+          message:message,
+          conversation:helpConversation.slice(0, -1),
+          issue:selectedHelpIssue,
+          order:selectedHelpOrder || {}
+        })
+      }
+    );
+
+    const data = await response.json();
 
     document
       .getElementById(typingId)
       ?.remove();
 
+    let reply =
+  data?.choices?.[0]?.message?.content?.trim();
 
-    const reply =
-      getHelpAutomaticReply(
-        selectedHelpIssue,
-        message
-      );
+if(
+  !response.ok ||
+  !reply
+){
+  reply =
+    "I’m having trouble connecting right now. Please try again in a moment.";
+}
 
+helpConversation.push({
+  role:"assistant",
+  content:reply
+});
 
     messages.insertAdjacentHTML(
       "beforeend",
       `
-
         <div class="helpSupportMessage">
 
           <div class="helpSupportIcon">
@@ -1216,17 +1526,51 @@ function showHelpAutoReply(message){
           </div>
 
         </div>
-
       `
     );
-
 
     messages.scrollTo({
       top:messages.scrollHeight,
       behavior:"smooth"
     });
 
-  }, 700);
+  }catch(error){
+
+    console.error(
+      "Help AI error:",
+      error
+    );
+
+    document
+      .getElementById(typingId)
+      ?.remove();
+
+    const fallbackReply =
+      "I’m having trouble connecting right now. Please try again in a moment.";
+
+    messages.insertAdjacentHTML(
+      "beforeend",
+      `
+        <div class="helpSupportMessage">
+
+          <div class="helpSupportIcon">
+            <i class="fa-solid fa-headset"></i>
+          </div>
+
+          <div class="helpSupportBubble">
+            ${escapeHelpMessage(fallbackReply)}
+          </div>
+
+        </div>
+      `
+    );
+
+    messages.scrollTo({
+      top:messages.scrollHeight,
+      behavior:"smooth"
+    });
+
+  }
 
 }
 function getHelpAutomaticReply(issue, message){
@@ -1926,4 +2270,265 @@ function getSelectedOrderReply(issue, order){
     `Please explain your issue in more detail.`
   );
 
+}
+
+function resetHelpChat(){
+
+  selectedHelpIssue = "";
+  selectedHelpOrder = null;
+  helpUserOrders = [];
+helpConversation = [];
+helpTicketCreated = false;
+  const input =
+    document.getElementById("helpChatInput");
+
+  if(input){
+
+    input.value = "";
+    input.disabled = false;
+    input.placeholder = "Type your message...";
+
+  }
+
+  renderHelpChatHome();
+
+}
+
+async function checkHelpTicketStatus(message){
+
+  const text =
+    String(message || "")
+      .toLowerCase()
+      .trim();
+
+  const wantsTicketStatus =
+    text.includes("ticket status") ||
+    text.includes("check ticket") ||
+    text.includes("my ticket") ||
+    text.includes("support ticket") ||
+    text.includes("ticket issue");
+
+  if(!wantsTicketStatus){
+    return false;
+  }
+
+  const messages =
+    document.getElementById("helpChatMessages");
+
+  const client =
+    window._supabaseClient;
+
+  const mobile =
+    getLoggedUserMobile();
+
+  if(
+    !messages ||
+    !client ||
+    typeof client.from !== "function" ||
+    !mobile
+  ){
+    return false;
+  }
+
+  const typingId =
+    `helpTicketTyping_${Date.now()}`;
+
+  messages.insertAdjacentHTML(
+    "beforeend",
+    `
+      <div
+        id="${typingId}"
+        class="helpTyping"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    `
+  );
+
+  messages.scrollTo({
+    top:messages.scrollHeight,
+    behavior:"smooth"
+  });
+
+  try{
+
+    let query =
+      client
+        .from("support_tickets")
+        .select("*")
+        .eq("user_mobile", mobile)
+        .order("created_at", {
+          ascending:false
+        })
+        .limit(1);
+
+    /*
+      If an issue is already selected,
+      first try to find the ticket for that issue.
+    */
+    if(selectedHelpIssue){
+      query =
+        query.eq(
+          "issue_type",
+          selectedHelpIssue
+        );
+    }
+
+    let {
+      data,
+      error
+    } = await query;
+
+    /*
+      If no matching issue ticket was found,
+      fetch the user's latest ticket by mobile.
+    */
+    if(
+      !error &&
+      (!data || data.length === 0) &&
+      selectedHelpIssue
+    ){
+
+      const fallbackResponse =
+        await client
+          .from("support_tickets")
+          .select("*")
+          .eq("user_mobile", mobile)
+          .order("created_at", {
+            ascending:false
+          })
+          .limit(1);
+
+      data = fallbackResponse.data;
+      error = fallbackResponse.error;
+    }
+
+    document
+      .getElementById(typingId)
+      ?.remove();
+
+    if(error){
+      throw error;
+    }
+
+    const ticket =
+      data?.[0];
+
+    if(!ticket){
+
+      messages.insertAdjacentHTML(
+        "beforeend",
+        `
+          <div class="helpSupportMessage">
+
+            <div class="helpSupportIcon">
+              <i class="fa-solid fa-headset"></i>
+            </div>
+
+            <div class="helpSupportBubble">
+              I couldn't find any support ticket linked to your registered mobile number.
+            </div>
+
+          </div>
+        `
+      );
+
+      return true;
+    }
+
+    const ticketStatus =
+      ticket.status || "Open";
+
+    const ticketIssue =
+      ticket.issue_type || "Support issue";
+
+    const ticketId =
+      ticket.ticket_id || "Not available";
+
+    const orderId =
+      ticket.order_id || "";
+
+    messages.insertAdjacentHTML(
+      "beforeend",
+      `
+        <div class="helpSupportMessage">
+
+          <div class="helpSupportIcon">
+            <i class="fa-solid fa-headset"></i>
+          </div>
+
+          <div class="helpSupportBubble">
+
+            I found your latest support ticket using your registered mobile number.
+
+            <br><br>
+
+            <strong>Ticket ID:</strong>
+            ${escapeHelpMessage(ticketId)}
+
+            <br>
+
+            <strong>Issue:</strong>
+            ${escapeHelpMessage(ticketIssue)}
+
+            ${
+              orderId
+                ? `
+                  <br>
+                  <strong>Order:</strong>
+                  ${escapeHelpMessage(orderId)}
+                `
+                : ""
+            }
+
+            <br>
+
+            <strong>Status:</strong>
+            ${escapeHelpMessage(ticketStatus)}
+
+          </div>
+
+        </div>
+      `
+    );
+
+    messages.scrollTo({
+      top:messages.scrollHeight,
+      behavior:"smooth"
+    });
+
+    return true;
+
+  }catch(error){
+
+    console.error(
+      "Ticket status check failed:",
+      error
+    );
+
+    document
+      .getElementById(typingId)
+      ?.remove();
+
+    messages.insertAdjacentHTML(
+      "beforeend",
+      `
+        <div class="helpSupportMessage">
+
+          <div class="helpSupportIcon">
+            <i class="fa-solid fa-headset"></i>
+          </div>
+
+          <div class="helpSupportBubble">
+            I couldn't check your ticket status right now. Please try again.
+          </div>
+
+        </div>
+      `
+    );
+
+    return true;
+  }
 }
