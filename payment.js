@@ -547,11 +547,19 @@ function startAutoCashOrder(delay = 3200){
   btn.dataset.processing = "true";
 
   // restart fill animation from 0
+  if(delay > 0){
+
   btn.classList.remove("loading");
 
   void btn.offsetWidth;
 
   btn.classList.add("loading");
+
+}else{
+
+  btn.classList.remove("loading");
+
+}
 
   // always same text
   btn.querySelector("span").innerText = "Place Order Now";
