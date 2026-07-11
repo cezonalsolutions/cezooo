@@ -380,33 +380,139 @@ window.closeYourOrdersPopup = function(){
 
 let ordersStartX = 0;
 let ordersStartY = 0;
+let ordersTouchCount = 0;
 
 const yourOrdersPopupBox =
   document.getElementById("yourOrdersPopup");
 
 
 yourOrdersPopupBox.addEventListener("touchstart", function(e){
-  e.stopPropagation();
+
+  ordersTouchCount = e.touches.length;
+
+  /*
+    Do not start popup swipe when:
+    - order details page is open
+    - user touches the map
+    - user scrolls product images
+  */
+  if(
+    document
+      .getElementById("userOrderDetailsPage")
+      ?.classList.contains("open") ||
+
+    e.target.closest("#userOrderTrackingMap") ||
+
+    e.target.closest(".userOrderTrackingMapWrap") ||
+
+    e.target.closest(".recentOrderImages") ||
+
+    e.target.closest(".userOrderImagesRow") ||
+
+    e.target.closest(".userOrderImagesViewport")
+  ){
+    ordersStartX = 0;
+    ordersStartY = 0;
+    return;
+  }
 
   const touch = e.touches[0];
+
   ordersStartX = touch.clientX;
   ordersStartY = touch.clientY;
+
 });
 
+
 yourOrdersPopupBox.addEventListener("touchend", function(e){
-  e.stopPropagation();
+
+  /*
+    Ignore popup swipe while order details are open
+  */
+  if(
+    document
+      .getElementById("userOrderDetailsPage")
+      ?.classList.contains("open")
+  ){
+    return;
+  }
+
+  /*
+    Ignore map and image scrolling
+  */
+  if(
+    e.target.closest("#userOrderTrackingMap") ||
+
+    e.target.closest(".userOrderTrackingMapWrap") ||
+
+    e.target.closest(".recentOrderImages") ||
+
+    e.target.closest(".userOrderImagesRow") ||
+
+    e.target.closest(".userOrderImagesViewport")
+  ){
+    return;
+  }
+
+  /*
+    Ignore two-finger map zoom
+  */
+  if(ordersTouchCount > 1){
+    return;
+  }
+
+  if(!ordersStartX && !ordersStartY){
+    return;
+  }
 
   const touch = e.changedTouches[0];
 
-  const diffX = touch.clientX - ordersStartX;
-  const diffY = touch.clientY - ordersStartY;
+  const diffX =
+    touch.clientX - ordersStartX;
 
-  if(Math.abs(diffX) > 90 && Math.abs(diffY) < 70){
+  const diffY =
+    touch.clientY - ordersStartY;
+
+  if(
+    Math.abs(diffX) > 90 &&
+    Math.abs(diffY) < 70
+  ){
     closeYourOrdersPopup();
   }
+
+  ordersStartX = 0;
+  ordersStartY = 0;
+  ordersTouchCount = 0;
+
 });
 
+const userOrderDetailsPageBox =
+  document.getElementById("userOrderDetailsPage");
 
+if(userOrderDetailsPageBox){
+
+  userOrderDetailsPageBox.addEventListener(
+    "touchstart",
+    function(e){
+      e.stopPropagation();
+    }
+  );
+
+  userOrderDetailsPageBox.addEventListener(
+    "touchmove",
+    function(e){
+      e.stopPropagation();
+    }
+  );
+
+  userOrderDetailsPageBox.addEventListener(
+    "touchend",
+    function(e){
+      e.stopPropagation();
+    }
+  );
+
+}
 
 /* ================================
    OPEN SAVED ADDRESS
@@ -1393,12 +1499,28 @@ function initializeUserOrderMap(order){
         attributionControl:false,
         dragging:true,
         scrollWheelZoom:false,
-        doubleClickZoom:false
+doubleClickZoom:true,
+touchZoom:true,
+boxZoom:true
       }
     ).setView(
       [latitude, longitude],
       16
     );
+L.DomEvent.disableClickPropagation(mapBox);
+L.DomEvent.disableScrollPropagation(mapBox);
+
+mapBox.addEventListener("touchstart", function(e){
+  e.stopPropagation();
+});
+
+mapBox.addEventListener("touchmove", function(e){
+  e.stopPropagation();
+});
+
+mapBox.addEventListener("touchend", function(e){
+  e.stopPropagation();
+});
 
   L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
