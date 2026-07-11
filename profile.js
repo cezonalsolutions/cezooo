@@ -819,7 +819,82 @@ async function loadSingleOrderProduct(item){
   if(!item){
     return null;
   }
+/* XEROX / PRINT ORDER */
+if(
+  item.product_type === "print_order" ||
+  item.product_table === "printing"
+){
 
+  const files =
+    Array.isArray(item.files)
+      ? item.files
+      : [];
+
+  return {
+    id: item.product_id,
+
+    product_table: "printing",
+    is_print_order: true,
+
+    name:
+      item.name ||
+      "CEZOO Xerox & Printing",
+
+    ordered_qty:
+      userOrderNumber(item.qty) || 1,
+
+    pages:
+      userOrderNumber(item.pages),
+
+    copies:
+      userOrderNumber(item.copies) || 1,
+
+    print_type:
+      item.print_type || "",
+
+    print_type_text:
+      item.print_type_text ||
+      item.print_type ||
+      "",
+
+    paper_size:
+      item.paper_size || "",
+
+    side_text:
+      item.side_text ||
+      item.side_type ||
+      "",
+
+    orientation_text:
+      item.orientation_text ||
+      item.orientation ||
+      "",
+
+    binding_text:
+      item.binding_text ||
+      item.binding ||
+      "",
+
+    files: files,
+
+    quantity: "",
+    unit: "",
+
+    original_price:
+      userOrderNumber(
+        item.unit_price ||
+        item.total_price
+      ),
+
+    discount_price:
+      userOrderNumber(
+        item.unit_price ||
+        item.total_price
+      ),
+
+    image1: ""
+  };
+}
   const tableName =
     String(item.product_table || "").trim();
 
@@ -1165,19 +1240,29 @@ const orderImagesHtml =
         return `
           <div class="userOrderMiniImage">
 
-            ${
-              product.image1
-                ? `
-                  <img
-                    src="${userOrderEscape(product.image1)}"
-                    alt="${userOrderEscape(product.name || "Product")}"
-                    loading="lazy"
-                  >
-                `
-                : `
-                  <i class="fa-solid fa-box"></i>
-                `
-            }
+           ${
+  product.is_print_order
+    ? `
+      <i
+        class="fa-solid fa-print"
+        style="color:#555;font-size:25px"
+      ></i>
+    `
+    : product.image1
+      ? `
+        <img
+          src="${userOrderEscape(product.image1)}"
+          alt="${userOrderEscape(product.name)}"
+          loading="lazy"
+        >
+      `
+      : `
+        <i
+          class="fa-solid fa-box"
+          style="color:#bbb;font-size:22px"
+        ></i>
+      `
+}
 
             <span>
               ×${userOrderNumber(product.ordered_qty) || 1}
@@ -1512,14 +1597,24 @@ async function(index){
                   </div>
 
 
-                  <div class="userOrderedProductPack">
+                 <div class="userOrderedProductPack">
 
-                    ${userOrderEscape(
-                      `${product.quantity || ""} ${product.unit || ""}`.trim() ||
-                      "Pack information unavailable"
-                    )}
+  ${
+    product.is_print_order
+      ? userOrderEscape(
+          `${product.pages || 0} pages • ` +
+          `${product.copies || 1} copies • ` +
+          `${product.print_type_text || ""} • ` +
+          `${product.paper_size || ""}`
+        )
+      : userOrderEscape(
+          `${product.quantity || ""} ${product.unit || ""}`.trim() ||
+          "Pack information unavailable"
+        )
+  }
 
-                  </div>
+</div>
+
 
 
                   <div class="userOrderedProductQty">
