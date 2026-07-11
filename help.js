@@ -1511,7 +1511,21 @@ helpConversation.push({
   role:"assistant",
   content:reply
 });
+const shouldCreateTicket =
+  reply
+    .toLowerCase()
+    .includes(
+      "i recommend creating a support ticket"
+    );
 
+if(shouldCreateTicket){
+
+  await createHelpSupportTicket(
+    "Issue could not be resolved through chat."
+  );
+
+  return;
+}
     messages.insertAdjacentHTML(
       "beforeend",
       `
