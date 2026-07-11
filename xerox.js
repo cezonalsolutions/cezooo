@@ -101,9 +101,6 @@ const delivery = document.getElementById("delivery");
 const totalPrice = document.getElementById("totalPrice");
 const addToCartBtn = document.getElementById("addToCartBtn");
 
-const cancelConfirmPopup = document.getElementById("cancelConfirmPopup");
-const confirmCancelYes = document.getElementById("confirmCancelYes");
-const confirmCancelNo = document.getElementById("confirmCancelNo");
 
 let uploadedFiles = [];
 let pendingUploadFiles = [];
@@ -112,7 +109,7 @@ let pendingUploadCountPromise = Promise.resolve([]);
 let uploadTimer = null;
 let progress = 0;
 let previewRenderTimer = null;
-
+let editingXeroxCartKey = null;
 if(window.pdfjsLib){
   pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 }
@@ -316,18 +313,11 @@ function openPrintPage(){
 }
 
 function closePrintPage(){
-  printPage.classList.remove("show");
+  printPage?.classList.remove("show");
   document.body.classList.remove("print-open");
-  cancelConfirmPopup.classList.remove("show");
 }
 
-function openCancelConfirm(){
-  cancelConfirmPopup.classList.add("show");
-}
 
-function closeCancelConfirm(){
-  cancelConfirmPopup.classList.remove("show");
-}
 
 function removeFile(index){
   const removed = uploadedFiles.splice(index,1)[0];
@@ -759,7 +749,110 @@ async function getPdfFromIndexedDB(fileId){
     };
   });
 }
+async function editXeroxCartProduct(cartKey){
 
+  const product = cart[cartKey];
+
+  if(!product || product.type !== "print_order"){
+    return;
+  }
+
+  editingXeroxCartKey = cartKey;
+
+  uploadedFiles.forEach(item => {
+    if(item.url){
+      URL.revokeObjectURL(item.url);
+    }
+  });
+
+  uploadedFiles = [];
+
+  try{
+
+    for(const savedFile of product.files || []){
+
+      const record = await getPdfFromIndexedDB(savedFile.id);
+
+      if(!record || !record.file){
+        continue;
+      }
+
+      let restoredFile = record.file;
+
+      if(!(restoredFile instanceof File)){
+        restoredFile = new File(
+          [record.file],
+          record.name || savedFile.name || "document.pdf",
+          {
+            type: record.type || "application/pdf",
+            lastModified: record.lastModified || Date.now()
+          }
+        );
+      }
+
+      uploadedFiles.push({
+        file: restoredFile,
+        url: URL.createObjectURL(restoredFile),
+
+        pageCount: Math.max(
+          1,
+          Number(savedFile.totalPages || 1)
+        ),
+
+        pageCountLoading: false,
+
+        deletedPages: new Set(
+          savedFile.deletedPages || []
+        )
+      });
+    }
+
+    copiesInput.value =
+      Math.max(1, Number(product.copies || 1));
+
+    printType.value =
+      product.printType || "color";
+
+    paperSize.value =
+      String(product.paperSize || "A4").toLowerCase();
+
+    sideType.value =
+      product.sideType || "single";
+
+    orientation.value =
+      product.orientation || "portrait";
+
+    binding.value =
+      product.binding || "none";
+
+    delivery.value =
+      product.delivery || delivery.value;
+
+    fileName.textContent =
+      uploadedFiles.length + " PDF file(s) ready";
+
+    fileName.style.color = "#0758ff";
+
+    updatePageCountInput();
+    renderAllPdfPreviews();
+    updatePreviewAndPrice();
+
+    addToCartBtn.textContent = "Update Cart";
+
+    closeCartPagePopup();
+    openPrintPage();
+
+  }catch(error){
+
+    console.error(
+      "Unable to edit Xerox product:",
+      error
+    );
+
+    editingXeroxCartKey = null;
+    addToCartBtn.textContent = "Add to Cart";
+  }
+}
 addToCartBtn.addEventListener("click", async function(){
   if(uploadedFiles.length === 0){
     alert("Please keep at least one PDF file for print.");
@@ -778,11 +871,19 @@ addToCartBtn.addEventListener("click", async function(){
 
     const amount = calculatePrice();
 
-    const orderId =
-      "print_order_" +
-      Date.now() +
-      "_" +
-      Math.random().toString(36).slice(2,8);
+  const existingXeroxProduct =
+  editingXeroxCartKey
+    ? cart[editingXeroxCartKey]
+    : null;
+
+const orderId =
+  existingXeroxProduct?.id ||
+  (
+    "print_order_" +
+    Date.now() +
+    "_" +
+    Math.random().toString(36).slice(2,8)
+  );
 
     const savedFiles = [];
 
@@ -874,24 +975,40 @@ addToCartBtn.addEventListener("click", async function(){
       addedAt:new Date().toISOString()
     };
 
-   const xeroxCartKey = `printing_${orderId}`;
+   const xeroxCartKey =
+  editingXeroxCartKey ||
+  `printing_${orderId}`;
+
+const oldXeroxQty =
+  editingXeroxCartKey &&
+  cart[editingXeroxCartKey]
+    ? Math.max(
+        1,
+        Number(cart[editingXeroxCartKey].qty || 1)
+      )
+    : 1;
 
 cart[xeroxCartKey] = {
   ...printProduct,
 
-  key:xeroxCartKey,
-  table:"printing",
+  id: orderId,
+  key: xeroxCartKey,
+  table: "printing",
 
-  qty:1,
-  quantity:1,
+  qty: oldXeroxQty,
+  quantity: oldXeroxQty,
 
-  imageType:"fontawesome",
-  iconClass:"fa-solid fa-print",
+  imageType: "fontawesome",
+  iconClass: "fa-solid fa-print",
 
-  image1:"",
-  image:"",
+  image1: "",
+  image: "",
 
-  addedTime:Date.now()
+  addedTime:
+    cart[xeroxCartKey]?.addedTime ||
+    Date.now(),
+
+  updatedTime: Date.now()
 };
 
 saveCart();
@@ -930,7 +1047,7 @@ restoreCartButtons(document);
 
   }catch(error){
   console.error("PDF save failed:", error);
-
+editingXeroxCartKey = null;
   addToCartBtn.disabled = false;
   addToCartBtn.textContent = "Add to Cart";
 }
