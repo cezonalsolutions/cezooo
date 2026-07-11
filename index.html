@@ -41,10 +41,7 @@ html, body {
   z-index: 9999;
   
 }
-body {
-  background: #fff;
-  color: #111;
-}
+
 
 /* gap */
 .top-gap { height: 50px; }
@@ -5028,6 +5025,7 @@ button{
 <link rel="stylesheet" href="profile.css">
 <link rel="stylesheet" href="xerox.css">
 <link rel="stylesheet" href="game.css">
+<link rel="stylesheet" href="help.css">
 <link rel="stylesheet" href="banners.css">
 </head>
 
@@ -8400,8 +8398,7 @@ button{
         </button>
 
         <div class="profileMenu" id="profileMenu">
-          <button onclick="editProfile()">Edit Profile</button>
-         
+        
           <button class="logout" onclick="logoutUser()">Logout</button>
         </div>
 
@@ -8476,6 +8473,21 @@ button{
 
 
 <div id="profileRecentOrders"></div>
+
+<div class="inspiredBy">
+  Inspired by
+
+  <span class="blinkitWrap">
+    <span class="blinkitText">Blinkit</span>
+    <i class="fa-solid fa-heart heartBlinkit"></i>
+  </span>
+
+  <span class="zeptoWrap">
+   
+    <span class="zeptoText">Zepto</span>
+    <i class="fa-solid fa-heart heartZepto"></i>
+  </span>
+</div>
 </div>
 
 
@@ -9195,7 +9207,28 @@ button{
 </div>
 
 
+<div id="helpPopup" class="helpPopup">
 
+  <div class="helpHeader">
+
+    <button
+      class="helpBackBtn"
+      type="button"
+      onclick="closeHelpPopup()"
+      aria-label="Back"
+    >
+      ‹
+    </button>
+
+    <div class="helpTitle">
+      Help & Support
+    </div>
+
+    <div class="helpRightSpace"></div>
+
+  </div>
+
+</div>
 
 </div>
 
@@ -9549,6 +9582,7 @@ button{
 <script src="xerox.js"></script>
 <script src="cart.js"></script>
 <script src="ios.js"></script>
+<script src="help.js"></script>
 
 <script src="location.js"></script>
 <script src="profile.js"></script>
