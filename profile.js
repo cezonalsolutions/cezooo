@@ -35,8 +35,22 @@ loadProfileRecentOrders();
 };
 
 window.closeCezooProfile = function(){
-  document.getElementById("cezooProfilePopup").classList.remove("open");
+
+  // Do not close profile while a child popup is open
+  if(anyChildPopupOpen()){
+    return;
+  }
+
+  document
+    .getElementById("cezooProfilePopup")
+    ?.classList.remove("open");
+
+  document
+    .getElementById("profileMenu")
+    ?.classList.remove("show");
+
   document.body.style.overflow = "";
+
 };
 
 const profileBackBtn = document.getElementById("profileBackBtn");
@@ -155,11 +169,11 @@ refundPopupBox.addEventListener("touchend", function(e){
 
 
   if(
-    Math.abs(diffX) > 90 &&
-    Math.abs(diffY) < 70
-  ){
-    closeRefundPopup();
-  }
+  diffX > 90 &&
+  Math.abs(diffY) < 70
+){
+  closeCezooProfile();
+}
 
 });
 
@@ -753,23 +767,45 @@ window.closeYourOrdersPopup = function(){
 };
 
 
-window.closeUserOrderDetails = function(){
+window.closeUserOrderDetails = async function(){
 
   document
     .getElementById("userOrderDetailsPage")
     ?.classList.remove("open");
 
-
   if(userOrderTrackingMap){
 
     userOrderTrackingMap.remove();
-
     userOrderTrackingMap = null;
 
   }
 
-
   document.body.style.overflow = "hidden";
+
+
+  // IMPORTANT:
+  // Load Your Orders list before user sees parent page
+
+  const container =
+    document.getElementById("yourOrdersContent");
+
+  if(container){
+
+    container.innerHTML = `
+      <div class="userOrdersState">
+
+        <div class="userOrdersSpinner"></div>
+
+        <h3>Loading your orders</h3>
+
+        <p>Please wait...</p>
+
+      </div>
+    `;
+
+  }
+
+  await loadLoggedUserOrders();
 
 };
 
@@ -2286,27 +2322,39 @@ async function renderProfileRecentOrders(){
 }
 window.openRecentOrderDetails = async function(index){
 
+  const selectedOrder = loggedUserOrders[index];
+
   const ordersPopup =
     document.getElementById("yourOrdersPopup");
 
   const detailsPage =
     document.getElementById("userOrderDetailsPage");
 
-  if(!ordersPopup || !detailsPage){
-    console.error("Orders popup or details page not found");
+  if(!selectedOrder || !ordersPopup || !detailsPage){
+    console.error("Order or popup not found");
     return;
   }
 
-  // Open parent first
+  // Keep selected recent order safe
+  const recentOrder = selectedOrder;
+
+  // Open parent popup behind details page
   ordersPopup.classList.add("open");
 
-  // Open details page
+  // Open details
   detailsPage.classList.add("open");
 
   document.body.style.overflow = "hidden";
 
-  // Load selected order details
-  await window.openUserOrderDetails(index);
+  // Show selected recent order
+  const tempOrders = loggedUserOrders;
+
+  loggedUserOrders = [recentOrder];
+
+  await window.openUserOrderDetails(0);
+
+  // Restore recent orders array temporarily
+  loggedUserOrders = tempOrders;
 };
 
 let detailSwipeStartX = 0;
@@ -2357,3 +2405,83 @@ orderDetailsPage.addEventListener("touchend", function(e){
   detailSwipeAllowed = false;
 
 }, { passive:true });
+
+
+/* =========================================
+   SWIPE LEFT / RIGHT TO CLOSE PROFILE
+========================================= */
+
+let profileSwipeStartX = 0;
+let profileSwipeStartY = 0;
+let profileSwipeAllowed = false;
+
+const cezooProfilePopup =
+  document.getElementById("cezooProfilePopup");
+
+if(cezooProfilePopup){
+
+  cezooProfilePopup.addEventListener(
+    "touchstart",
+    function(e){
+
+      // Do not handle profile swipe
+      // when another popup is open above it
+      if(anyChildPopupOpen()){
+        profileSwipeAllowed = false;
+        return;
+      }
+
+      const touch = e.touches[0];
+
+      profileSwipeStartX = touch.clientX;
+      profileSwipeStartY = touch.clientY;
+
+      profileSwipeAllowed = true;
+
+    },
+    {
+      passive:true
+    }
+  );
+
+
+  cezooProfilePopup.addEventListener(
+    "touchend",
+    function(e){
+
+      if(!profileSwipeAllowed){
+        return;
+      }
+
+      // Recheck before closing
+      if(anyChildPopupOpen()){
+        profileSwipeAllowed = false;
+        return;
+      }
+
+      const touch = e.changedTouches[0];
+
+      const diffX =
+        touch.clientX - profileSwipeStartX;
+
+      const diffY =
+        touch.clientY - profileSwipeStartY;
+
+
+      // Close when swiped either left or right
+      if(
+        Math.abs(diffX) > 90 &&
+        Math.abs(diffY) < 70
+      ){
+        closeCezooProfile();
+      }
+
+      profileSwipeAllowed = false;
+
+    },
+    {
+      passive:true
+    }
+  );
+
+}
