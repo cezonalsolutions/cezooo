@@ -5024,6 +5024,57 @@ button{
 
   transform:translateY(-3px);
 }
+.priyaaProductArea{
+  position:relative;
+  overflow:hidden;
+}
+
+.priyaaShimmer{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  background:#eeeeee;
+  overflow:hidden;
+}
+
+.priyaaShimmer::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:-100%;
+  width:100%;
+
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.75),
+    transparent
+  );
+
+  animation:priyaaShimmerMove 1.1s linear infinite;
+}
+
+@keyframes priyaaShimmerMove{
+  from{
+    left:-100%;
+  }
+
+  to{
+    left:100%;
+  }
+}
+
+.priyaaProductArea img{
+  position:relative;
+  z-index:1;
+  opacity:0;
+  transition:opacity .25s ease;
+}
+
+.priyaaProductArea img.priyaaLoaded{
+  opacity:1;
+}
 </style>
 <link rel="stylesheet" href="profile.css">
 <link rel="stylesheet" href="xerox.css">
@@ -5154,86 +5205,225 @@ button{
 
 
 </div>
+
 <section class="brands-section">
 
-    <h1 class="brands-title"></h1>
+  <h1 class="brands-title"></h1>
 
-    <!-- ROW 1 -->
-    <div class="brands-scroll">
+  <div class="brands-scroll">
 
-        <div class="brand-card">
-            <div class="product-area">
-<img id="cocaCola" src="vijay/image2.png" alt="Coca Cola">            </div>
-            <div class="logo-area">
-                <img src="vijay/image1down.png" alt="Coca Cola Logo">
-            </div>
-        </div>
+    <div class="brand-card">
 
-        <div class="brand-card">
-            <div class="product-area">
-<img id="palampet" src="vijay/lays.png" alt="Lays">
-            </div>
-            <div class="logo-area">
-                <img src="vijay/laysdown.png" alt="Lays Logo">
-            </div>
-        </div>
- <div class="brand-card">
-            <div class="product-area">
-                <img id="narsampet" src="vijay/kur.png" alt="Fabelle">
-            </div>
-            <div class="logo-area">
-                <img src="vijay/kurdown.png" alt="Fabelle Logo">
-            </div>
-        </div>
-        <div class="brand-card">
-            <div class="product-area">
-                <img id="manuguru" src="vijay/bingo.png" alt="Cookies">
-            </div>
-            <div class="logo-area">
-                <img src="vijay/bingodown.png" alt="Bakers Dozen Logo">
-            </div>
-        </div>
+      <div class="product-area priyaaProductArea">
 
-        <div class="brand-card">
-            <div class="product-area">
-               <img id="sircilla" src="vijay/milk.png" alt="Bingo">
-            </div>
-            <div class="logo-area">
-                <img src="vijay/milkdown.png" alt="Bingo Logo">
-            </div>
-        </div>
+        <div class="priyaaShimmer"></div>
 
-      
-<div class="brand-card">
-    <div class="product-area">
-        <img id="pig" src="vijay/kit.png" alt="Havmor">
+        <img
+          id="cocaCola"
+          src="vijay/image2.png"
+          alt="Coca Cola"
+          loading="lazy"
+        >
+
+      </div>
+
+      <div class="logo-area priyaaProductArea">
+
+        <div class="priyaaShimmer"></div>
+
+        <img
+          src="vijay/image1down.png"
+          alt="Coca Cola Logo"
+          loading="lazy"
+        >
+
+      </div>
+
     </div>
 
-<div class="logo-area">
-        <img src="vijay/kitdown.png" alt="Havmor Logo">
+
+    <div class="brand-card">
+
+      <div class="product-area priyaaProductArea">
+
+        <div class="priyaaShimmer"></div>
+
+        <img
+          id="palampet"
+          src="vijay/lays.png"
+          alt="Lays"
+          loading="lazy"
+        >
+
+      </div>
+
+      <div class="logo-area priyaaProductArea">
+
+        <div class="priyaaShimmer"></div>
+
+        <img
+          src="vijay/laysdown.png"
+          alt="Lays Logo"
+          loading="lazy"
+        >
+
+      </div>
+
     </div>
-</div>
 
 
+    <div class="brand-card">
 
- <div class="brand-card">
-            <div class="product-area">
-<img id="zaheerabad" src="vijay/oreo.png" alt="KitKat">
-            </div>
+      <div class="product-area priyaaProductArea">
 
+        <div class="priyaaShimmer"></div>
 
-            <div class="logo-area">
-                <img src="vijay/oreodown.png" alt="KitKat Logo">
-            </div>
-        </div>
+        <img
+          id="narsampet"
+          src="vijay/kur.png"
+          alt="Kurkure"
+          loading="lazy"
+        >
+
+      </div>
+
+      <div class="logo-area priyaaProductArea">
+
+        <div class="priyaaShimmer"></div>
+
+        <img
+          src="vijay/kurdown.png"
+          alt="Kurkure Logo"
+          loading="lazy"
+        >
+
+      </div>
+
     </div>
 
-    <!-- ROW 2 -->
-   
+
+    <div class="brand-card">
+
+      <div class="product-area priyaaProductArea">
+
+        <div class="priyaaShimmer"></div>
+
+        <img
+          id="manuguru"
+          src="vijay/bingo.png"
+          alt="Bingo"
+          loading="lazy"
+        >
+
+      </div>
+
+      <div class="logo-area priyaaProductArea">
+
+        <div class="priyaaShimmer"></div>
+
+        <img
+          src="vijay/bingodown.png"
+          alt="Bingo Logo"
+          loading="lazy"
+        >
+
+      </div>
+
+    </div>
+
+
+    <div class="brand-card">
+
+      <div class="product-area priyaaProductArea">
+
+        <div class="priyaaShimmer"></div>
+
+        <img
+          id="sircilla"
+          src="vijay/milk.png"
+          alt="Milk"
+          loading="lazy"
+        >
+
+      </div>
+
+      <div class="logo-area priyaaProductArea">
+
+        <div class="priyaaShimmer"></div>
+
+        <img
+          src="vijay/milkdown.png"
+          alt="Milk Logo"
+          loading="lazy"
+        >
+
+      </div>
+
+    </div>
+
+
+    <div class="brand-card">
+
+      <div class="product-area priyaaProductArea">
+
+        <div class="priyaaShimmer"></div>
+
+        <img
+          id="pig"
+          src="vijay/kit.png"
+          alt="KitKat"
+          loading="lazy"
+        >
+
+      </div>
+
+      <div class="logo-area priyaaProductArea">
+
+        <div class="priyaaShimmer"></div>
+
+        <img
+          src="vijay/kitdown.png"
+          alt="KitKat Logo"
+          loading="lazy"
+        >
+
+      </div>
+
+    </div>
+
+
+    <div class="brand-card">
+
+      <div class="product-area priyaaProductArea">
+
+        <div class="priyaaShimmer"></div>
+
+        <img
+          id="zaheerabad"
+          src="vijay/oreo.png"
+          alt="Oreo"
+          loading="lazy"
+        >
+
+      </div>
+
+      <div class="logo-area priyaaProductArea">
+
+        <div class="priyaaShimmer"></div>
+
+        <img
+          src="vijay/oreodown.png"
+          alt="Oreo Logo"
+          loading="lazy"
+        >
+
+      </div>
+
+    </div>
+
+  </div>
+
 </section>
-
-
-
 
 <div class="sectionTitleWrap">
 
