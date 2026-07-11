@@ -2746,3 +2746,281 @@
 .userOrderMapRefreshBtn:active{
   transform:scale(.92);
 }
+#profileRecentOrders{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  padding:4px 15px 30px;
+}
+
+.recentOrdersHeading{
+  margin:24px 18px 12px;
+  font-size:19px;
+  font-weight:800;
+  color:#171717;
+  letter-spacing:-0.3px;
+}
+
+.recentOrderCard{
+  width:100%;
+  background:#ffffff;
+  border:1px solid #eeeeee;
+  border-radius:20px;
+  padding:16px;
+  cursor:pointer;
+  box-sizing:border-box;
+  box-shadow:
+    0 4px 14px rgba(0,0,0,.05);
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease;
+}
+
+.recentOrderCard:active{
+  transform:scale(.985);
+  box-shadow:
+    0 2px 8px rgba(0,0,0,.04);
+}
+
+.recentOrderHeader{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.recentOrderIcon{
+  width:43px;
+  height:43px;
+  border-radius:13px;
+  background:#eafff1;
+  color:rgb(11,217,87);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  font-size:18px;
+}
+
+.recentOrderHeaderInfo{
+  flex:1;
+  min-width:0;
+}
+
+.recentOrderId{
+  font-size:14px;
+  font-weight:800;
+  color:#151515;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.recentOrderDate{
+  margin-top:4px;
+  font-size:11.5px;
+  font-weight:500;
+  color:#929292;
+}
+
+.recentOrderArrow{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:#f5f5f5;
+  color:#777;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  font-size:11px;
+}
+
+.recentOrderProducts{
+  margin-top:15px;
+  padding:12px;
+  background:#f8f8f8;
+  border-radius:15px;
+  overflow:hidden;
+}
+
+.recentOrderImages{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+
+.recentOrderImages::-webkit-scrollbar{
+  display:none;
+}
+
+.recentOrderImages .userOrderMiniImage{
+  position:relative;
+  width:55px;
+  height:55px;
+  min-width:55px;
+  border-radius:12px;
+  background:#ffffff;
+  border:1px solid #eeeeee;
+  overflow:visible;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.recentOrderImages .userOrderMiniImage img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  padding:5px;
+  box-sizing:border-box;
+  border-radius:12px;
+}
+
+.recentOrderImages .userOrderMiniImage span{
+  position:absolute;
+  right:-5px;
+  bottom:-5px;
+  min-width:20px;
+  height:20px;
+  padding:0 4px;
+  border-radius:10px;
+  background:#151515;
+  color:#ffffff;
+  border:2px solid #ffffff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:9px;
+  font-weight:800;
+  box-sizing:border-box;
+}
+
+.recentOrderMeta{
+  display:flex;
+  align-items:center;
+  margin-top:13px;
+}
+
+.recentOrderMetaItem{
+  display:flex;
+  align-items:center;
+  gap:6px;
+
+  background:#f7f7f7;
+  border-radius:9px;
+
+  padding:7px 10px;
+
+  font-size:11px;
+  font-weight:700;
+  color:#666;
+}
+
+.recentOrderMetaItem i{
+  color:#888;
+  font-size:10px;
+}
+
+
+/* LOCATION - NO BOX */
+
+.recentOrderLocation{
+  display:flex;
+  align-items:flex-start;
+  gap:7px;
+
+  margin-top:11px;
+
+  font-size:11.5px;
+  font-weight:500;
+  color:#777;
+
+  line-height:1.45;
+}
+
+.recentOrderLocation i{
+  color:#111;
+  font-size:12px;
+  margin-top:2px;
+  flex-shrink:0;
+}
+
+.recentOrderLocation span{
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.recentOrderMetaItem:first-child{
+  flex-shrink:0;
+}
+
+.recentOrderMetaItem:last-child{
+  flex:1;
+}
+
+
+
+.recentOrderMetaItem span{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.recentOrderFooter{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:15px;
+  padding-top:14px;
+  border-top:1px solid #eeeeee;
+}
+
+.recentOrderStatus{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:7px 10px;
+  border-radius:20px;
+  background:#f2fff6;
+  color:#07943c;
+  font-size:11px;
+  font-weight:800;
+}
+
+.recentOrderStatusDot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:currentColor;
+}
+
+.recentOrderStatus.cancelled,
+.recentOrderStatus.canceled{
+  background:#fff0f0;
+  color:#e03131;
+}
+
+.recentOrderStatus.delivered{
+  background:#ecfff3;
+  color:#07943c;
+}
+
+.recentOrderStatus.packed{
+  background:#fff8e7;
+  color:#b97800;
+}
+
+.recentOrderStatus.on_the_way{
+  background:#eef5ff;
+  color:#276bd8;
+}
+
+.recentOrderAmount{
+  font-size:17px;
+  font-weight:900;
+  color:#111;
+}
