@@ -562,7 +562,7 @@ let loggedUserOrders = [];
 
 const userOrdersProductCache = {};
 let userOrderTrackingMap = null;
-let userOrderDetailsOpenedFrom = "orders";
+
 /* =====================================================
    HELPERS
 ===================================================== */
@@ -755,17 +755,9 @@ window.closeYourOrdersPopup = function(){
 
 window.closeUserOrderDetails = function(){
 
-  const detailsPage =
-    document.getElementById("userOrderDetailsPage");
-
-  const ordersPopup =
-    document.getElementById("yourOrdersPopup");
-
-  const profilePopup =
-    document.getElementById("cezooProfilePopup");
-
-
-  detailsPage?.classList.remove("open");
+  document
+    .getElementById("userOrderDetailsPage")
+    ?.classList.remove("open");
 
 
   if(userOrderTrackingMap){
@@ -777,24 +769,10 @@ window.closeUserOrderDetails = function(){
   }
 
 
-  if(userOrderDetailsOpenedFrom === "orders"){
-
-    // Return to Your Orders list
-    ordersPopup?.classList.add("open");
-    profilePopup?.classList.add("open");
-
-  }else{
-
-    // Return directly to Profile
-    ordersPopup?.classList.remove("open");
-    profilePopup?.classList.add("open");
-
-  }
-
-
   document.body.style.overflow = "hidden";
 
 };
+
 
 /* =====================================================
    LOAD FIRST PRODUCT FOR ORDER CARD
@@ -1212,7 +1190,7 @@ const totalItemCount = items.reduce((total, item) => {
 
             <div
               class="userOrderCard"
-              onclick="openUserOrderDetailsFromOrders(${index})"
+              onclick="openRecentOrderDetails(${index})"
             >
 
               <div class="userOrderTopRow">
@@ -2308,8 +2286,6 @@ async function renderProfileRecentOrders(){
 }
 window.openRecentOrderDetails = async function(index){
 
-  userOrderDetailsOpenedFrom = "profile";
-
   const ordersPopup =
     document.getElementById("yourOrdersPopup");
 
@@ -2321,16 +2297,15 @@ window.openRecentOrderDetails = async function(index){
     return;
   }
 
-  /*
-    Keep Your Orders popup closed because this order
-    was opened directly from the Profile recent orders.
-  */
-  ordersPopup.classList.remove("open");
+  // Open parent first
+  ordersPopup.classList.add("open");
 
+  // Open details page
   detailsPage.classList.add("open");
 
   document.body.style.overflow = "hidden";
 
+  // Load selected order details
   await window.openUserOrderDetails(index);
 };
 
@@ -2382,21 +2357,3 @@ orderDetailsPage.addEventListener("touchend", function(e){
   detailSwipeAllowed = false;
 
 }, { passive:true });
-
-window.openUserOrderDetailsFromOrders = async function(index){
-
-  userOrderDetailsOpenedFrom = "orders";
-
-  const ordersPopup =
-    document.getElementById("yourOrdersPopup");
-
-  if(!ordersPopup){
-    return;
-  }
-
-  ordersPopup.classList.add("open");
-
-  document.body.style.overflow = "hidden";
-
-  await window.openUserOrderDetails(index);
-};
