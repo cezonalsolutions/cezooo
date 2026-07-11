@@ -70,34 +70,82 @@ window.logoutUser = function(){
   }, 150);
 };
 
-
 let profileStartX = 0;
 let profileStartY = 0;
+let profileSwipeBlocked = false;
 
 const cezooProfilePopup =
   document.getElementById("cezooProfilePopup");
 
+
 cezooProfilePopup.addEventListener("touchstart", function(e){
+
+  profileSwipeBlocked = false;
+
+  // NEVER trigger back swipe from map or horizontal image rows
+  if(
+    e.target.closest("#userOrderTrackingMap") ||
+    e.target.closest(".userOrderTrackingMapWrap") ||
+    e.target.closest(".recentOrderImages") ||
+    e.target.closest(".recentOrderProducts") ||
+    e.target.closest(".userOrderImagesRow") ||
+    e.target.closest(".userOrderImagesViewport")
+  ){
+    profileSwipeBlocked = true;
+    profileStartX = 0;
+    profileStartY = 0;
+    return;
+  }
+
   const touch = e.touches[0];
 
   profileStartX = touch.clientX;
   profileStartY = touch.clientY;
-});
+
+}, { passive:true });
+
+
 cezooProfilePopup.addEventListener("touchend", function(e){
 
+  if(profileSwipeBlocked){
+    profileSwipeBlocked = false;
+    return;
+  }
+
   if(anyChildPopupOpen()) return;
+
+  if(!profileStartX && !profileStartY) return;
 
   const touch = e.changedTouches[0];
 
   const diffX = touch.clientX - profileStartX;
   const diffY = touch.clientY - profileStartY;
 
-  if(Math.abs(diffX) > 90 && Math.abs(diffY) < 70){
+  if(
+    Math.abs(diffX) > 90 &&
+    Math.abs(diffY) < 70
+  ){
     closeCezooProfile();
   }
-});
 
+  profileStartX = 0;
+  profileStartY = 0;
 
+}, { passive:true });
+document.addEventListener("touchstart", function(e){
+
+  if(
+    e.target.closest("#userOrderTrackingMap") ||
+    e.target.closest(".userOrderTrackingMapWrap") ||
+    e.target.closest(".recentOrderImages") ||
+    e.target.closest(".recentOrderProducts") ||
+    e.target.closest(".userOrderImagesRow") ||
+    e.target.closest(".userOrderImagesViewport")
+  ){
+    e.stopPropagation();
+  }
+
+}, true);
 function openTermsPopup(){
   document.getElementById("termsPopup").classList.add("open");
   document.body.style.overflow = "hidden";
