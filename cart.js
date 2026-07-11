@@ -1838,86 +1838,134 @@ function createCezooOrderId(paymentType){
    GET FULL DELIVERY ADDRESS
 ===================================================== */
 
+
 function getCezooOrderAddress(){
 
-  const latitude =
-    Number(localStorage.getItem("cezooUserLat"));
+  const confirmAddress =
+    document
+      .getElementById("cashConfirmAddress")
+      ?.innerText
+      ?.trim();
 
-  const longitude =
-    Number(localStorage.getItem("cezooUserLon"));
-
-
-  /* Cart map selected address */
-
-  if(
-    typeof cartMapAddress !== "undefined" &&
-    cartMapAddress
-  ){
-    return cartMapAddress;
+  if(confirmAddress){
+    return confirmAddress;
   }
 
+  const cartAddress =
+    document
+      .getElementById("cartHeaderStreet")
+      ?.innerText
+      ?.trim();
 
-  /* Try full address from recent locations */
-
-  const recentLocations = JSON.parse(
-    localStorage.getItem("recentLocations") || "[]"
-  );
-
-  const matchingLocation =
-    recentLocations.find(location => {
-
-      const savedLat = Number(location.lat);
-      const savedLon = Number(location.lon);
-
-      return (
-        Math.abs(savedLat - latitude) < 0.00001 &&
-        Math.abs(savedLon - longitude) < 0.00001
-      );
-
-    });
-
-  if(matchingLocation?.name){
-    return matchingLocation.name;
+  if(cartAddress){
+    return cartAddress;
   }
 
+  const mainAddress =
+    document
+      .getElementById("street")
+      ?.innerText
+      ?.trim();
 
-  /* Final fallback */
+  if(mainAddress){
+    return mainAddress;
+  }
 
-  return (
-    document.getElementById("cartHeaderStreet")?.innerText ||
-    document.getElementById("street")?.innerText ||
-    "Delivery address"
-  );
+  return "Delivery address";
 }
-
 
 /* =====================================================
    PREPARE COMMON ORDER DATA
 ===================================================== */
+function makeSafeStorageFileName(name){
 
-function prepareCezooOrderData(paymentMethod){
+  const originalName =
+    String(name || "document.pdf");
+
+  const baseName = originalName
+    .replace(/\.pdf$/i, "")
+    .replace(/[^a-zA-Z0-9_-]/g, "_")
+    .replace(/_+/g, "_")
+    .slice(0, 80);
+
+  return `${baseName || "document"}.pdf`;
+}
+
+
+async function uploadXeroxPdfToSupabase(
+  file,
+  orderFolder,
+  fileIndex
+){
+
+  const safeName =
+    makeSafeStorageFileName(file.name);
+
+  const storagePath =
+    `${orderFolder}/${Date.now()}_${fileIndex}_${safeName}`;
+
+  const { error: uploadError } =
+    await supabaseClient.storage
+      .from("xerox-pdfs")
+      .upload(
+        storagePath,
+        file,
+        {
+          contentType: "application/pdf",
+          cacheControl: "3600",
+          upsert: false
+        }
+      );
+
+  if(uploadError){
+    throw new Error(
+      `PDF upload failed: ${uploadError.message}`
+    );
+  }
+
+  const { data: publicData } =
+    supabaseClient.storage
+      .from("xerox-pdfs")
+      .getPublicUrl(storagePath);
+
+  return {
+    storagePath,
+    publicUrl: publicData?.publicUrl || ""
+  };
+}
+
+async function prepareCezooOrderData(paymentMethod){
 
   const user = JSON.parse(
     localStorage.getItem("cezooUser") || "null"
   );
 
   if(!user || !user.name || !user.mobile){
-    throw new Error("Please login before placing the order.");
+    throw new Error(
+      "Please login before placing the order."
+    );
   }
 
 
   const totals = getCartTotals();
 
-  if(!totals.items || totals.items.length === 0){
+  if(
+    !totals.items ||
+    totals.items.length === 0
+  ){
     throw new Error("Your cart is empty.");
   }
 
 
   const latitude =
-    Number(localStorage.getItem("cezooUserLat"));
+    Number(
+      localStorage.getItem("cezooUserLat")
+    );
 
   const longitude =
-    Number(localStorage.getItem("cezooUserLon"));
+    Number(
+      localStorage.getItem("cezooUserLon")
+    );
 
 
   if(
@@ -1926,48 +1974,275 @@ function prepareCezooOrderData(paymentMethod){
     latitude === 0 ||
     longitude === 0
   ){
-    throw new Error("Please select your delivery location.");
+    throw new Error(
+      "Please select your delivery location."
+    );
   }
 
 
   const deliveryMode =
-    localStorage.getItem("cezooDeliveryMode") ||
-    "instant";
+    localStorage.getItem(
+      "cezooDeliveryMode"
+    ) || "instant";
 
 
   const savedSchedule = JSON.parse(
-    localStorage.getItem("cezooDeliverySchedule") ||
-    "null"
+    localStorage.getItem(
+      "cezooDeliverySchedule"
+    ) || "null"
   );
 
 
-  /*
-    Save only:
-    product_id
-    product_table
-    qty selected by customer
-  */
-
-  const orderItems = totals.items.map(item => ({
-    product_id: Number(item.id),
-    product_table: item.table,
-    qty: Number(item.qty || 1)
-  }));
+  const orderFolder =
+    String(user.mobile).replace(
+      /[^0-9a-zA-Z_-]/g,
+      ""
+    ) +
+    "/" +
+    Date.now();
 
 
-  /*
-    For Instant:
-      delivery_date = null
-      delivery_time = null
+  const orderItems = [];
 
-    For Day Delivery:
-      saved schedule is included when available
-  */
+
+  for(
+    let itemIndex = 0;
+    itemIndex < totals.items.length;
+    itemIndex++
+  ){
+
+    const item = totals.items[itemIndex];
+
+
+    /* =========================
+       XEROX PRODUCT
+    ========================= */
+
+    if(item.type === "print_order"){
+
+      const uploadedPdfFiles = [];
+
+      const savedFiles =
+        Array.isArray(item.files)
+          ? item.files
+          : [];
+
+
+      for(
+        let fileIndex = 0;
+        fileIndex < savedFiles.length;
+        fileIndex++
+      ){
+
+        const savedFile =
+          savedFiles[fileIndex];
+
+
+        const pdfRecord =
+          await getPdfFromIndexedDB(
+            savedFile.id
+          );
+
+
+        if(
+          !pdfRecord ||
+          !pdfRecord.file
+        ){
+          throw new Error(
+            `PDF file not found: ${
+              savedFile.name ||
+              "document.pdf"
+            }`
+          );
+        }
+
+
+        let originalPdf =
+          pdfRecord.file;
+
+
+        if(!(originalPdf instanceof File)){
+
+          originalPdf = new File(
+            [pdfRecord.file],
+            pdfRecord.name ||
+              savedFile.name ||
+              "document.pdf",
+            {
+              type:
+                pdfRecord.type ||
+                "application/pdf",
+
+              lastModified:
+                pdfRecord.lastModified ||
+                Date.now()
+            }
+          );
+        }
+
+
+        const uploaded =
+          await uploadXeroxPdfToSupabase(
+            originalPdf,
+            orderFolder,
+            fileIndex
+          );
+
+
+        uploadedPdfFiles.push({
+
+          indexed_db_id:
+            savedFile.id || null,
+
+          name:
+            originalPdf.name,
+
+          type:
+            originalPdf.type ||
+            "application/pdf",
+
+          size:
+            Number(
+              originalPdf.size || 0
+            ),
+
+          storage_bucket:
+            "xerox-pdfs",
+
+          storage_path:
+            uploaded.storagePath,
+
+          public_url:
+            uploaded.publicUrl,
+
+          total_pages:
+            Number(
+              savedFile.totalPages || 1
+            ),
+
+          selected_pages:
+            Number(
+              savedFile.selectedPages ||
+              savedFile.totalPages ||
+              1
+            ),
+
+          deleted_pages:
+            Array.isArray(
+              savedFile.deletedPages
+            )
+              ? savedFile.deletedPages
+              : []
+
+        });
+      }
+
+
+      orderItems.push({
+
+        product_id:
+          String(
+            item.id ||
+            item.key ||
+            `print_${Date.now()}`
+          ),
+
+        product_table:
+          "printing",
+
+        product_type:
+          "print_order",
+
+        name:
+          item.name ||
+          "CEZOO Xerox & Printing",
+
+        qty:
+          Number(item.qty || 1),
+
+        pages:
+          Number(item.pages || 0),
+
+        copies:
+          Number(item.copies || 1),
+
+        print_type:
+          item.printType || "",
+
+        print_type_text:
+          item.printTypeText || "",
+
+        paper_size:
+          item.paperSize || "",
+
+        side_type:
+          item.sideType || "",
+
+        side_text:
+          item.sideText || "",
+
+        orientation:
+          item.orientation || "",
+
+        orientation_text:
+          item.orientationText || "",
+
+        binding:
+          item.binding || "",
+
+        binding_text:
+          item.bindingText || "",
+
+        delivery:
+          item.delivery || "",
+
+        file_count:
+          uploadedPdfFiles.length,
+
+        files:
+          uploadedPdfFiles,
+
+        unit_price:
+          Number(
+            item.discount_price || 0
+          ),
+
+        total_price:
+          Number(
+            item.discount_price || 0
+          ) *
+          Number(item.qty || 1)
+
+      });
+
+      continue;
+    }
+
+
+    /* =========================
+       NORMAL PRODUCT
+    ========================= */
+
+    orderItems.push({
+
+      product_id:
+        Number(item.id),
+
+      product_table:
+        item.table,
+
+      qty:
+        Number(item.qty || 1)
+
+    });
+  }
+
 
   const deliveryDate =
     deliveryMode === "12_hours"
       ? savedSchedule?.date || null
       : null;
+
 
   const deliveryTime =
     deliveryMode === "12_hours"
@@ -1977,75 +2252,109 @@ function prepareCezooOrderData(paymentMethod){
 
   return {
 
-    user_name: user.name.trim(),
+    user_name:
+      user.name.trim(),
 
-    user_mobile: String(user.mobile).trim(),
+    user_mobile:
+      String(user.mobile).trim(),
 
     village:
-      document.getElementById("cartHeaderVillage")?.innerText ||
-      document.getElementById("village")?.innerText ||
+      document
+        .getElementById(
+          "cartHeaderVillage"
+        )
+        ?.innerText ||
+
+      document
+        .getElementById("village")
+        ?.innerText ||
+
       "Selected Location",
 
-    address: getCezooOrderAddress(),
+    address:
+      getCezooOrderAddress(),
 
-    latitude: latitude,
+    latitude:
+      latitude,
 
-    longitude: longitude,
+    longitude:
+      longitude,
 
-    items: orderItems,
+    items:
+      orderItems,
 
-    total_items: Number(totals.totalQty || 0),
+    total_items:
+      Number(
+        totals.totalQty || 0
+      ),
 
-    mrp_total: Number(totals.mrpTotal || 0),
+    mrp_total:
+      Number(
+        totals.mrpTotal || 0
+      ),
 
-    item_total: Number(totals.itemTotal || 0),
+    item_total:
+      Number(
+        totals.itemTotal || 0
+      ),
 
-    /*
-      Automatically saves:
-      "instant"
-      OR
-      "12_hours"
-    */
-
-    delivery_mode: deliveryMode,
+    delivery_mode:
+      deliveryMode,
 
     delivery_distance:
       totals.deliveryDistance !== null
-        ? Number(totals.deliveryDistance.toFixed(2))
+        ? Number(
+            totals.deliveryDistance
+              .toFixed(2)
+          )
         : null,
 
-    /*
-      Actual amount charged to customer.
-      Day Delivery or free delivery = ₹0.
-    */
+    delivery_fee:
+      Number(
+        totals.deliveryPay || 0
+      ),
 
-    delivery_fee: Number(totals.deliveryPay || 0),
+    handling_fee:
+      Number(
+        totals.handlingPay || 0
+      ),
 
-    handling_fee: Number(totals.handlingPay || 0),
+    delivery_tip:
+      Number(
+        deliveryPartnerTip || 0
+      ),
 
-    delivery_tip: Number(deliveryPartnerTip || 0),
+    total_amount:
+      Number(
+        totals.toPay || 0
+      ),
 
-    total_amount: Number(totals.toPay || 0),
+    total_savings:
+      Number(
+        totals.savings || 0
+      ),
 
-    total_savings: Number(totals.savings || 0),
+    delivery_date:
+      deliveryDate,
 
-    delivery_date: deliveryDate,
-
-    delivery_time: deliveryTime,
+    delivery_time:
+      deliveryTime,
 
     delivery_instructions:
-      Array.isArray(selectedInstructions)
+      Array.isArray(
+        selectedInstructions
+      )
         ? selectedInstructions
         : [],
 
-    payment_method: paymentMethod,
+    payment_method:
+      paymentMethod,
 
-    order_status: "placed"
+    order_status:
+      "placed"
 
   };
 }
-
-
 /* =====================================================
    SAVE CASH ON DELIVERY ORDER
 ===================================================== */
@@ -2062,7 +2371,9 @@ async function saveCashOrderToSupabase(){
     try{
 
       const orderData =
-        prepareCezooOrderData("cash_on_delivery");
+  await prepareCezooOrderData(
+    "cash_on_delivery"
+  );
 
       orderData.order_id =
         createCezooOrderId("CASH");
@@ -2134,8 +2445,8 @@ async function saveUpiOrderToSupabase(paymentData = {}){
 
   try{
 
-    const orderData =
-      prepareCezooOrderData("upi");
+   const orderData =
+  await prepareCezooOrderData("upi");
 
     orderData.order_id =
       createCezooOrderId("UPI");
