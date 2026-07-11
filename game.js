@@ -976,7 +976,7 @@ function showCouponResult(){
     localStorage.setItem(
       "cezooGameCoupon",
       JSON.stringify({
-        code: "CREAMKULFY",
+        code: "CREAMKULFI",
         score: maxScore,
         percent: Number(
           result.percent.replace("%","")
