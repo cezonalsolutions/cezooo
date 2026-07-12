@@ -2117,6 +2117,60 @@ ${
 </div>
 
 </div>
+
+${
+  [
+    "cancelled",
+    "canceled"
+  ].includes(
+    String(order.order_status || "")
+      .trim()
+      .toLowerCase()
+  )
+    ? `
+     <div class="orderTrackingCancelled">
+
+  <div class="trackingRow completed">
+    <div class="trackingDot">
+      <i class="fa-solid fa-check"></i>
+    </div>
+
+    <div class="trackingContent">
+      <div class="trackingTitle">
+        Order Placed
+      </div>
+
+      <div class="trackingSub">
+        Your order was received successfully.
+      </div>
+    </div>
+  </div>
+
+  <div class="trackingLine"></div>
+
+  <div class="trackingRow cancelled">
+    <div class="trackingDot cancel">
+      <i class="fa-solid fa-xmark"></i>
+    </div>
+
+    <div class="trackingContent">
+      <div class="trackingTitle">
+        Order Cancelled
+      </div>
+
+      <div class="trackingSub">
+        This order has been cancelled.
+      </div>
+    </div>
+  </div>
+
+</div>
+    `
+    : ""
+}
+
+
+
 ${
   ![
     "on_the_way",
@@ -2130,13 +2184,15 @@ ${
     ? `
       <div class="userOrderCancelArea">
 
-        <button
-          class="userOrderCancelBtn"
-          type="button"
-          onclick="openCancelOrderSheet(${index})"
-        >
-          Cancel Order
-        </button>
+       <button
+  class="userOrderCancelBtn"
+  type="button"
+  data-order-id="${userOrderEscape(order.order_id || "")}"
+  data-order-type="${order._order_type || "cash"}"
+  onclick="openCancelOrderSheetById(this)"
+>
+  Cancel Order
+</button>
 
       </div>
     `
@@ -2848,28 +2904,41 @@ function createCancelOrderSheet(){
   );
 }
 
+window.openCancelOrderSheetById = function(button){
 
+  const orderId =
+    button?.dataset?.orderId || "";
 
+  const orderType =
+    button?.dataset?.orderType || "cash";
 
-
-
-
-
-
-
-window.openCancelOrderSheet = function(index){
+  if(!orderId){
+    console.error("Cancel Order ID is missing");
+    return;
+  }
 
   const order =
-    loggedUserOrders[index];
+    loggedUserOrders.find(item =>
+      String(item.order_id) === String(orderId) &&
+      String(item._order_type || "cash") === String(orderType)
+    );
 
   if(!order){
+    console.error(
+      "Cancel order not found:",
+      orderId,
+      orderType
+    );
     return;
   }
 
   const currentStatus =
     String(
       order.order_status || "placed"
-    ).toLowerCase();
+    )
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_");
 
   if(
     [
@@ -2885,40 +2954,53 @@ window.openCancelOrderSheet = function(index){
   createCancelOrderSheet();
 
   selectedCancelOrder = order;
-  selectedCancelOrderIndex = index;
 
-  document.getElementById(
-    "cancelOrderId"
-  ).textContent =
-    order.order_id || "—";
+  selectedCancelOrderIndex =
+    loggedUserOrders.findIndex(item =>
+      String(item.order_id) === String(orderId) &&
+      String(item._order_type || "cash") === String(orderType)
+    );
 
-  document.getElementById(
-    "cancelOrderTime"
-  ).textContent =
-    userOrderDate(order.created_at);
+  const sheet =
+    document.getElementById(
+      "cancelOrderSheet"
+    );
 
-  document
-    .getElementById("cancelOrderSheet")
-    ?.classList.add("show");
+  if(!sheet){
+    console.error(
+      "Cancel order sheet was not created"
+    );
+    return;
+  }
 
-  document.body.style.overflow = "hidden";
+  sheet.classList.add("show");
+
+  document.body.style.overflow =
+    "hidden";
+
+  console.log(
+    "✅ Cancel sheet opened:",
+    orderId
+  );
 };
-
-
 window.closeCancelOrderSheet = function(){
 
-  document
-    .getElementById("cancelOrderSheet")
-    ?.classList.remove("show");
+  const sheet =
+    document.getElementById(
+      "cancelOrderSheet"
+    );
+
+  sheet?.classList.remove("show");
 
   selectedCancelOrder = null;
   selectedCancelOrderIndex = null;
 
   /*
-    Order details are still open,
-    so keep body locked.
+    Order details page is still open,
+    so keep the background locked.
   */
   document.body.style.overflow = "hidden";
+
 };
 window.confirmCancelOrder = async function(){
 
