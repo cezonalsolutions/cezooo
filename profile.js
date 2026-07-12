@@ -168,11 +168,11 @@ refundPopupBox.addEventListener("touchend", function(e){
     touch.clientY - refundStartY;
 
 
-  if(
-  diffX > 90 &&
+ if(
+  Math.abs(diffX) > 90 &&
   Math.abs(diffY) < 70
 ){
-  closeCezooProfile();
+  closeRefundPopup();
 }
 
 });
@@ -362,7 +362,76 @@ window.closeYourOrdersPopup = function(){
   // profile popup remains open
   document.body.style.overflow = "hidden";
 };
+let yourOrdersStartX = 0;
+let yourOrdersStartY = 0;
 
+const yourOrdersPopupBox =
+  document.getElementById("yourOrdersPopup");
+
+if(yourOrdersPopupBox){
+
+  yourOrdersPopupBox.addEventListener(
+    "touchstart",
+    function(e){
+
+      /*
+        Don't close Your Orders when the
+        Order Details page is open.
+      */
+      if(
+        document
+          .getElementById("userOrderDetailsPage")
+          ?.classList.contains("open")
+      ){
+        return;
+      }
+
+      e.stopPropagation();
+
+      const touch = e.touches[0];
+
+      yourOrdersStartX = touch.clientX;
+      yourOrdersStartY = touch.clientY;
+
+    },
+    { passive:true }
+  );
+
+
+  yourOrdersPopupBox.addEventListener(
+    "touchend",
+    function(e){
+
+      if(
+        document
+          .getElementById("userOrderDetailsPage")
+          ?.classList.contains("open")
+      ){
+        return;
+      }
+
+      e.stopPropagation();
+
+      const touch = e.changedTouches[0];
+
+      const diffX =
+        touch.clientX - yourOrdersStartX;
+
+      const diffY =
+        touch.clientY - yourOrdersStartY;
+
+      if(
+        Math.abs(diffX) > 90 &&
+        Math.abs(diffY) < 70
+      ){
+        closeYourOrdersPopup();
+      }
+
+    },
+    { passive:true }
+  );
+
+}
 
 
 /* ================================
