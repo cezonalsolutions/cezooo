@@ -314,59 +314,65 @@ function openPrintPage(){
 
 function closePrintPage(cancelEdit = true){
 
+  /* Close print settings */
   printPage?.classList.remove("show");
 
-  document.body.classList.remove("print-open");
-  document.documentElement.classList.remove("print-open");
+  /* Remove print/upload/Xerox overlays */
+  document
+    .getElementById("xeroxPopup")
+    ?.classList.remove("show");
 
+  document
+    .getElementById("uploadPopup")
+    ?.classList.remove("active");
+
+  /* Keep cart closed */
+  document
+    .getElementById("cartPagePopup")
+    ?.classList.remove("open");
+
+  /* Remove every possible scroll-lock class */
+  document.body.classList.remove(
+    "print-open",
+    "popup-open"
+  );
+
+  document.documentElement.classList.remove(
+    "print-open",
+    "popup-open"
+  );
+
+  /* Restore complete main-page scrolling */
   document.body.style.overflow = "";
   document.documentElement.style.overflow = "";
 
-  /*
-    Only when user presses Back/Close
-    without clicking Update Cart.
-  */
+  document.body.style.position = "";
+  document.documentElement.style.position = "";
+
+  document.body.style.height = "";
+  document.documentElement.style.height = "";
+
+  document.body.style.touchAction = "";
+  document.documentElement.style.touchAction = "";
+
+  /* Restore floating bar */
+  document
+    .querySelector(".floatBarWrap")
+    ?.classList.remove("popupMode");
+
   if(cancelEdit && editingXeroxCartKey){
-
-    document
-      .getElementById("xeroxPopup")
-      ?.classList.remove("show");
-
-    document
-      .getElementById("uploadPopup")
-      ?.classList.remove("active");
-
-    document
-      .querySelector(".floatBarWrap")
-      ?.classList.remove("popupMode");
-
     editingXeroxCartKey = null;
 
     addToCartBtn.disabled = false;
     addToCartBtn.textContent = "Add to Cart";
-
-   setTimeout(() => {
-
-  openCartPagePopup();
-
-  requestAnimationFrame(() => {
-
-    const cartContent =
-      document.getElementById("cartPageContent");
-
-    if(cartContent){
-      cartContent.scrollTop = 0;
-      cartContent.style.overflowY = "auto";
-      cartContent.style.touchAction = "pan-y";
-      cartContent.style.webkitOverflowScrolling = "touch";
-    }
-
-  });
-
-}, 120);
   }
-}
 
+  /* Force iOS/Android browser to restore body scrolling */
+  requestAnimationFrame(() => {
+    window.scrollBy(0, 1);
+    window.scrollBy(0, -1);
+  });
+}
 function removeFile(index){
   const removed = uploadedFiles.splice(index,1)[0];
   if(removed && removed.url){
