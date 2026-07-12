@@ -317,16 +317,7 @@ function closePrintPage(){
   printPage?.classList.remove("show");
   document.body.classList.remove("print-open");
 
-  /* Hide Xerox parent also */
-  document
-    .getElementById("xeroxPopup")
-    ?.classList.remove("show");
-
-  document
-    .querySelector(".floatBarWrap")
-    ?.classList.remove("popupMode");
-
-  document.body.style.overflow = "";
+  /* Don't close Xerox popup */
 }
 
 
@@ -1042,7 +1033,19 @@ restoreCartButtons(document);
     addToCartBtn.textContent = "Added";
 
     setTimeout(() => {
-      closePrintPage();
+     if(editingXeroxCartKey){
+
+  closePrintPage();
+
+  openCartPagePopup();
+
+  editingXeroxCartKey = null;
+
+}else{
+
+  closePrintPage();
+
+}
 
       uploadedFiles.forEach(item => {
         if(item.url){
