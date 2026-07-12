@@ -2366,3 +2366,525 @@
   font-size:17px;
   vertical-align:2px;
 }
+
+
+.apsaraRewardOverlay{
+  position:fixed;
+  inset:0;
+  z-index:999999999;
+
+  background:rgba(0,0,0,.45);
+
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+
+  transition:opacity .25s ease;
+}
+
+.apsaraRewardOverlay.apsaraRewardShow{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+
+.apsaraRewardSheet{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+
+  width:100%;
+  height:70vh;
+
+  background:#fff;
+  border-radius:26px 26px 0 0;
+
+  transform:translateY(105%);
+  transition:transform .35s cubic-bezier(.22,.8,.25,1);
+
+  padding:18px 20px 30px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  box-sizing:border-box;
+}
+
+.apsaraRewardOverlay.apsaraRewardShow .apsaraRewardSheet{
+  transform:translateY(0);
+}
+
+.apsaraRewardCloseBtn{
+  position:absolute;
+  top:15px;
+  right:16px;
+
+  width:36px;
+  height:36px;
+  margin:0;
+
+  border:none;
+  border-radius:50%;
+
+  background:#f1f1f1;
+  color:#222;
+
+  font-size:27px;
+  font-weight:400;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  z-index:10;
+}
+
+.apsaraRewardTopLogoBox{
+  width:100%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0 50px;
+}
+
+.apsaraRewardTopLogo{
+  width:auto;
+  height:55px;
+  max-width:200px;
+
+  object-fit:contain;
+  display:block;
+}
+
+.apsaraRewardContent{
+  width:100%;
+  flex:1;
+
+  margin-top:20px;
+
+  overflow-y:auto;
+}
+
+
+.reportIssueContent{
+  padding-bottom:35px;
+}
+
+.reportIssueIntro{
+  text-align:center;
+  padding:12px 8px 22px;
+}
+
+.reportIssueMainIcon{
+  width:62px;
+  height:62px;
+  margin:0 auto 12px;
+
+  border-radius:18px;
+  background:#fff4f4;
+  color:#e53935;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:25px;
+}
+
+.reportIssueIntro h2{
+  margin:0 0 7px;
+  color:#202124;
+  font-size:20px;
+  font-weight:800;
+}
+
+.reportIssueDescription{
+  max-width:340px;
+  margin:0 auto;
+
+  color:#747b88;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.reportIssueSection{
+  margin-bottom:17px;
+}
+
+.reportIssueLabel{
+  display:block;
+  margin-bottom:7px;
+
+  color:#272a31;
+  font-size:13px;
+  font-weight:750;
+}
+
+.reportOptionalText{
+  margin-left:4px;
+  color:#9a9a9a;
+  font-size:10px;
+  font-weight:500;
+}
+
+.reportIssueSelect,
+.reportIssueInput,
+.reportIssueTextarea{
+  width:100%;
+  box-sizing:border-box;
+
+  border:1px solid #e1e4e8;
+  border-radius:13px;
+
+  background:#f8f9fa;
+  color:#202124;
+
+  font-family:inherit;
+  font-size:13px;
+
+  outline:none;
+}
+
+.reportIssueSelect,
+.reportIssueInput{
+  height:48px;
+  padding:0 13px;
+}
+
+.reportIssueTextarea{
+  height:130px;
+  padding:13px;
+
+  resize:none;
+  line-height:1.5;
+}
+
+.reportIssueSelect:focus,
+.reportIssueInput:focus,
+.reportIssueTextarea:focus{
+  border-color:#b8bdc5;
+  background:#fff;
+}
+
+.reportIssueCount{
+  margin-top:5px;
+  text-align:right;
+
+  color:#999;
+  font-size:10px;
+}
+
+.reportIssueStatus{
+  display:none;
+
+  margin-bottom:12px;
+  padding:10px 12px;
+
+  border-radius:10px;
+
+  font-size:12px;
+  font-weight:650;
+  text-align:center;
+}
+
+.reportIssueStatus.error{
+  display:block;
+  background:#fff0f0;
+  color:#d93025;
+}
+
+.reportIssueStatus.success{
+  display:block;
+  background:#effcf3;
+  color:#0a9f47;
+}
+
+.reportIssueSubmitBtn{
+  width:100%;
+  height:49px;
+
+  border:none;
+  border-radius:14px;
+
+  background:#111;
+  color:#fff;
+
+  font-size:14px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+
+
+
+
+
+
+
+
+.reportIssueSuccessTick{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  width:28px;
+  height:28px;
+
+  border-radius:50%;
+
+  background:#0BD957;
+  color:#fff;
+
+  font-size:18px;
+  font-weight:900;
+
+  animation:reportIssueTick .45s ease;
+}
+
+@keyframes reportIssueTick{
+
+  0%{
+    transform:scale(.2) rotate(-40deg);
+    opacity:0;
+  }
+
+  70%{
+    transform:scale(1.15);
+    opacity:1;
+  }
+
+  100%{
+    transform:scale(1);
+    opacity:1;
+  }
+
+}
+
+.tirupathiiFaqItem{
+  margin-bottom:12px;
+  background:#fff;
+  border:1px solid #ececec;
+  border-radius:16px;
+  overflow:hidden;
+  transition:.25s ease;
+  box-shadow:0 3px 12px rgba(0,0,0,.04);
+}
+
+.tirupathiiFaqItem[open]{
+  border-color:#0BD957;
+  box-shadow:0 8px 20px rgba(11,217,87,.10);
+}
+
+.tirupathiiFaqItem summary{
+  list-style:none;
+  cursor:pointer;
+  padding:18px 20px;
+  font-size:15px;
+  font-weight:800;
+  color:#202124;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  user-select:none;
+}
+
+.tirupathiiFaqItem summary::-webkit-details-marker{
+  display:none;
+}
+
+.tirupathiiFaqItem summary::after{
+  content:"+";
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:#f4f4f4;
+  color:#444;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  font-weight:900;
+  transition:.25s ease;
+  flex-shrink:0;
+}
+
+.tirupathiiFaqItem[open] summary::after{
+  content:"−";
+  background:#0BD957;
+  color:#fff;
+  transform:rotate(180deg);
+}
+
+.tirupathiiFaqItem p{
+  margin:0;
+  padding:0 20px 18px;
+  color:#666;
+  font-size:13px;
+  line-height:1.7;
+  animation:tirupathiiFaqFade .22s ease;
+}
+
+@keyframes tirupathiiFaqFade{
+
+  from{
+    opacity:0;
+    transform:translateY(-6px);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+}
+
+.shiridiContent{
+  padding-bottom:35px;
+}
+
+.shiridiIntro{
+  text-align:center;
+  padding:12px 8px 24px;
+}
+
+.shiridiIcon{
+  width:64px;
+  height:64px;
+  margin:0 auto 14px;
+
+  border-radius:18px;
+
+  background:#fff8e8;
+  color:#ffb300;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:26px;
+}
+
+.shiridiHeading{
+  margin:0 0 8px;
+
+  color:#202124;
+  font-size:20px;
+  font-weight:800;
+}
+
+.shiridiDescription{
+  max-width:340px;
+  margin:0 auto;
+
+  color:#747b88;
+  font-size:13px;
+  line-height:1.6;
+}
+
+.shiridiSection{
+  margin-bottom:18px;
+}
+
+.shiridiLabel{
+  display:block;
+
+  margin-bottom:7px;
+
+  color:#202124;
+  font-size:13px;
+  font-weight:750;
+}
+
+.shiridiInput{
+  width:100%;
+  height:50px;
+
+  padding:0 15px;
+
+  border:1px solid #e4e6eb;
+  border-radius:14px;
+
+  background:#f8f9fa;
+
+  color:#202124;
+  font-size:14px;
+  font-family:inherit;
+
+  outline:none;
+  box-sizing:border-box;
+
+  transition:.22s;
+}
+
+.shiridiInput:focus{
+  border-color:#0BD957;
+  background:#fff;
+  box-shadow:0 0 0 3px rgba(11,217,87,.08);
+}
+
+.shiridiSubmitBtn{
+  width:100%;
+  height:50px;
+
+  margin-top:8px;
+
+  border:none;
+  border-radius:14px;
+
+  background:#111;
+  color:#fff;
+
+  font-size:15px;
+  font-weight:800;
+
+  cursor:pointer;
+
+  transition:.22s;
+}
+
+.shiridiSubmitBtn:active{
+  transform:scale(.98);
+}
+
+.shiridiSuccessTick{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  width:28px;
+  height:28px;
+
+  border-radius:50%;
+
+  background:#0BD957;
+  color:#fff;
+
+  font-size:18px;
+  font-weight:900;
+
+  animation:shiridiTick .45s ease;
+}
+
+@keyframes shiridiTick{
+
+  0%{
+    transform:scale(.2) rotate(-40deg);
+    opacity:0;
+  }
+
+  70%{
+    transform:scale(1.15);
+    opacity:1;
+  }
+
+  100%{
+    transform:scale(1);
+    opacity:1;
+  }
+
+}
+
