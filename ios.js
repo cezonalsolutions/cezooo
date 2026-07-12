@@ -33,22 +33,18 @@ window.onCezooDeviceTokenReceived = function(tokenData){
         "cezooDeviceTokenStatus"
       );
 
+    /* ALWAYS HIDE STATUS ELEMENT */
+
+    if(tokenStatus){
+
+      tokenStatus.textContent = "";
+      tokenStatus.style.display = "none";
+
+    }
+
     /* TOKEN EMPTY */
 
     if(!deviceToken){
-
-      if(tokenStatus){
-
-        tokenStatus.style.marginTop = "8px";
-        tokenStatus.style.fontSize = "11px";
-        tokenStatus.style.lineHeight = "1.4";
-        tokenStatus.style.wordBreak = "break-all";
-        tokenStatus.style.color = "#e53935";
-
-        tokenStatus.textContent =
-          "Device token not received";
-
-      }
 
       console.warn(
         "CEZOO device token is empty"
@@ -70,24 +66,8 @@ window.onCezooDeviceTokenReceived = function(tokenData){
       new Date().toISOString()
     );
 
-    /* SHOW TOKEN */
-
-    if(tokenStatus){
-
-      tokenStatus.style.marginTop = "8px";
-      tokenStatus.style.fontSize = "11px";
-      tokenStatus.style.lineHeight = "1.4";
-      tokenStatus.style.wordBreak = "break-all";
-      tokenStatus.style.color = "#0aaa43";
-
-      tokenStatus.textContent =
-        "Device Token: " + deviceToken;
-
-    }
-
     console.log(
-      "✅ CEZOO device token saved:",
-      deviceToken
+      "✅ CEZOO device token saved"
     );
 
     /* NOTIFY OTHER JS */
@@ -114,9 +94,8 @@ window.onCezooDeviceTokenReceived = function(tokenData){
 
     if(tokenStatus){
 
-      tokenStatus.style.color = "#e53935";
-      tokenStatus.textContent =
-        "Device token error";
+      tokenStatus.textContent = "";
+      tokenStatus.style.display = "none";
 
     }
 
