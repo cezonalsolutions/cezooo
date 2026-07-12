@@ -149,6 +149,16 @@ function resetGameStart(){
 }
 
 function openGamePopup(){
+
+  gameIntroRunId++;
+  gameIntroStarting = false;
+
+  clearGameIntroTimers();
+
+  clearTimeout(gameTimer);
+  gameTimer = null;
+
+ 
   updateCezooAttemptUI();
   document.getElementById("gamePopup").classList.add("show");
   document.body.style.overflow = "hidden";
@@ -177,6 +187,13 @@ function openGamePopup(){
   }, 3000);
 }
 function closeGamePopup(){
+    gameIntroRunId++;
+  gameIntroStarting = false;
+
+  clearTimeout(gameTimer);
+  gameTimer = null;
+
+  clearGameIntroTimers();
   stopGameVideo();
 stopMic();
   document.getElementById("gamePopup").classList.remove("show");
@@ -246,83 +263,208 @@ gamePopup.addEventListener("touchend", function(e){
 });
 
 
-let introTimer1, introTimer2, introTimer3;
+let introTimer1 = null;
+let introTimer2 = null;
+let introTimer3 = null;
+let introCountTimer = null;
 
+let gameIntroStarting = false;
+let gameIntroRunId = 0;
+function clearGameIntroTimers(){
+
+  clearTimeout(introTimer1);
+  clearTimeout(introTimer2);
+  clearTimeout(introTimer3);
+  clearTimeout(introCountTimer);
+
+  introTimer1 = null;
+  introTimer2 = null;
+  introTimer3 = null;
+  introCountTimer = null;
+}
 function hideIntroSteps(){
   document.querySelectorAll(".introStep")
     .forEach(step => step.classList.remove("active"));
 }
 async function startGameIntro(){
 
-
-  stopGameVideo();
-
-  clearTimeout(introTimer1);
-  clearTimeout(introTimer2);
-  clearTimeout(introTimer3);
-
-  // mic asks ONLY after Play Now click
-  try{
-    if(!micStream){
-    micStream = await navigator.mediaDevices.getUserMedia({
-  audio:{
-    echoCancellation:false,
-    noiseSuppression:false,
-    autoGainControl:false
-  }
-});
-      audioContext = new AudioContext();
-      analyser = audioContext.createAnalyser();
-      analyser.fftSize = 512;
-      analyser.smoothingTimeConstant = .92;
-
-      const mic = audioContext.createMediaStreamSource(micStream);
-      mic.connect(analyser);
-
-      dataArray = new Uint8Array(analyser.frequencyBinCount);
-      if(audioContext.state === "suspended"){
-  await audioContext.resume();
-}
-    }
-  }catch(err){
-    alert("Please allow microphone permission.");
+  /* Prevent double taps */
+  if(gameIntroStarting || running){
     return;
   }
 
-  document.getElementById("mainScreen").style.display = "none";
-  document.getElementById("gameIntroScreen").style.display = "block";
+  gameIntroStarting = true;
+
+  const currentRunId = ++gameIntroRunId;
+
+  /*
+    Important:
+    Stop the old 3-second popup timer.
+    Otherwise it can reopen Play Now during countdown.
+  */
+  clearTimeout(gameTimer);
+  gameTimer = null;
+
+  clearGameIntroTimers();
+  stopGameVideo();
+
+  const mainScreen =
+    document.getElementById("mainScreen");
+
+  const introScreen =
+    document.getElementById("gameIntroScreen");
+
+  /*
+    Change screen immediately so the tap
+    does not feel delayed.
+  */
+  mainScreen.style.display = "none";
+  introScreen.style.display = "block";
 
   hideIntroSteps();
-  document.getElementById("clockStep").classList.add("active");
+
+  document
+    .getElementById("clockStep")
+    ?.classList.add("active");
+
+  try{
+
+    if(!micStream){
+
+      micStream =
+        await navigator.mediaDevices.getUserMedia({
+          audio:{
+            echoCancellation:false,
+            noiseSuppression:false,
+            autoGainControl:false
+          }
+        });
+
+      /*
+        User may have closed/restarted while
+        microphone permission was opening.
+      */
+      if(currentRunId !== gameIntroRunId){
+
+        micStream
+          .getTracks()
+          .forEach(track => track.stop());
+
+        micStream = null;
+        gameIntroStarting = false;
+
+        return;
+      }
+
+      audioContext = new AudioContext();
+
+      analyser =
+        audioContext.createAnalyser();
+
+      analyser.fftSize = 512;
+      analyser.smoothingTimeConstant = .92;
+
+      const mic =
+        audioContext.createMediaStreamSource(
+          micStream
+        );
+
+      mic.connect(analyser);
+
+      dataArray =
+        new Uint8Array(
+          analyser.frequencyBinCount
+        );
+    }
+
+    if(
+      audioContext &&
+      audioContext.state === "suspended"
+    ){
+      await audioContext.resume();
+    }
+
+  }catch(error){
+
+    console.error(
+      "Microphone permission error:",
+      error
+    );
+
+    gameIntroStarting = false;
+
+    hideIntroSteps();
+
+    introScreen.style.display = "none";
+    mainScreen.style.display = "block";
+
+    updateCezooAttemptUI();
+
+    return;
+  }
+
+  if(currentRunId !== gameIntroRunId){
+    gameIntroStarting = false;
+    return;
+  }
 
   introTimer1 = setTimeout(() => {
+
+    if(currentRunId !== gameIntroRunId){
+      return;
+    }
+
     hideIntroSteps();
-    document.getElementById("timeStep").classList.add("active");
+
+    document
+      .getElementById("timeStep")
+      ?.classList.add("active");
+
   }, 1800);
 
+
   introTimer2 = setTimeout(() => {
+
+    if(currentRunId !== gameIntroRunId){
+      return;
+    }
+
     hideIntroSteps();
-    document.getElementById("countStep").classList.add("active");
+
+    document
+      .getElementById("countStep")
+      ?.classList.add("active");
+
+    const countEl =
+      document.getElementById("countNumber");
 
     let count = 3;
-    const countEl = document.getElementById("countNumber");
 
     function showCount(){
+
+      if(currentRunId !== gameIntroRunId){
+        return;
+      }
+
       countEl.className = "countNumber";
 
       if(count === 3){
+
         countEl.classList.add("leftAnim");
         countEl.innerText = "3";
-      }
-      else if(count === 2){
+
+      }else if(count === 2){
+
         countEl.classList.add("rightAnim");
         countEl.innerText = "2";
-      }
-      else if(count === 1){
+
+      }else if(count === 1){
+
         countEl.classList.add("zoomAnim");
         countEl.innerText = "1";
-      }
-      else{
+
+      }else{
+
         countEl.classList.add("goAnim");
         countEl.innerText = "GO!";
       }
@@ -330,53 +472,64 @@ async function startGameIntro(){
       count--;
 
       if(count >= -1){
-        setTimeout(showCount,700);
-      }else{
-        setTimeout(()=>{
-          hideIntroSteps();
-          document.getElementById("welcomeStep").classList.add("active");
 
-          // 15 sec game starts here
-          // Count only when real game starts
-if(!useCezooGameAttempt()){
+        introCountTimer =
+          setTimeout(showCount, 700);
 
-  hideIntroSteps();
-
-  document.getElementById("gameIntroScreen")
-    .style.display = "none";
-
-  document.getElementById("mainScreen")
-    .style.display = "block";
-
-  updateCezooAttemptUI();
-
-  showNoAttemptsMessage();
-
-  return;
-}
-function showNoAttemptsMessage(){
-
-  const text = document.getElementById("cezooAttemptText");
-
-  if(text){
-    text.innerText = "No attempts left";
-  }
-
-}
-resetGame();
-running = true;
-detectVoice();
-startTimer();
-
-        },700);
+        return;
       }
+
+      introCountTimer = setTimeout(() => {
+
+        if(currentRunId !== gameIntroRunId){
+          return;
+        }
+
+        hideIntroSteps();
+
+        document
+          .getElementById("welcomeStep")
+          ?.classList.add("active");
+
+        if(!useCezooGameAttempt()){
+
+          hideIntroSteps();
+
+          introScreen.style.display = "none";
+          mainScreen.style.display = "block";
+
+          updateCezooAttemptUI();
+
+          const text =
+            document.getElementById(
+              "cezooAttemptText"
+            );
+
+          if(text){
+            text.innerText =
+              "No attempts left";
+          }
+
+          gameIntroStarting = false;
+
+          return;
+        }
+
+        resetGame();
+
+        running = true;
+        gameIntroStarting = false;
+
+        detectVoice();
+        startTimer();
+
+      }, 500);
     }
 
     showCount();
 
   }, 3600);
 }
-
 
 let audioContext, analyser, dataArray, micStream;
 let currentScore = 0;
