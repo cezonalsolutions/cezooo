@@ -646,7 +646,9 @@ function getOrdersSupabaseClient(){
 ===================================================== */
 
 let loggedUserOrders = [];
-
+let selectedCancelOrder = null;
+let selectedCancelOrderIndex = null;
+let orderCancelSaving = false;
 const userOrdersProductCache = {};
 let userOrderTrackingMap = null;
 
@@ -2115,16 +2117,31 @@ ${
 </div>
 
 </div>
-<div class="userOrderCancelArea">
+${
+  ![
+    "on_the_way",
+    "delivered",
+    "cancelled",
+    "canceled"
+  ].includes(
+    String(order.order_status || "placed")
+      .toLowerCase()
+  )
+    ? `
+      <div class="userOrderCancelArea">
 
-  <button
-    class="userOrderCancelBtn"
-    type="button"
-  >
-    Cancel Order
-  </button>
+        <button
+          class="userOrderCancelBtn"
+          type="button"
+          onclick="openCancelOrderSheet(${index})"
+        >
+          Cancel Order
+        </button>
 
-</div>
+      </div>
+    `
+    : ""
+}
 `;
 
 
@@ -2641,3 +2658,402 @@ if(cezooProfilePopup){
   );
 
 }
+
+/* =====================================================
+   CANCEL ORDER BOTTOM SHEET
+===================================================== */
+
+
+
+
+/* =====================================================
+   SIMPLE CANCEL ORDER BOTTOM SHEET
+===================================================== */
+
+function createCancelOrderSheet(){
+
+  if(
+    document.getElementById(
+      "cancelOrderSheet"
+    )
+  ){
+    return;
+  }
+
+  const style =
+    document.createElement("style");
+
+  style.innerHTML = `
+
+    .cancelOrderSheet{
+      position:fixed;
+      inset:0;
+      z-index:9999999999;
+      display:none;
+    }
+
+    .cancelOrderSheet.show{
+      display:block;
+    }
+
+    .cancelOrderOverlay{
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,.42);
+    }
+
+    .cancelOrderBox{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+
+      background:#fff;
+      border-radius:24px 24px 0 0;
+
+      padding:
+        14px 18px
+        calc(20px + env(safe-area-inset-bottom));
+
+      box-shadow:
+        0 -12px 35px rgba(0,0,0,.16);
+
+      animation:
+        cancelOrderUp .24s ease;
+    }
+
+    @keyframes cancelOrderUp{
+      from{
+        transform:translateY(100%);
+      }
+
+      to{
+        transform:translateY(0);
+      }
+    }
+
+    .cancelOrderHandle{
+      width:40px;
+      height:4px;
+      background:#ddd;
+      border-radius:10px;
+      margin:0 auto 18px;
+    }
+
+    .cancelOrderTitle{
+      margin:0;
+
+      text-align:center;
+      font-size:18px;
+      font-weight:800;
+      color:#222;
+    }
+
+    .cancelOrderDescription{
+      margin:8px 0 20px;
+
+      text-align:center;
+      font-size:13px;
+      line-height:1.5;
+      color:#777;
+    }
+
+    .cancelOrderButtons{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .cancelOrderKeepBtn,
+    .cancelOrderConfirmBtn{
+      height:48px;
+
+      border:none;
+      border-radius:14px;
+
+      font-size:14px;
+      font-weight:700;
+
+      cursor:pointer;
+    }
+
+    .cancelOrderKeepBtn{
+      background:#f2f2f2;
+      color:#333;
+    }
+
+    .cancelOrderConfirmBtn{
+      background:#e53935;
+      color:#fff;
+    }
+
+    .cancelOrderConfirmBtn:disabled{
+      opacity:.6;
+      cursor:not-allowed;
+    }
+  `;
+
+  document.head.appendChild(style);
+
+  document.body.insertAdjacentHTML(
+    "beforeend",
+    `
+      <div
+        id="cancelOrderSheet"
+        class="cancelOrderSheet"
+      >
+
+        <div
+          class="cancelOrderOverlay"
+          onclick="closeCancelOrderSheet()"
+        ></div>
+
+        <div class="cancelOrderBox">
+
+          <div class="cancelOrderHandle"></div>
+
+          <h3 class="cancelOrderTitle">
+            Cancel Order?
+          </h3>
+
+          <p class="cancelOrderDescription">
+            Are you sure you want to cancel this order?
+          </p>
+
+          <div class="cancelOrderButtons">
+
+            <button
+              type="button"
+              class="cancelOrderKeepBtn"
+              onclick="closeCancelOrderSheet()"
+            >
+              No, Keep It
+            </button>
+
+            <button
+              type="button"
+              id="confirmCancelOrderBtn"
+              class="cancelOrderConfirmBtn"
+              onclick="confirmCancelOrder()"
+            >
+              Yes, Cancel
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+    `
+  );
+}
+
+
+
+
+
+
+
+
+
+
+window.openCancelOrderSheet = function(index){
+
+  const order =
+    loggedUserOrders[index];
+
+  if(!order){
+    return;
+  }
+
+  const currentStatus =
+    String(
+      order.order_status || "placed"
+    ).toLowerCase();
+
+  if(
+    [
+      "on_the_way",
+      "delivered",
+      "cancelled",
+      "canceled"
+    ].includes(currentStatus)
+  ){
+    return;
+  }
+
+  createCancelOrderSheet();
+
+  selectedCancelOrder = order;
+  selectedCancelOrderIndex = index;
+
+  document.getElementById(
+    "cancelOrderId"
+  ).textContent =
+    order.order_id || "—";
+
+  document.getElementById(
+    "cancelOrderTime"
+  ).textContent =
+    userOrderDate(order.created_at);
+
+  document
+    .getElementById("cancelOrderSheet")
+    ?.classList.add("show");
+
+  document.body.style.overflow = "hidden";
+};
+
+
+window.closeCancelOrderSheet = function(){
+
+  document
+    .getElementById("cancelOrderSheet")
+    ?.classList.remove("show");
+
+  selectedCancelOrder = null;
+  selectedCancelOrderIndex = null;
+
+  /*
+    Order details are still open,
+    so keep body locked.
+  */
+  document.body.style.overflow = "hidden";
+};
+window.confirmCancelOrder = async function(){
+
+  if(
+    !selectedCancelOrder ||
+    orderCancelSaving
+  ){
+    return;
+  }
+
+  const order =
+    selectedCancelOrder;
+
+  const orderIndex =
+    selectedCancelOrderIndex;
+
+  const currentStatus =
+    String(
+      order.order_status || "placed"
+    ).toLowerCase();
+
+  /*
+    Recheck status before cancelling.
+  */
+  if(
+    [
+      "on_the_way",
+      "delivered",
+      "cancelled",
+      "canceled"
+    ].includes(currentStatus)
+  ){
+
+    closeCancelOrderSheet();
+    return;
+  }
+
+  const button =
+    document.getElementById(
+      "confirmCancelOrderBtn"
+    );
+
+  orderCancelSaving = true;
+
+  if(button){
+    button.disabled = true;
+    button.textContent = "Cancelling...";
+  }
+
+  try{
+
+    const tableName =
+      order._order_type === "upi"
+        ? "upi_orders"
+        : "cash_delivery_orders";
+
+   const { data, error } =
+  await getOrdersSupabaseClient()
+    .from(tableName)
+    .update({
+      order_status: "cancelled"
+    })
+    .eq(
+      "order_id",
+      order.order_id
+    )
+    .select()
+    .single();
+
+    if(error){
+      throw error;
+    }
+
+    /*
+      Update local order immediately.
+    */
+    if(
+      orderIndex !== null &&
+      loggedUserOrders[orderIndex]
+    ){
+
+      loggedUserOrders[orderIndex] = {
+        ...loggedUserOrders[orderIndex],
+        ...data,
+        order_status:"cancelled"
+      };
+
+    }
+
+    selectedCancelOrder = null;
+    selectedCancelOrderIndex = null;
+
+    document
+      .getElementById("cancelOrderSheet")
+      ?.classList.remove("show");
+
+    /*
+      Reload order details.
+      Cancel button will now be hidden.
+    */
+    await window.openUserOrderDetails(
+      orderIndex
+    );
+
+    /*
+      Also refresh order lists.
+    */
+    await loadLoggedUserOrders();
+
+  }catch(error){
+
+    console.error(
+      "Order cancellation failed:",
+      error
+    );
+
+    if(button){
+      button.textContent =
+        "Try Again";
+    }
+
+  }finally{
+
+    orderCancelSaving = false;
+
+    if(button){
+      button.disabled = false;
+
+      if(
+        button.textContent !== "Try Again"
+      ){
+        button.textContent =
+          "Yes, Cancel";
+      }
+    }
+
+  }
+};
