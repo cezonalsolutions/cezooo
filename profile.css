@@ -3001,9 +3001,7 @@
   align-items:center;
   justify-content:space-between;
   gap:12px;
-  margin-top:15px;
-  padding-top:14px;
-  border-top:1px solid #eeeeee;
+  
 }
 
 .recentOrderStatus{
