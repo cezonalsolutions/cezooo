@@ -312,23 +312,60 @@ function openPrintPage(){
   document.body.classList.add("print-open");
 }
 
-function closePrintPage(){
+function closePrintPage(cancelEdit = true){
 
   printPage?.classList.remove("show");
 
-  document.body.classList.remove(
-    "print-open"
-  );
-
-  document.documentElement.classList.remove(
-    "print-open"
-  );
+  document.body.classList.remove("print-open");
+  document.documentElement.classList.remove("print-open");
 
   document.body.style.overflow = "";
   document.documentElement.style.overflow = "";
+
+  /*
+    Only when user presses Back/Close
+    without clicking Update Cart.
+  */
+  if(cancelEdit && editingXeroxCartKey){
+
+    document
+      .getElementById("xeroxPopup")
+      ?.classList.remove("show");
+
+    document
+      .getElementById("uploadPopup")
+      ?.classList.remove("active");
+
+    document
+      .querySelector(".floatBarWrap")
+      ?.classList.remove("popupMode");
+
+    editingXeroxCartKey = null;
+
+    addToCartBtn.disabled = false;
+    addToCartBtn.textContent = "Add to Cart";
+
+   setTimeout(() => {
+
+  openCartPagePopup();
+
+  requestAnimationFrame(() => {
+
+    const cartContent =
+      document.getElementById("cartPageContent");
+
+    if(cartContent){
+      cartContent.scrollTop = 0;
+      cartContent.style.overflowY = "auto";
+      cartContent.style.touchAction = "pan-y";
+      cartContent.style.webkitOverflowScrolling = "touch";
+    }
+
+  });
+
+}, 120);
+  }
 }
-
-
 
 function removeFile(index){
   const removed = uploadedFiles.splice(index,1)[0];
@@ -647,9 +684,9 @@ previewFilesList.addEventListener("click", function(event){
   }
 });
 
-backPrint.addEventListener("click", closePrintPage);
-
-
+backPrint.addEventListener("click", function(){
+  closePrintPage(true);
+});
 
 increaseCopies.addEventListener("click", function(){
   copiesInput.value = Number(copiesInput.value) + 1;
@@ -1044,8 +1081,7 @@ setTimeout(() => {
 
   if(editingXeroxCartKey){
 
-    closePrintPage();
-
+    closePrintPage(false);
     /* Completely close hidden Xerox parent */
     document
       .getElementById("xeroxPopup")
