@@ -335,9 +335,13 @@ function anyChildPopupOpen(){
     document
   .getElementById("savedAddressPopup")
   ?.classList.contains("open") ||
+
     document.getElementById("termsPopup")?.classList.contains("open") ||
     document.getElementById("refundPopup")?.classList.contains("open") ||
     document.getElementById("couponsPopup")?.classList.contains("open") ||
+    document
+  .getElementById("suggestProductPopup")
+  ?.classList.contains("open") ||
     document.getElementById("notificationsPopup")?.classList.contains("open") ||
     document.getElementById("sellerPopup")?.classList.contains("open") ||
     document.getElementById("yourOrdersPopup")?.classList.contains("open")
