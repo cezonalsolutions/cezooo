@@ -1690,38 +1690,61 @@ position:relative;
   right:2px;
   bottom:2px;
 
-  width:32px;
-  height:32px;
+  width:34px;
+  height:34px;
+  min-width:34px;
+  min-height:34px;
 
-  border:1px solid #dff5e8;
-  border-radius:10px;
+  margin:0;
+  padding:0;
 
-  background:#f8fffb;
+  border:1.5px solid #b7efd0;
+  border-radius:11px;
+
+  background:#ffffff;
   color:#0BD957;
 
   display:flex;
   align-items:center;
   justify-content:center;
 
+  flex-shrink:0;
   cursor:pointer;
-  box-shadow:0 1px 3px rgba(0,0,0,.04);
 
-  padding:0;
+  box-shadow:
+    0 3px 10px rgba(0,0,0,.13),
+    0 1px 3px rgba(11,217,87,.15);
+
+  -webkit-appearance:none;
+  appearance:none;
+  outline:none;
+
+  z-index:10;
+
   line-height:1;
-
   transition:.2s ease;
+
+  -webkit-tap-highlight-color:transparent;
 }
 
 .addBtn span{
-  font-size:18px;
-  font-weight:700;
+  display:block;
+  font-size:21px;
+  font-weight:800;
   line-height:1;
+  color:#0BD957;
+  transform:translateY(-1px);
 }
 
-/* after click */
+.addBtn:focus,
+.addBtn:active{
+  background:#f4fff8;
+  border-color:#86e8b2;
+  outline:none;
+}
 .addBtn.qtyMode{
   width:70px;
-
+  min-width:70px;
   justify-content:space-between;
   padding:0 7px;
 }
