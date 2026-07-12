@@ -187,6 +187,7 @@ function openGamePopup(){
   }, 3000);
 }
 function closeGamePopup(){
+  
     gameIntroRunId++;
   gameIntroStarting = false;
 
@@ -194,7 +195,7 @@ function closeGamePopup(){
   gameTimer = null;
 
   clearGameIntroTimers();
-  stopGameVideo();
+ stopGameVideo(true);
 stopMic();
   document.getElementById("gamePopup").classList.remove("show");
   document.body.style.overflow = "";
@@ -287,7 +288,7 @@ function hideIntroSteps(){
     .forEach(step => step.classList.remove("active"));
 }
 async function startGameIntro(){
-
+stopGameVideo();
   /* Prevent double taps */
   if(gameIntroStarting || running){
     return;
@@ -1230,26 +1231,191 @@ else{
   }
 
 }
+
+
+
 function gameVideo(){
-  return document.querySelector(".videoBox video");
+  return (
+    document.getElementById("gameTutorialVideo") ||
+    document.querySelector(".videoBox video")
+  );
 }
+
+
+function shouldGameVideoPlay(){
+
+  const gamePopup =
+    document.getElementById("gamePopup");
+
+  const mainScreen =
+    document.getElementById("mainScreen");
+
+  const introScreen =
+    document.getElementById("gameIntroScreen");
+
+  const couponScreen =
+    document.getElementById("couponResultScreen");
+
+  return (
+    gamePopup?.classList.contains("show") &&
+    mainScreen?.style.display !== "none" &&
+    introScreen?.style.display !== "block" &&
+    couponScreen?.style.display !== "flex" &&
+    !running &&
+    !gameIntroStarting
+  );
+}
+
 
 function playGameVideo(){
-  const v = gameVideo();
-  if(!v) return;
 
-  v.currentTime = 0;
-  v.muted = true;
-  v.play().catch(()=>{});
+  const video = gameVideo();
+
+  if(!video || !shouldGameVideoPlay()){
+    return;
+  }
+
+  video.muted = true;
+  video.loop = true;
+  video.playsInline = true;
+
+  if(video.ended){
+    video.currentTime = 0;
+  }
+
+  const playPromise = video.play();
+
+  if(playPromise?.catch){
+
+    playPromise.catch(() => {
+
+      /*
+        iPhone/WebView may temporarily reject play.
+        Retry once after the screen settles.
+      */
+      setTimeout(() => {
+
+        if(shouldGameVideoPlay()){
+
+          video.muted = true;
+          video.play().catch(() => {});
+
+        }
+
+      }, 250);
+
+    });
+
+  }
 }
 
-function stopGameVideo(){
-  const v = gameVideo();
-  if(!v) return;
 
-  v.pause();
-  v.currentTime = 0;
+function stopGameVideo(resetTime = false){
+
+  const video = gameVideo();
+
+  if(!video){
+    return;
+  }
+
+  video.pause();
+
+  if(resetTime){
+    try{
+      video.currentTime = 0;
+    }catch(error){}
+  }
 }
+
+
+function resumeGameTutorialVideo(){
+
+  requestAnimationFrame(() => {
+
+    requestAnimationFrame(() => {
+
+      playGameVideo();
+
+    });
+
+  });
+
+}
+
+
+document.addEventListener("visibilitychange", function(){
+
+  if(document.visibilityState === "visible"){
+    resumeGameTutorialVideo();
+  }
+
+});
+
+
+window.addEventListener("pageshow", function(){
+  resumeGameTutorialVideo();
+});
+
+
+window.addEventListener("focus", function(){
+  resumeGameTutorialVideo();
+});
+
+
+document.addEventListener("touchend", function(){
+
+  setTimeout(() => {
+    resumeGameTutorialVideo();
+  }, 150);
+
+}, { passive:true });
+
+
+const tutorialVideo = gameVideo();
+
+if(tutorialVideo){
+
+  tutorialVideo.addEventListener("ended", function(){
+
+    if(shouldGameVideoPlay()){
+      this.currentTime = 0;
+      this.play().catch(() => {});
+    }
+
+  });
+
+
+  tutorialVideo.addEventListener("pause", function(){
+
+    if(shouldGameVideoPlay()){
+
+      setTimeout(() => {
+        playGameVideo();
+      }, 200);
+
+    }
+
+  });
+
+
+  tutorialVideo.addEventListener("stalled", function(){
+
+    if(shouldGameVideoPlay()){
+      this.load();
+
+      setTimeout(() => {
+        playGameVideo();
+      }, 250);
+    }
+
+  });
+
+}
+
+
+
+
+
 function stopMic(){
 
   running = false;
