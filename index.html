@@ -8423,17 +8423,26 @@ button{
         HOW IT WORKS
     </div>
 
-    <div class="videoBox">
-        <video autoplay muted loop playsinline>
-            <source src="game/tuto.mp4" type="video/mp4">
-        </video>
-    </div>
+   <div class="videoBox">
+  <video
+    id="gameTutorialVideo"
+    autoplay
+    muted
+    loop
+    playsinline
+    webkit-playsinline
+    preload="auto"
+  >
+    <source src="game/tuto.mp4" type="video/mp4">
+  </video>
+</div>
 
     <div class="howFooter">
     <span class="proTip">PRO TIP :</span>
     <span class="tipText">Watch the full video once.</span>
 </div>
 </div>
+
 <button class="playNowBtn" onclick="startGameIntro()">PLAY NOW</button>
 </div>
 
