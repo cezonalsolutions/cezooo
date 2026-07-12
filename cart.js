@@ -2012,7 +2012,8 @@ async function prepareCezooOrderData(paymentMethod){
   const user = JSON.parse(
     localStorage.getItem("cezooUser") || "null"
   );
-
+const deviceToken =
+  localStorage.getItem("cezooDeviceToken") || "";
   if(!user || !user.name || !user.mobile){
     throw new Error(
       "Please login before placing the order."
@@ -2330,7 +2331,8 @@ async function prepareCezooOrderData(paymentMethod){
 
     user_mobile:
       String(user.mobile).trim(),
-
+device_token:
+  deviceToken,
     village:
       document
         .getElementById(
