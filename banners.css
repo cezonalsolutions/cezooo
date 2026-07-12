@@ -2888,3 +2888,50 @@
 
 }
 
+.couponInfoCard{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  padding:14px 16px;
+
+  margin:10px 14px 14px;   /* Left & Right gap */
+
+  background:#fff;
+  border:1px solid #ececec;
+  border-radius:14px;
+}
+
+.couponInfoCode{
+  font-size:16px;
+  font-weight:800;
+  color:#202124;
+  letter-spacing:.4px;
+}
+
+.couponInfoSub{
+  margin-top:3px;
+  font-size:12px;
+  color:#777;
+}
+
+.couponInfoType{
+  padding:5px 10px;
+
+  border:1px solid #ddd;
+  border-radius:999px;
+
+  font-size:11px;
+  font-weight:700;
+  color:#555;
+
+  background:#fafafa;
+}
+
+.couponInfoNote{
+ margin:0 16px 18px;   /* left right gap */
+
+  font-size:12px;
+  color:#777;
+  line-height:1.6;
+}
