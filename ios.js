@@ -8,7 +8,6 @@ window.onCezooDeviceTokenReceived = function(tokenData){
 
     let deviceToken = "";
 
-
     /* GET TOKEN */
 
     if(typeof tokenData === "string"){
@@ -27,13 +26,29 @@ window.onCezooDeviceTokenReceived = function(tokenData){
 
     }
 
-
     deviceToken = String(deviceToken).trim();
 
+    const tokenStatus =
+      document.getElementById(
+        "cezooDeviceTokenStatus"
+      );
 
     /* TOKEN EMPTY */
 
     if(!deviceToken){
+
+      if(tokenStatus){
+
+        tokenStatus.style.marginTop = "8px";
+        tokenStatus.style.fontSize = "11px";
+        tokenStatus.style.lineHeight = "1.4";
+        tokenStatus.style.wordBreak = "break-all";
+        tokenStatus.style.color = "#e53935";
+
+        tokenStatus.textContent =
+          "Device token not received";
+
+      }
 
       console.warn(
         "CEZOO device token is empty"
@@ -43,7 +58,6 @@ window.onCezooDeviceTokenReceived = function(tokenData){
 
     }
 
-
     /* SAVE TOKEN */
 
     localStorage.setItem(
@@ -51,18 +65,30 @@ window.onCezooDeviceTokenReceived = function(tokenData){
       deviceToken
     );
 
-
     localStorage.setItem(
       "cezooDeviceTokenUpdatedAt",
       new Date().toISOString()
     );
 
+    /* SHOW TOKEN */
+
+    if(tokenStatus){
+
+      tokenStatus.style.marginTop = "8px";
+      tokenStatus.style.fontSize = "11px";
+      tokenStatus.style.lineHeight = "1.4";
+      tokenStatus.style.wordBreak = "break-all";
+      tokenStatus.style.color = "#0aaa43";
+
+      tokenStatus.textContent =
+        "Device Token: " + deviceToken;
+
+    }
 
     console.log(
       "✅ CEZOO device token saved:",
       deviceToken
     );
-
 
     /* NOTIFY OTHER JS */
 
@@ -77,11 +103,22 @@ window.onCezooDeviceTokenReceived = function(tokenData){
       )
     );
 
-
     return true;
 
-
   }catch(error){
+
+    const tokenStatus =
+      document.getElementById(
+        "cezooDeviceTokenStatus"
+      );
+
+    if(tokenStatus){
+
+      tokenStatus.style.color = "#e53935";
+      tokenStatus.textContent =
+        "Device token error";
+
+    }
 
     console.error(
       "CEZOO device token save error:",
