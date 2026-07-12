@@ -7,30 +7,103 @@ document.getElementById("closeCartPage").addEventListener("click", () => {
 });
 
 function openCartPagePopup(){
-  const popup = document.getElementById("cartPagePopup");
+
+  const popup =
+    document.getElementById("cartPagePopup");
+
+  const content =
+    document.getElementById("cartPageContent");
+
+  /* Clear all old locks first */
+  document.body.style.overflow = "";
+  document.documentElement.style.overflow = "";
+
+  document.body.classList.remove(
+    "print-open",
+    "popup-open"
+  );
+
+  document.documentElement.classList.remove(
+    "print-open",
+    "popup-open"
+  );
+
+  document
+    .getElementById("xeroxPopup")
+    ?.classList.remove("show");
+
+  document
+    .getElementById("printPage")
+    ?.classList.remove("show");
 
   popup.classList.add("open");
-  document.body.style.overflow = "hidden";
 
-  document.querySelector(".floatBarWrap").classList.add("popupMode");
+  document
+    .querySelector(".floatBarWrap")
+    ?.classList.add("popupMode");
 
-  document.getElementById("cartHeaderVillage").innerText =
-    document.getElementById("village")?.innerText || "Selected Location";
+  document.getElementById(
+    "cartHeaderVillage"
+  ).innerText =
+    document.getElementById("village")
+      ?.innerText ||
+    "Selected Location";
 
-  document.getElementById("cartHeaderStreet").innerText =
-    document.getElementById("street")?.innerText || "Delivery address";
+  document.getElementById(
+    "cartHeaderStreet"
+  ).innerText =
+    document.getElementById("street")
+      ?.innerText ||
+    "Delivery address";
 
   showCartPageShimmer();
 
   setTimeout(() => {
+
     renderCartPage();
+
+    /* Force Android scroll recovery */
+    if(content){
+
+      content.style.overflowY = "auto";
+      content.style.webkitOverflowScrolling =
+        "touch";
+
+      content.scrollTop = 0;
+
+      content.getBoundingClientRect();
+    }
+
+    popup.style.overflowY = "auto";
+    popup.style.webkitOverflowScrolling =
+      "touch";
+
   }, 150);
 }
 
 function closeCartPagePopup(){
-  document.getElementById("cartPagePopup").classList.remove("open");
+
+  const popup =
+    document.getElementById("cartPagePopup");
+
+  popup?.classList.remove("open");
+
   document.body.style.overflow = "";
-  document.querySelector(".floatBarWrap").classList.remove("popupMode");
+  document.documentElement.style.overflow = "";
+
+  document.body.classList.remove(
+    "print-open",
+    "popup-open"
+  );
+
+  document.documentElement.classList.remove(
+    "print-open",
+    "popup-open"
+  );
+
+  document
+    .querySelector(".floatBarWrap")
+    ?.classList.remove("popupMode");
 }
 
 function showCartPageShimmer(){
