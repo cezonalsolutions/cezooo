@@ -8751,22 +8751,43 @@ button{
   <span>Notifications</span>
   <i class="fa-solid fa-chevron-right profileArrow"></i>
 </div>
+<div
+  class="profileListItem"
+  onclick="openSuggestProductPopup()"
+>
+  <i class="fa-solid fa-lightbulb profileListIcon"></i>
+
+  <span>Suggest a Product</span>
+
+  <i class="fa-solid fa-chevron-right profileArrow"></i>
+</div>
 <div class="profileListItem" onclick="openSellerPopup()">
   <i class="fa-solid fa-store profileListIcon"></i>
   <span>Seller Registration</span>
   <i class="fa-solid fa-chevron-right profileArrow"></i>
 </div>
 
-<div class="profileListItem" onclick="openReportIssuePopup()">
+<div
+  class="profileListItem"
+  onclick="openReportIssuePopup()"
+>
   <i class="fa-solid fa-triangle-exclamation profileListIcon"></i>
+
   <span>Report an Issue</span>
+
   <i class="fa-solid fa-chevron-right profileArrow"></i>
 </div>
-<div class="profileListItem" onclick="openFaqPopup()">
+<div
+  class="profileListItem"
+  onclick="openFaqPopup()"
+>
   <i class="fa-solid fa-circle-question profileListIcon"></i>
+
   <span>FAQs</span>
+
   <i class="fa-solid fa-chevron-right profileArrow"></i>
 </div>
+
 </div>
 
 <h2 class="recentOrdersHeading">
@@ -8792,7 +8813,359 @@ button{
 </div>
 </div>
 
+<div id="suggestProductPopup" class="termsPopup">
 
+  <div class="termsHeader">
+
+    <button
+      class="termsBackBtn"
+      onclick="closeSuggestProductPopup()"
+    >
+      ‹
+    </button>
+
+    <div class="termsTitle">
+      Suggest a Product
+    </div>
+
+    <div class="termsRightSpace"></div>
+
+  </div>
+
+
+  <div class="termsContent shiridiContent">
+
+    <div class="shiridiIntro">
+
+      <div class="shiridiIcon">
+        <i class="fa-solid fa-lightbulb"></i>
+      </div>
+
+      <h2 class="shiridiHeading">
+        Can't find your favourite product?
+      </h2>
+
+      <div class="shiridiDescription">
+        Tell us the product you'd like to buy.
+        We'll review your suggestion and try to add it to CEZOO soon.
+      </div>
+
+    </div>
+
+
+
+    <div class="shiridiSection">
+
+      <label class="shiridiLabel">
+        Product Name
+      </label>
+
+      <input
+        id="shiridiProductName"
+        class="shiridiInput"
+        type="text"
+        placeholder="Enter product name"
+      >
+
+    </div>
+
+
+
+    <div class="shiridiSection">
+
+      <label class="shiridiLabel">
+        Brand Name
+      </label>
+
+      <input
+        id="shiridiBrandName"
+        class="shiridiInput"
+        type="text"
+        placeholder="Optional"
+      >
+
+    </div>
+
+
+
+    <div class="shiridiSection">
+
+      <label class="shiridiLabel">
+        Approximate Price
+      </label>
+
+      <input
+        id="shiridiPrice"
+        class="shiridiInput"
+        type="text"
+        placeholder="₹ Optional"
+      >
+
+    </div>
+
+
+
+    <div
+      id="shiridiStatus"
+      class="reportIssueStatus"
+    ></div>
+
+
+
+    <button
+      class="shiridiSubmitBtn reportIssueSubmitBtn"
+      onclick="submitSuggestedProduct()"
+    >
+      Submit
+    </button>
+
+  </div>
+
+</div>
+<div id="faqPopup" class="termsPopup">
+
+  <div class="termsHeader">
+
+    <button
+      class="termsBackBtn"
+      onclick="closeFaqPopup()"
+    >
+      ‹
+    </button>
+
+    <div class="termsTitle">
+      Frequently Asked Questions
+    </div>
+
+    <div class="termsRightSpace"></div>
+
+  </div>
+
+
+  <div class="termsContent">
+
+    <details class="tirupathiiFaqItem">
+      <summary>What is CEZOO?</summary>
+      <p>CEZOO is a grocery, daily essentials, and service platform offering fast deliveries and Xerox printing in supported areas.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>How does Instant Delivery work?</summary>
+      <p>Instant Delivery starts preparing your order immediately and delivers it as quickly as possible.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>How does Scheduled Delivery work?</summary>
+      <p>Orders placed between 10:00 AM–4:00 PM are delivered between 4:00 PM–6:00 PM. Orders placed after 4:00 PM are delivered the next morning between 9:00 AM–10:00 AM.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>How are delivery charges calculated?</summary>
+      <p>Delivery charges are automatically calculated based on your delivery location and distance.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>Can I schedule a delivery?</summary>
+      <p>Yes. During checkout you can choose Instant Delivery or Scheduled Delivery whenever available.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>Can I track my order?</summary>
+      <p>Yes. Open Your Orders to view the latest delivery status and order information.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>What payment methods are available?</summary>
+      <p>CEZOO supports Cash on Delivery, UPI, and other available payment methods shown during checkout.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>How do I cancel an order?</summary>
+      <p>Orders may be cancelled before packing or dispatch depending on the order status.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>How do refunds work?</summary>
+      <p>Eligible refunds are processed according to CEZOO's Refund Policy and payment provider timelines.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>Can I save multiple addresses?</summary>
+      <p>Yes. You can save and manage multiple delivery addresses from your profile.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>Why does CEZOO need my location?</summary>
+      <p>Your location is used to determine service availability, calculate delivery charges, and help our delivery partners reach you.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>What products can I order?</summary>
+      <p>Groceries, fruits, vegetables, beverages, chocolates, snacks, gifts, stationery, household essentials, personal care products, and more.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>Does CEZOO provide Xerox & Printing?</summary>
+      <p>Yes. Upload your PDF, choose printing options, and place your order where the service is available.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>Which file formats are supported?</summary>
+      <p>Currently only PDF files are supported for Xerox printing.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>Can I edit my Xerox order?</summary>
+      <p>Yes. Before checkout you can edit pages, copies, paper size, orientation, print type, and other print settings.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>What if I receive a damaged or wrong product?</summary>
+      <p>Use the Report an Issue option from your profile and our support team will review your request.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>How do coupons work?</summary>
+      <p>Coupons may require a minimum order value and may have expiry dates or product restrictions.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>How can I contact CEZOO?</summary>
+      <p>You can contact us through Help & Support or Report an Issue from your profile.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>How do I know if CEZOO delivers to my area?</summary>
+      <p>Enter or allow your delivery location and the app will automatically check service availability.</p>
+    </details>
+
+    <details class="tirupathiiFaqItem">
+      <summary>Is my personal information secure?</summary>
+      <p>Yes. CEZOO takes reasonable measures to protect your information and uses it only for providing and improving our services.</p>
+    </details>
+
+  </div>
+
+</div>
+<div id="reportIssuePopup" class="termsPopup">
+
+  <div class="termsHeader">
+
+    <button
+      class="termsBackBtn"
+      type="button"
+      onclick="closeReportIssuePopup()"
+    >
+      ‹
+    </button>
+
+    <div class="termsTitle">
+      Report an Issue
+    </div>
+
+    <div class="termsRightSpace"></div>
+
+  </div>
+
+
+  <div class="termsContent reportIssueContent">
+
+    <div class="reportIssueIntro">
+
+      <div class="reportIssueMainIcon">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+
+      <h2>How can we help?</h2>
+
+     <div class="reportIssueDescription">
+  Select the issue you are facing and share the required information.
+  Our support team will review it and assist you.
+</div>
+    </div>
+
+
+    <div class="reportIssueSection">
+
+      <label class="reportIssueLabel">
+        Select issue
+      </label>
+
+      <select
+        id="reportIssueType"
+        class="reportIssueSelect"
+      >
+        <option value="">Choose an issue</option>
+        <option value="order">Order related issue</option>
+        <option value="payment">Payment related issue</option>
+        <option value="delivery">Delivery related issue</option>
+        <option value="damaged">Damaged or incorrect product</option>
+        <option value="refund">Refund related issue</option>
+        <option value="location">Location or address issue</option>
+        <option value="app">App or technical issue</option>
+        <option value="xerox">Xerox or printing issue</option>
+        <option value="other">Other issue</option>
+      </select>
+
+    </div>
+
+
+    <div class="reportIssueSection">
+
+      <label class="reportIssueLabel">
+        Order ID
+        <span class="reportOptionalText">
+          Optional
+        </span>
+      </label>
+
+      <input
+        id="reportIssueOrderId"
+        class="reportIssueInput"
+        type="text"
+        placeholder="Enter your order ID"
+      >
+
+    </div>
+
+
+    <div class="reportIssueSection">
+
+      <label class="reportIssueLabel">
+        Describe the issue
+      </label>
+
+      <textarea
+        id="reportIssueMessage"
+        class="reportIssueTextarea"
+        placeholder="Tell us what happened..."
+        maxlength="500"
+      ></textarea>
+
+      <div class="reportIssueCount">
+        <span id="reportIssueCharCount">0</span>/500
+      </div>
+
+    </div>
+
+
+    <div
+      id="reportIssueStatus"
+      class="reportIssueStatus"
+    ></div>
+
+
+    <button
+      class="reportIssueSubmitBtn"
+      type="button"
+      onclick="submitReportIssue()"
+    >
+      Submit Issue
+    </button>
+
+  </div>
+
+</div>
 
 <div id="termsPopup" class="termsPopup">
 
