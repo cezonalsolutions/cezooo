@@ -47,25 +47,40 @@ xeroxPopup.addEventListener("touchend", function(e){
 
   const touch = e.changedTouches[0];
 
-  const diffX = touch.clientX - xeroxStartX;
-  const diffY = Math.abs(touch.clientY - xeroxStartY);
+  const diffX =
+    touch.clientX - xeroxStartX;
+
+  const diffY =
+    Math.abs(
+      touch.clientY - xeroxStartY
+    );
 
   xeroxEdge = "";
 
   if(diffY > 60) return;
 
-  /* Swipe from left edge → right */
-  if(diffX > 90){
-    closeXeroxPopup();
+  const validSwipe =
+    diffX > 90 ||
+    diffX < -90;
+
+  if(!validSwipe) return;
+
+  /*
+    If print settings are open,
+    swipe behaves exactly like Back.
+  */
+  if(
+    printPage?.classList.contains("show")
+  ){
+    closePrintPage(true);
+    return;
   }
 
-  /* Swipe from right edge → left */
-  if(diffX < -90){
-    closeXeroxPopup();
-  }
-
+  /*
+    Otherwise close normal Xerox popup.
+  */
+  closeXeroxPopup();
 });
-
 
 
 const pdfUpload = document.getElementById("pdfUpload");
