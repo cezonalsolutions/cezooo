@@ -1066,12 +1066,42 @@ setTimeout(() => {
     document.body.style.overflow = "";
     document.documentElement.style.overflow = "";
 
-    editingXeroxCartKey = null;
+   editingXeroxCartKey = null;
 
-    requestAnimationFrame(() => {
-      openCartPagePopup();
-    });
+setTimeout(() => {
 
+  const cartPopup =
+    document.getElementById(
+      "cartPagePopup"
+    );
+
+  const cartContent =
+    document.getElementById(
+      "cartPageContent"
+    );
+
+  openCartPagePopup();
+
+  requestAnimationFrame(() => {
+
+    cartPopup?.getBoundingClientRect();
+
+    if(cartContent){
+
+      cartContent.style.overflowY =
+        "auto";
+
+      cartContent.style.touchAction =
+        "pan-y";
+
+      cartContent.style.webkitOverflowScrolling =
+        "touch";
+
+      cartContent.scrollTop = 0;
+    }
+  });
+
+}, 80);
   }else{
 
     closePrintPage();
