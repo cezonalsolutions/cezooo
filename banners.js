@@ -1308,56 +1308,50 @@ window.submitSuggestedProduct = async function(){
   },5000);
 
 };
-
 let shiridiStartX = 0;
 let shiridiStartY = 0;
 
 const shiridiPopup =
-document.getElementById(
-  "suggestProductPopup"
-);
+  document.getElementById("suggestProductPopup");
 
 shiridiPopup?.addEventListener(
   "touchstart",
   function(e){
 
+    /* Stop Profile swipe */
+    e.stopPropagation();
+
     const touch = e.touches[0];
 
-    shiridiStartX =
-      touch.clientX;
-
-    shiridiStartY =
-      touch.clientY;
+    shiridiStartX = touch.clientX;
+    shiridiStartY = touch.clientY;
 
   },
-  {passive:true}
+  { passive:true }
 );
-
 
 shiridiPopup?.addEventListener(
   "touchend",
   function(e){
 
-    const touch =
-      e.changedTouches[0];
+    /* Stop Profile swipe */
+    e.stopPropagation();
+
+    const touch = e.changedTouches[0];
 
     const diffX =
-      touch.clientX -
-      shiridiStartX;
+      touch.clientX - shiridiStartX;
 
     const diffY =
-      touch.clientY -
-      shiridiStartY;
+      touch.clientY - shiridiStartY;
 
     if(
       Math.abs(diffX) > 90 &&
       Math.abs(diffY) < 70
     ){
-
       closeSuggestProductPopup();
-
     }
 
   },
-  {passive:true}
+  { passive:true }
 );
