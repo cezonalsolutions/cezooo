@@ -315,9 +315,17 @@ function openPrintPage(){
 function closePrintPage(){
 
   printPage?.classList.remove("show");
-  document.body.classList.remove("print-open");
 
-  /* Don't close Xerox popup */
+  document.body.classList.remove(
+    "print-open"
+  );
+
+  document.documentElement.classList.remove(
+    "print-open"
+  );
+
+  document.body.style.overflow = "";
+  document.documentElement.style.overflow = "";
 }
 
 
@@ -1032,21 +1040,45 @@ updatePopupCartSummary();
 restoreCartButtons(document);
     addToCartBtn.textContent = "Added";
 
-    setTimeout(() => {
-     if(editingXeroxCartKey){
+setTimeout(() => {
 
-  closePrintPage();
+  if(editingXeroxCartKey){
 
-  openCartPagePopup();
+    closePrintPage();
 
-  editingXeroxCartKey = null;
+    /* Completely close hidden Xerox parent */
+    document
+      .getElementById("xeroxPopup")
+      ?.classList.remove("show");
 
-}else{
+    document
+      .querySelector(".floatBarWrap")
+      ?.classList.remove("popupMode");
 
-  closePrintPage();
+    document.body.classList.remove(
+      "print-open"
+    );
 
-}
+    document.documentElement.classList.remove(
+      "print-open"
+    );
 
+    document.body.style.overflow = "";
+    document.documentElement.style.overflow = "";
+
+    editingXeroxCartKey = null;
+
+    requestAnimationFrame(() => {
+      openCartPagePopup();
+    });
+
+  }else{
+
+    closePrintPage();
+
+    document.body.style.overflow = "";
+    document.documentElement.style.overflow = "";
+  }
       uploadedFiles.forEach(item => {
         if(item.url){
           URL.revokeObjectURL(item.url);
