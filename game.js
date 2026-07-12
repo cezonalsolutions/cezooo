@@ -491,29 +491,11 @@ async function startGameIntro(){
           .getElementById("welcomeStep")
           ?.classList.add("active");
 
-        if(!useCezooGameAttempt()){
+        const couponEligible = useCezooGameAttempt();
 
-          hideIntroSteps();
 
-          introScreen.style.display = "none";
-          mainScreen.style.display = "block";
 
-          updateCezooAttemptUI();
-
-          const text =
-            document.getElementById(
-              "cezooAttemptText"
-            );
-
-          if(text){
-            text.innerText =
-              "No attempts left";
-          }
-
-          gameIntroStarting = false;
-
-          return;
-        }
+window.cezooCouponEligible = couponEligible;
 
         resetGame();
 
@@ -1100,13 +1082,13 @@ function showCouponResult(){
   const actionBtn =
     coupon.querySelector(".redeemBtn");
 
-
+const couponEligible =
+  window.cezooCouponEligible !== false;
   /* =========================
      USER WON
   ========================= */
 
-  if(result.won){
-
+ if(result.won && couponEligible){
     topText.innerText = "YOU WON EXTRA";
 
     offerBox.innerHTML = `
@@ -1217,13 +1199,32 @@ function showCouponResult(){
 
     /* NO ATTEMPTS LEFT */
 
-    else{
+   /* COUPON ATTEMPTS FINISHED — PLAY FOR FUN */
 
-  bottomText.innerHTML = `
-    No attempts left
-  `;
+else{
 
-  actionBtn.style.display = "none";
+  bottomText.innerHTML = "";
+
+  actionBtn.style.display = "block";
+  actionBtn.innerText = "TRY AGAIN";
+
+  actionBtn.onclick = function(){
+
+    coupon.style.display = "none";
+    coupon.classList.remove("playArc");
+
+    document
+      .getElementById("gameIntroScreen")
+      .style.display = "none";
+
+    hideIntroSteps();
+
+    document
+      .getElementById("mainScreen")
+      .style.display = "block";
+
+    playGameVideo();
+  };
 
 }
   }
