@@ -873,3 +873,491 @@ document.addEventListener(
   "DOMContentLoaded",
   initializePriyaaShimmer
 );
+
+window.openReportIssuePopup = function(){
+
+  document
+    .getElementById("reportIssuePopup")
+    ?.classList.add("open");
+
+  document.body.style.overflow = "hidden";
+};
+
+
+window.closeReportIssuePopup = function(){
+
+  document
+    .getElementById("reportIssuePopup")
+    ?.classList.remove("open");
+
+  document.body.style.overflow = "hidden";
+};
+
+
+const reportIssueMessage =
+  document.getElementById("reportIssueMessage");
+
+const reportIssueCharCount =
+  document.getElementById("reportIssueCharCount");
+
+
+reportIssueMessage?.addEventListener(
+  "input",
+  function(){
+
+    reportIssueCharCount.innerText =
+      String(this.value.length);
+
+  }
+);
+
+
+window.submitReportIssue = async function(){
+  const issueType =
+    document
+      .getElementById("reportIssueType")
+      ?.value;
+
+  const orderId =
+    document
+      .getElementById("reportIssueOrderId")
+      ?.value
+      ?.trim();
+
+  const message =
+    document
+      .getElementById("reportIssueMessage")
+      ?.value
+      ?.trim();
+
+  const status =
+    document.getElementById("reportIssueStatus");
+
+
+  status.className = "reportIssueStatus";
+  status.innerText = "";
+
+
+  if(!issueType){
+
+    status.classList.add("error");
+    status.innerText = "Please select an issue.";
+
+    setTimeout(() => {
+      status.className = "reportIssueStatus";
+      status.innerText = "";
+    }, 5000);
+
+    return;
+  }
+
+
+  if(!message){
+
+    status.classList.add("error");
+    status.innerText = "Please describe your issue.";
+
+    setTimeout(() => {
+      status.className = "reportIssueStatus";
+      status.innerText = "";
+    }, 5000);
+
+    return;
+  }
+
+
+  const user = JSON.parse(
+    localStorage.getItem("cezooUser") || "null"
+  );
+
+
+  const { error } =
+await window._supabaseClient
+  .from("reported_issues")
+  .insert([{
+
+    issue_type: issueType,
+
+    order_id: orderId || null,
+
+    message: message,
+
+    user_name: user?.name || "",
+
+    user_mobile: user?.mobile || ""
+
+  }]);
+
+if(error){
+
+  status.className = "reportIssueStatus error";
+  status.innerText = "Unable to submit issue.";
+
+  setTimeout(() => {
+    status.className = "reportIssueStatus";
+    status.innerText = "";
+  }, 5000);
+
+  return;
+}
+
+
+ const submitBtn =
+  document.querySelector(".reportIssueSubmitBtn");
+
+submitBtn.disabled = true;
+
+submitBtn.innerHTML = `
+  <span class="reportIssueSuccessTick">
+    ✓
+  </span>
+`;
+
+document.getElementById("reportIssueType").value = "";
+document.getElementById("reportIssueOrderId").value = "";
+document.getElementById("reportIssueMessage").value = "";
+
+reportIssueCharCount.innerText = "0";
+
+setTimeout(() => {
+
+  submitBtn.disabled = false;
+
+  submitBtn.innerHTML = "Submit Issue";
+
+}, 5000);
+
+};
+let reportIssueStartX = 0;
+let reportIssueStartY = 0;
+
+const reportIssuePopupBox =
+  document.getElementById("reportIssuePopup");
+
+
+reportIssuePopupBox?.addEventListener(
+  "touchstart",
+  function(e){
+
+    e.stopPropagation();
+
+    const touch = e.touches[0];
+
+    reportIssueStartX = touch.clientX;
+    reportIssueStartY = touch.clientY;
+
+  },
+  { passive:true }
+);
+
+
+reportIssuePopupBox?.addEventListener(
+  "touchend",
+  function(e){
+
+    e.stopPropagation();
+
+    const touch = e.changedTouches[0];
+
+    const diffX =
+      touch.clientX - reportIssueStartX;
+
+    const diffY =
+      touch.clientY - reportIssueStartY;
+
+
+    if(
+      Math.abs(diffX) > 90 &&
+      Math.abs(diffY) < 70
+    ){
+      closeReportIssuePopup();
+    }
+
+  },
+  { passive:true }
+);
+
+
+window.openFaqPopup = function(){
+
+  document
+    .getElementById("faqPopup")
+    ?.classList.add("open");
+
+  document.body.style.overflow = "hidden";
+
+};
+
+
+window.closeFaqPopup = function(){
+
+  document
+    .getElementById("faqPopup")
+    ?.classList.remove("open");
+
+  // Profile popup is still open
+  document.body.style.overflow = "hidden";
+
+};
+
+
+/* ===========================
+   FAQ SWIPE BACK
+=========================== */
+
+let tirupathiiStartX = 0;
+let tirupathiiStartY = 0;
+
+const tirupathiiPopup =
+  document.getElementById("faqPopup");
+
+
+tirupathiiPopup?.addEventListener(
+  "touchstart",
+  function(e){
+
+    e.stopPropagation();
+
+    const touch = e.touches[0];
+
+    tirupathiiStartX = touch.clientX;
+    tirupathiiStartY = touch.clientY;
+
+  },
+  { passive:true }
+);
+
+
+tirupathiiPopup?.addEventListener(
+  "touchend",
+  function(e){
+
+    e.stopPropagation();
+
+    const touch = e.changedTouches[0];
+
+    const diffX =
+      touch.clientX - tirupathiiStartX;
+
+    const diffY =
+      touch.clientY - tirupathiiStartY;
+
+    if(
+      Math.abs(diffX) > 90 &&
+      Math.abs(diffY) < 70
+    ){
+
+      closeFaqPopup();
+
+    }
+
+  },
+  { passive:true }
+);
+
+
+
+window.openSuggestProductPopup = function(){
+
+  document
+    .getElementById("suggestProductPopup")
+    ?.classList.add("open");
+
+  document.body.style.overflow = "hidden";
+
+};
+
+
+window.closeSuggestProductPopup = function(){
+
+  document
+    .getElementById("suggestProductPopup")
+    ?.classList.remove("open");
+
+  document.body.style.overflow = "hidden";
+
+};
+
+
+
+window.submitSuggestedProduct = async function(){
+
+  const productName =
+    document
+      .getElementById("shiridiProductName")
+      ?.value
+      ?.trim();
+
+  const brandName =
+    document
+      .getElementById("shiridiBrandName")
+      ?.value
+      ?.trim();
+
+  const approxPrice =
+    document
+      .getElementById("shiridiPrice")
+      ?.value
+      ?.trim();
+
+  const status =
+    document.getElementById("shiridiStatus");
+
+
+  status.className = "reportIssueStatus";
+  status.innerText = "";
+
+
+  if(!productName){
+
+    status.classList.add("error");
+    status.innerText =
+      "Please enter the product name.";
+
+    setTimeout(()=>{
+
+      status.className =
+        "reportIssueStatus";
+
+      status.innerText = "";
+
+    },5000);
+
+    return;
+  }
+
+
+  const user = JSON.parse(
+    localStorage.getItem("cezooUser") || "null"
+  );
+
+
+  const { error } =
+    await window._supabaseClient
+
+      .from("product_suggestions")
+
+      .insert([{
+
+        product_name: productName,
+
+        brand_name: brandName || null,
+
+        approx_price: approxPrice || null,
+
+        user_name: user?.name || "",
+
+        user_mobile: user?.mobile || ""
+
+      }]);
+
+
+  if(error){
+
+    status.classList.add("error");
+
+    status.innerText =
+      "Unable to submit suggestion.";
+
+    setTimeout(()=>{
+
+      status.className =
+        "reportIssueStatus";
+
+      status.innerText = "";
+
+    },5000);
+
+    return;
+  }
+
+
+  const submitBtn =
+    document.querySelector(".shiridiSubmitBtn");
+
+
+  submitBtn.disabled = true;
+
+  submitBtn.innerHTML = `
+    <span class="shiridiSuccessTick">
+      ✓
+    </span>
+  `;
+
+
+  document.getElementById(
+    "shiridiProductName"
+  ).value = "";
+
+  document.getElementById(
+    "shiridiBrandName"
+  ).value = "";
+
+  document.getElementById(
+    "shiridiPrice"
+  ).value = "";
+
+
+  setTimeout(()=>{
+
+    submitBtn.disabled = false;
+
+    submitBtn.innerHTML =
+      "Submit Suggestion";
+
+  },5000);
+
+};
+
+let shiridiStartX = 0;
+let shiridiStartY = 0;
+
+const shiridiPopup =
+document.getElementById(
+  "suggestProductPopup"
+);
+
+shiridiPopup?.addEventListener(
+  "touchstart",
+  function(e){
+
+    const touch = e.touches[0];
+
+    shiridiStartX =
+      touch.clientX;
+
+    shiridiStartY =
+      touch.clientY;
+
+  },
+  {passive:true}
+);
+
+
+shiridiPopup?.addEventListener(
+  "touchend",
+  function(e){
+
+    const touch =
+      e.changedTouches[0];
+
+    const diffX =
+      touch.clientX -
+      shiridiStartX;
+
+    const diffY =
+      touch.clientY -
+      shiridiStartY;
+
+    if(
+      Math.abs(diffX) > 90 &&
+      Math.abs(diffY) < 70
+    ){
+
+      closeSuggestProductPopup();
+
+    }
+
+  },
+  {passive:true}
+);
